@@ -81,6 +81,12 @@ const config: Config = {
           position: 'left',
           label: 'General',
         },
+        {
+          type: 'docSidebar',
+          sidebarId: 'resourcesSidebar',
+          position: 'left',
+          label: 'Resources',
+        },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://hosting.qbox.re/',
