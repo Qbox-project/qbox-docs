@@ -1,0 +1,122 @@
+---
+title: "Frequently Asked Questions"
+sidebar_label: "FAQ"
+sidebar_position: 2
+keywords: [qbox, fivem, faq, questions, answers, help, support, troubleshooting]
+description: Find answers to commonly asked questions about the Qbox framework, including compatibility, features, installation, and troubleshooting information.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Frequently Asked Questions
+
+## What are the differences between QBCore and Qbox?
+
+While originally forked from QBCore, many Qbox resources have been refactored to improve code quality, enhance security, lower performance overhead, and integrate with [overextended](https://overextended.dev) resources.
+Where appropriate Qbox also integrates directly with other open source projects, rather than maintaining subpar resources in-house.
+
+Qbox maintains high quality standards, with a strong community of regular contributors.
+As time goes on, expect greater differences in player facing features.
+
+## Will my QBCore scripts work with Qbox?
+
+TL;DR: Yes (in most cases).
+
+We've created a bridge layer for backwards compatibility with the documented and proper ways of using qb-core,
+and you can continue to use most QBCore scripts without any modifications.
+
+An exception to this is resources that use qb-core in undocumented, unsupported, invalid, and/or improper ways, such as:
+- Direct access to database tables;
+- Direct access to qb-core files that aren't meant to be used by other resources;
+- Invalid usages of existing functions;
+- And other unexpected ways not mentioned here.
+
+## Who should use Qbox?
+
+Servers currently using QBCore and servers interested in running QBCore in the future.
+
+## Is Qbox ready to use?
+
+Since qbx_core is backwards compatible with qb-core resources, we recommend using only the released Qbox resources for a stable experience.
+
+## Which resources are ready to use?
+
+- [qbx_core](./resources/qbx_core)
+- [qbx_divegear](./resources/qbx_divegear)
+- [qbx_diving](./resources/qbx_diving)
+- [qbx_binoculars](./resources/qbx_binoculars)
+- [qbx_management](./resources/qbx_management)
+- [qbx_radio](./resources/qbx_radio)
+- [qbx_truckrobbery](./resources/qbx_truckrobbery)
+- [qbx_vehicles](./resources/qbx_vehicles)
+- [qbx_garages](./resources/qbx_garages)
+- [qbx_loading](./resources/qbx_loading)
+- [qbx_smallresources](./resources/qbx_smallresources)
+
+## Are multijob resources compatible with Qbox?
+
+They can be, but only if calling qbx_core exports to add/modify/remove player's jobs.
+The two common issues with multijob resources are:
+- Directly accessing Qbox's database tables
+- Maintaining Qbox's core data in a resource's own table
+
+## Do I need to convert my resources to Qbox to make them work?
+
+No, the bridge layer handles the compatibility for resources expecting QBCore style exports and events. Converting resources only helps to improve readability and reduce the memory footprint
+
+## Are beta releases ready to be used?
+
+If you see a resource with a version less than v1.0.0, it is a beta released resources.
+Beta releases still meet all of our release standards, except that they may not yet be as optimized or cleaned up as we'd like.
+To qualify for a beta release we're principally concerned that the resource works well, and the API & dependencies are appropriate.
+We wouldn't release resources in beta if we didn't think they were stable and ready to be used.
+
+## Common Problems and Questions
+
+### No such export GetCoreObject in resource qbx_core
+
+Qbox does not have the core object. However, you can continue to use `exports['qb-core']:GetCoreObject()` to get a core object from Qbox's QB bridge layer.
+
+### [WARN] This resource is still using the deprecated qbx_core utils! ###
+
+If you are receiving this warning then please download the latest release/commit for that resource. With the exception of archived resources this dependency has been resolved.
+
+### Can I use my own multicharacter?
+
+Yes, you can. To disable the built in multicharacter change this setting to true in `qbx_core/config/client.lua`
+```lua filename="qbx_core/config/client.lua"
+    useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
+```
+
+### Can I use my own notification system?
+
+Yes, you can but you will need to modify `ox_lib` to pass the event to your notification system.
+
+### Vehicle model names starting with a number
+
+When using vehicle names that start with a number you need to enclose them in square brackets like this
+```lua
+    ['5vigero'] =
+```
+
+### Keybind changes do not work
+
+Changing keybinds via convars or configuration files will not change them for clients that have already connected to the server. You need to clear your binds manually in order them to reset to the defaults
+
+### txAdmin Installation: Task Failed: Response code 403 (rate limit exceeded)
+
+This is due to Github rate limits which is outside our control. You can keep trying or change your IP address 
+
+### SCRIPT ERROR: failed to load model
+
+This is likely due to a low performance PC. If the error is `qbx_core` you can adjust the timeout in `qbx_core/config/client.lua` under `loadingModelsTimeout`
+
+### Do I need to add items to qbx_core/shared/items.lua and ox_inventory?
+
+No you don't need to add items there unless they are being accessed in a resource via the bridge such as a script that is not ox_inventory compatible. Items added here will be automatically added to `ox_inventory` but you will have to manually add things like client/server exports in the `ox_inventory/data/items.lua`
+
+### Error SQL: Can't create table xyz (Foreign Key Constraint is incorrectly formed)
+
+This is due to a mismatch of collation types between the table being created and existing tables. Add the following to the end of the `CREATE TABLE` parts of the sql you are trying to add and that should fix the issue. You may need to drop the table and readd it for the changes to apply
+```sql
+DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```

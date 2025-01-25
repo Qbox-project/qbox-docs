@@ -1,0 +1,75 @@
+---
+title: "Installation Guide"
+sidebar_label: "Installation"
+sidebar_position: 1
+keywords: [qbox, fivem, installation, setup, server, txadmin, recipe, deployment]
+description: Step-by-step guide for installing the Qbox framework on your FiveM server. Learn how to deploy using txAdmin and choose the right recipe for your needs.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Link from '@docusaurus/Link';
+
+# Installation
+
+:::info
+We highly recommend using **txAdmin** to install your FiveM server.  
+For detailed instructions, refer to [Setting up a server using txAdmin](https://docs.fivem.net/docs/server-manual/setting-up-a-server-txadmin/).
+:::
+
+## Installation Steps
+
+### 1. Download the server
+
+Download the latest [FiveM artifacts](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and extract the files.
+
+### 2. Start the server installation 
+
+Run `FXServer.exe` to begin the installation and follow all the steps.
+
+### 3. Deploy the recipe
+
+When prompted, select `Remote URL Template`:
+
+![Deployment Type](/img/txadmin-deployment-type.jpg)
+
+Use the raw recipe link shown below:
+
+<Tabs>
+  <TabItem value="unstable" label="Qbox Unstable" default>
+    The Qbox Unstable Recipe comes with *all* of our actively maintained resources.
+    Use this if you're looking for a complete server base.
+
+    ```bash
+    https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/main/qbox.yaml
+    ```
+  </TabItem>
+  <TabItem value="lean" label="Qbox Lean">
+    The Qbox Lean Recipe is a stripped down version of Qbox, without excess resources,
+    and it does not include any criminal or civilian activities.
+    Use this if you're looking for a smaller server base to build off of.
+
+    ```bash
+    https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/main/qbox-lean.yaml
+    ```
+  </TabItem>
+  <TabItem value="stable" label="Qbox Stable">
+    The Qbox Stable Recipe comes with the resources we consider stable, based on our Release Readiness guidelines.
+    Use this if you're looking for the most stable experience.
+
+    :::caution
+    Since many Qbox resources are still a work-in-progress, some important resources are still considered unstable,
+    and are currently missing from this recipe. This may result in various issues.
+    You are expected to find alternatives by yourself, or to download the unstable versions of those resources.
+    :::
+
+    ```bash
+    https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/main/qbox-stable.yaml
+    ```
+  </TabItem>
+</Tabs>
+
+### 4. Run the server
+
+Once you have completed all of the installation steps, run the server.

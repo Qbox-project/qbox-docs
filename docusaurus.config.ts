@@ -37,6 +37,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          routeBasePath: '/',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
@@ -76,9 +77,9 @@ const config: Config = {
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'introductionSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'General',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
@@ -106,6 +107,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['lua'],
     },
   } satisfies Preset.ThemeConfig,
 };
