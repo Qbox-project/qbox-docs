@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Qbox Documentation',
   tagline: 'The official documentation for the Qbox Project',
-  favicon: 'img/favicon.ico',
+  favicon: 'https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png',
 
   // Set the production url of your site here
   url: 'https://docs.qbox.re',

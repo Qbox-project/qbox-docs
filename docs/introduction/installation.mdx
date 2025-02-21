@@ -8,10 +8,6 @@ image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.pn
 slug: /installation
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import Link from '@docusaurus/Link';
-
 # Installation
 
 :::info
@@ -19,17 +15,34 @@ We highly recommend using **txAdmin** to install your FiveM server.
 For detailed instructions, refer to [Setting up a server using txAdmin](https://docs.fivem.net/docs/server-manual/setting-up-a-server-txadmin/).
 :::
 
+:::danger
+We expect you to already have MariaDB installed. XAMPP IS NOT SUPPORTED AND SHOULD NEVER EVEN BE USED.
+Please download MariaDB from the official website: [MariaDB Downloads](https://mariadb.org/download/).
+:::
+
 ## Installation Steps
 
 ### 1. Download the server
 
-Download the latest [FiveM artifacts](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and extract the files.
+Download the latest [FiveM artifacts](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and extract the files. Do not use the buttons at the top. Download directly from the list.
 
-### 2. Start the server installation 
+![Latest Artifacts](/img/artifacts.png)
 
-Run `FXServer.exe` to begin the installation and follow all the steps.
+### 2. Extract the artifacts
 
-### 3. Deploy the recipe
+Now extract the `server.7z` with any archive manager of your choosing. We recommend using [7-Zip](https://www.7-zip.org/). Extract it as `/server` so you keep the server folder name.
+
+### 3. Starting the server
+
+Open the folder you just extracted it to. It should look a little like this. And then run `FXServer.exe`.
+
+![Server Folder](/img/artifact-list.png)
+
+### 4. Start the recipe installation 
+
+Run `FXServer.exe` to start txAdmin and follow all the steps.
+
+### 5. Deploy the recipe
 
 When prompted, select `Remote URL Template`:
 
@@ -37,40 +50,10 @@ When prompted, select `Remote URL Template`:
 
 Use the raw recipe link shown below:
 
-<Tabs>
-  <TabItem value="unstable" label="Qbox Unstable" default>
-    The Qbox Unstable Recipe comes with *all* of our actively maintained resources.
-    Use this if you're looking for a complete server base.
+```bash
+https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/main/qbox.yaml
+```
 
-    ```bash
-    https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/main/qbox.yaml
-    ```
-  </TabItem>
-  <TabItem value="lean" label="Qbox Lean">
-    The Qbox Lean Recipe is a stripped down version of Qbox, without excess resources,
-    and it does not include any criminal or civilian activities.
-    Use this if you're looking for a smaller server base to build off of.
-
-    ```bash
-    https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/main/qbox-lean.yaml
-    ```
-  </TabItem>
-  <TabItem value="stable" label="Qbox Stable">
-    The Qbox Stable Recipe comes with the resources we consider stable, based on our Release Readiness guidelines.
-    Use this if you're looking for the most stable experience.
-
-    :::caution
-    Since many Qbox resources are still a work-in-progress, some important resources are still considered unstable,
-    and are currently missing from this recipe. This may result in various issues.
-    You are expected to find alternatives by yourself, or to download the unstable versions of those resources.
-    :::
-
-    ```bash
-    https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/main/qbox-stable.yaml
-    ```
-  </TabItem>
-</Tabs>
-
-### 4. Run the server
+### 6. Run the server
 
 Once you have completed all of the installation steps, run the server.
