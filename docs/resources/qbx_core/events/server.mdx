@@ -1,0 +1,124 @@
+---
+title: Server Events
+sidebar_label: server
+keywords: [qbox, fivem, qbx_core, events]
+description: This document provides comprehensive documentation for server-side events within the Qbox Core framework. It outlines both non-networked and networked events that are triggered on the client, offering details on their purpose, usage, and any associated data structures (types).
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Server Events
+
+:::warning
+  These events **MUST NOT** be triggered by any other scripts.
+:::
+
+:::info
+  Some of these events use custom types.
+  You can learn more about those in the Types section of this resource.
+:::
+
+## Non-Networked Events
+
+### QBCore:Server:OnPlayerUnload
+
+Triggered when aplayer begins the process of logging out. \
+There is no guarantee that the player still exists in qbx_core's memory at the time this event is triggered.
+
+```lua
+AddEventHandler('QBCore:Server:OnPlayerUnload', function(source) end)
+```
+
+- source: `integer`
+
+### QBCore:Server:OnPermissionUpdate
+
+Triggered when the player's permissions are updated. \
+Only applies to permissions created through QB permission functions.
+
+```lua
+AddEventHandler('QBCore:Server:OnPermissionUpdate', function(source) end)
+```
+
+- source: `integer`
+
+### QBCore:Server:OnJobUpdate
+
+Triggered when a player's job updates.
+
+```lua
+AddEventHandler('QBCore:Server:OnJobUpdate', function(source, job) end)
+```
+
+- source: `integer`
+- job: [`PlayerJob`](../types/player.mdx#playerjob)
+
+### QBCore:Server:OnGangUpdate
+
+Triggered when a player's gang updates.
+
+```lua
+AddEventHandler('QBCore:Server:OnGangUpdate', function(source, gang) end)
+```
+
+- source: `integer`
+- gang: [`PlayerGang`](../types/player.mdx#playergang)
+
+### QBCore:Server:SetDuty
+
+Triggered when a player's job duty updates.
+
+```lua
+AddEventHandler('QBCore:Server:SetDuty', function(source, onDuty) end)
+```
+
+- source: `integer`
+- onDuty: `boolean`
+
+### qbx_core:server:onGroupUpdate
+
+Triggered when the player's groups are updated. If grade is nil then group was removed otherwise group was added
+
+```lua
+AddEventHandler('qbx_core:server:onGroupUpdate', function(source, groupName, groupGrade) end)
+```
+
+- source: `integer`
+- groupName: `string`
+- groupGrade?: `number`
+
+### QBCore:Server:OnMoneyChange
+
+Triggered when a player's cash/bank balance updates.
+
+```lua
+AddEventHandler('QBCore:Server:OnMoneyChange', function(source, moneyType, amount, operation, reason) end)
+```
+
+- source: `integer`
+- moneyType: `'cash' | 'bank' | 'crypto'`
+- amount: `number`
+- operation: `'add' | 'remove' | 'set'`
+- reason: `string`
+
+### qbx_core:server:onSetMetaData
+
+Triggered when player.Functions.setMetaData() is used.
+
+```lua
+AddEventHandler('qbx_core:server:onSetMetaData', function(key, oldValue, newValue, source) end)
+```
+
+- key: `string`
+- oldValue: `any`
+- newValue: `any`
+- source: `number`
+
+## Networked Events
+
+### QBCore:Server:OnPlayerLoaded
+
+Triggered when a player has finished loading.
+
+```lua
+RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function() end)
+```

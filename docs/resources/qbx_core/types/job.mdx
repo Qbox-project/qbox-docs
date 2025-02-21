@@ -1,0 +1,33 @@
+---
+sidebar_label: jobs
+keywords: [qbox, fivem, qbx_core, types]
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Jobs
+
+## JobData
+
+**Fields**
+
+- label: `string`
+- type?: `string`
+- defaultDuty: `boolean`
+- offDutyPay: `boolean`
+
+## Job
+
+Extends [`JobData`](#jobdata)
+
+**Fields**
+
+- grades: [`table<integer, JobGradeData>`](#jobgradedata)
+
+## JobGradeData
+
+**Fields**
+
+- name: `string`
+- isboss?: `boolean`
+- bankAuth?: `boolean`
+- payment: `number`

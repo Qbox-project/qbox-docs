@@ -1,0 +1,86 @@
+---
+title: Client Exports
+sidebar_label: client
+keywords: [qbox, fivem, qbx_core, exports]
+description: Documentation for client-side exports. Learn about available functions for notifications, group management, and other client-side utilities.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Client Exports
+
+## Notify
+
+:::info
+  See [`lib.notify`] for more details.
+:::
+
+Text box popup which disappears after a given amount of time.
+
+```lua
+exports.qbx_core:Notify(text, notifyType, duration, subTitle, notifyPosition, notifyStyle, notifyIcon, notifyIconColor)
+```
+
+- text: `table | string`
+  - The text of the notification.
+  - Can be a string, or a table containing:
+    - text?: `string`
+    - caption?: `string`
+- notifyType?: `'inform' | 'error' | 'success' | 'warning'`
+  - Default: `'inform'`
+- duration?: `integer`
+  - The duration in milliseconds for which the notification will remain on screen.
+  - Default: `5000`
+- subTitle?: `string`
+  - Additional text under the title.
+- notifyPosition?: `'top' | 'top-right' | 'top-left' | 'bottom' | 'bottom-right' | 'bottom-left' | 'center-right' | 'center-left'`
+  - Default: `top-right` (changable in config)
+- notifyStyle?: `table`
+  - Custom styling. Refer to [`lib.notify`].
+- notifyIcon?: `string`
+  - Font Awesome 6 icon name.
+- notifyIconColor?: `string`
+  - Custom color for `notifyIcon`.
+
+[`lib.notify`]: https://overextended.dev/ox_lib/Modules/Interface/Client/notify#libnotify
+
+## HasPrimaryGroup
+
+Checks if the player's current Job/Gang or citizenid matches against a single group, array of group, or group/grade or list of citizenids. Does not check if player is on or off duty
+
+```lua
+exports.qbx_core:HasPrimaryGroup(filter)
+```
+
+- filter: `string` or `string[]` or `table<string, number>`
+  - A group/citizenid, array of groups/citizenids, or pairs of groups-grades required to pass the check.
+
+Returns:
+
+- success: `boolean`
+
+## HasGroup
+
+Checks if the player's list of groups (Jobs/Gangs) or citizenid matches against a single group, array of group, or group/grade or list of citizenids. Does not check if player is on or off duty
+
+```lua
+exports.qbx_core:HasGroup(filter)
+```
+
+- filter: `string` or `string[]` or `table<string, number>`
+  - A group/citizenid, array of groups/citizenids, or pairs of groups-grades required to pass the check.
+
+Returns:
+
+- success: `boolean`
+
+## GetGroups
+
+Returns a combined table of all the groups the current player currently has.
+
+```lua
+exports.qbx_core:GetGroups()
+```
+
+Returns:
+
+- groups: `table<string, number>`

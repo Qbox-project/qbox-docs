@@ -1,0 +1,156 @@
+---
+title: Convars
+sidebar_label: convars
+keywords: [qbox, fivem, qbx_core, convars]
+description: Configuration variables (convars) for Qbox. Learn about the available server configuration options and their usage.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Convars
+
+Below is a list of convars used within qbx_core.
+The value shown in the example is the default value for each convar.
+
+## enableBridge
+
+Enables or disables the qb-core bridge for compatibility with QBCore resources.
+
+```lua
+setr qbx:enableBridge "true"
+```
+
+Type: `boolean`
+
+## enableQueue
+
+Enables or disables the built-in qbx_core queuing system.
+
+```lua
+set qbx:enableQueue "true"
+```
+
+Type: `boolean`
+
+## bucketLockdownMode
+
+Sets entity lockdown mode for bucket 0.
+See [`SET_ROUTING_BUCKET_ENTITY_LOCKDOWN_MODE`](https://docs.fivem.net/natives/?_0xA0F2201F) for more information.
+
+```lua
+set qbx:bucketLockdownMode "inactive"
+```
+
+Type: `'inactive' | 'relaxed' | 'strict'`
+
+## discordLink
+
+Sets the Discord link for kick messages.
+
+:::warning
+  This convar is only used by the qb-core bridge, and the deprecated `utils` module.
+:::
+
+```lua
+set qbx:discordLink "discord.gg/qbox"
+```
+
+Type: `string`
+
+## max_jobs_per_player
+
+Sets the maximum number of jobs a player can have with the built-in multijob.
+
+```lua
+set qbx:max_jobs_per_player 1
+```
+
+Type: `integer`
+
+## max_gangs_per_player
+
+Sets the maximum number of gangs a player can have with the built-in multigang.
+
+```lua
+set qbx:max_gangs_per_player 1
+```
+
+Type: `integer`
+
+## setjob_replaces
+
+Controls if the `/setjob` command replaces or adds a job to a player.
+
+```lua
+set qbx:setjob_replaces "true"
+```
+
+Type: `boolean`
+
+## setgang_replaces
+
+Controls if the `/setgang` command replaces or adds a gang to a player.
+
+```lua
+set qbx:setgang_replaces "true"
+```
+
+Type: `boolean`
+
+## cleanPlayerGroups
+
+Controls if the `player_groups` SQL table is automatically cleaned of invalid groups (jobs/gangs) on startup.
+
+```lua
+set qbx:cleanPlayerGroups "true"
+```
+
+Type: `boolean`
+
+## allowMethodOverrides
+
+Enables or disables the ability of resources to override existing methods in player object.
+
+```lua
+set qbx:allowMethodOverrides "true"
+```
+
+Type: `boolean`
+
+## disableOverrideWarning
+
+Enables or disables warning from resources overriding existing methods in player object.
+
+```lua
+set qbx:disableOverrideWarning "false"
+```
+
+Type: `boolean`
+
+## enableVehiclePersistence
+
+When enabled, player owned vehicles deleted by the server which have persistence enabled on them (either via having spawned using `qbx.spawnVehicle` or through `exports.qbx_core:EnablePersistence`), will be respawned with the same properties as when the vehicle was deleted.
+This is a fix to a FiveM bug which can result in vehicles randomly being deleted; ensuring that vehicles that players leave, will be there when they return.
+
+```lua
+setr qbx:enableVehiclePersistence "false"
+```
+
+Type: `boolean`
+
+## acknowledge
+
+Enables or disabled the Qbox documentation console message.
+
+```lua
+set qbx:acknowledge "false"
+```
+
+Type: `boolean`
+
+## motd
+
+The message displayed to players in the chat after loading in.
+
+```lua
+set qbx:motd "<p style='padding: 1rem; background-color: rgb(30, 30, 30); border-radius: 1rem; text-align: center;'><span style='color: rgb(40, 200, 40);'>Welcome to Qbox!</span><br>Learn more at <span id='link' style='color: rgb(100, 100, 255);' onclick='window.invokeNative(\"openUrl\", \"https://docs.qbox.re/\")'>docs.qbox.re</span></p><style>span#link:hover { cursor: pointer; }</style>"
+```

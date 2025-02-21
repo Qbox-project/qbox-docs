@@ -1,0 +1,1039 @@
+---
+title: Server Exports
+sidebar_label: server
+keywords: [qbox, fivem, qbx_core, exports]
+description: Documentation for server-side exports. Learn about available functions for notifications, group management, and other server-side utilities.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Server Exports
+
+:::info
+Some of these exports use custom types.
+You can learn more about those in the Types section of this resource.
+:::
+
+## CreateJobs
+
+Adds or overwrites the given jobs.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:CreateJobs(jobs)
+```
+
+- jobs: [`table<string, Job>`](../types/job.mdx)
+
+## RemoveJob
+
+Removes the given job.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:RemoveJob(jobName)
+```
+
+- jobName: `string`
+
+Returns:
+
+- success: `boolean`
+- message: `'success' | 'invalid_job_name' | 'job_not_exists'`
+
+## CreateGangs
+
+Adds or overwrites the given gangs.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:CreateGangs(gangs)
+```
+
+- gangs: [`table<string, Gang>`](../types/gang.mdx)
+
+## RemoveGang
+
+Removes the given gang.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:RemoveGang(gangName)
+```
+
+- gangName: `string`
+
+Returns:
+
+- success: `boolean`
+- message: `'success' | 'invalid_gang_name' | 'gang_not_exists'`
+
+## GetCoreVersion
+
+Returns the current version of `qbx_core` set in its fxmanifest.
+
+```lua
+exports.qbx_core:GetCoreVersion(InvokingResource)
+```
+
+- InvokingResource: `string`
+
+Returns: `string`
+
+## ExploitBan
+
+Bans the given player for the given reason.
+
+```lua
+exports.qbx_core:ExploitBan(playerId, origin)
+```
+
+- playerId: `integer`
+- origin: `string`
+
+## GetSource
+
+Returns the ID of the player that has the given identifier, or 0 if the player is not in the server.
+
+```lua
+exports.qbx_core:GetSource(identifier)
+```
+
+- identifier: `string`
+
+Returns: `integer`
+
+## GetUserId
+
+Returns the userId of the player that has the given identifier, or 0 if the player is not in the server.
+
+```lua
+exports.qbx_core:GetUserId(identifier)
+```
+
+- identifier: `string`
+
+Returns: `integer`
+
+## GetPlayer
+
+Returns the Player object for the given player ID or identifier.
+
+```lua
+exports.qbx_core:GetPlayer(source)
+```
+
+- source: `integer`
+
+Returns: [`Player?`](../types/player.mdx#player)
+
+## GetPlayerByCitizenId
+
+Returns the Player object for the given citizenid.
+
+```lua
+exports.qbx_core:GetPlayerByCitizenId(citizenid)
+```
+
+- citizenid: `string`
+
+Returns: [`Player?`](../types/player.mdx#player)
+
+## GetPlayerByUserId
+
+Returns the Player object for the given userId.
+
+```lua
+exports.qbx_core:GetPlayerByUserId(citizenid)
+```
+
+- userId: `string`
+
+Returns: [`Player?`](../types/player.mdx#player)
+
+## GetPlayerByPhone
+
+Returns the Player object for the given phone number.
+
+```lua
+exports.qbx_core:GetPlayerByPhone(number)
+```
+
+- number: `string`
+
+Returns: [`Player?`](../types/player.mdx#player)
+
+## GetQBPlayers
+
+Returns the player ID to Player object map of logged-in players.
+
+```lua
+exports.qbx_core:GetQBPlayers()
+```
+
+Returns: [`table<integer, Player>`](../types/player.mdx#player)
+
+## GetPlayersData
+
+Returns all PlayerData tables for all active players.
+
+```lua
+exports.qbx_core:GetPlayersData()
+```
+
+Returns: [`PlayerData[]`](../types/player.mdx#playerdata)
+
+## SetPlayerData
+
+Sets a specific players PlayerData key to a new value.
+
+```lua
+exports.qbx_core:SetPlayerData(identifier, key, value)
+```
+
+- identifier: `source | citizenid`
+- key: `string`
+- value: `any`
+
+## UpdatePlayerData
+
+Triggers the players PlayerData to update.
+
+```lua
+exports.qbx_core:UpdatePlayerData(identifier)
+```
+
+- identifier: `source | citizenid`
+
+## GetMetadata
+
+Gets a specific players metadata value.
+
+```lua
+exports.qbx_core:GetMetadata(identifier, metadata)
+```
+
+- identifier: `source | citizenid`
+- metadata: `string`
+
+## SetMetadata
+
+Sets a specific players metadata key to a new value.
+
+```lua
+exports.qbx_core:SetMetadata(identifier, metadata, value)
+```
+
+- identifier: `source | citizenid`
+- metadata: `string`
+- value: `any`
+
+## SetCharInfo
+
+Sets a specific players character information.
+
+```lua
+exports.qbx_core:SetCharInfo(identifier, charInfo, value)
+```
+
+- identifier: `source | citizenid`
+- charInfo: `string`
+- value: `any`
+
+## GetDutyCountJob
+
+Returns the amount of players that are on-duty in the given job, and a list of their IDs.
+
+```lua
+exports.qbx_core:GetDutyCountJob(job)
+```
+
+- job: `string`
+
+Returns:
+
+- count: `integer`
+- players: `integer[]`
+
+## GetDutyCountType
+
+Returns the amount of players that are on-duty in the given job type, and a list of their IDs.
+
+```lua
+exports.qbx_core:GetDutyCountType(jobType)
+```
+
+- jobType: `string`
+
+Returns:
+
+- count: `integer`
+- players: `integer[]`
+
+## GetBucketObjects
+
+Returns the player to bucket and entity to bucket maps.
+
+```lua
+exports.qbx_core:GetBucketObjects()
+```
+
+Returns:
+
+- playerBuckets: `table<integer, integer>`
+- entityBuckets: `table<integer, integer>`
+
+## SetPlayerBucket
+
+Sets the given player to the given bucket. \
+Returns `false` if one of the parameters is nil, and `true` otherwise.
+
+```lua
+exports.qbx_core:SetPlayerBucket(source, bucket)
+```
+
+- source: `integer`
+- bucket: `integer`
+
+Returns: `boolean`
+
+## SetEntityBucket
+
+Sets the given entity (e.g. ped, vehicle, prop, etc.) to the given bucket. \
+Returns `false` if one of the parameters is nil, and `true` otherwise.
+
+```lua
+exports.qbx_core:SetEntityBucket(entity, bucket)
+```
+
+- entity: `integer`
+- bucket: `integer`
+
+Returns: `boolean`
+
+## GetPlayersInBucket
+
+Returns a list of all the players in the given bucket, or `false` if there are no known player buckets.
+
+```lua
+exports.qbx_core:GetPlayersInBucket(bucket)
+```
+
+- bucket: `integer`
+
+Returns: `integer[] | false`
+
+## GetEntitiesInBucket
+
+Returns a list of all the entities in the given bucket, or `false` if there are no known entity buckets.
+
+```lua
+exports.qbx_core:GetEntitiesInBucket(bucket)
+```
+
+- bucket: `integer`
+
+Returns: `integer[] | false`
+
+## CreateUseableItem
+
+Registers the given function to run when the given item is used.
+
+```lua
+exports.qbx_core:CreateUseableItem(item, data)
+```
+
+- item: `string`
+- data: `fun(source: integer, item: unknown)`
+
+## CanUseItem
+
+Returns the data set to run when the given item is used, or `nil` if none exists.
+
+```lua
+exports.qbx_core:CanUseItem(item)
+```
+
+- item: `string`
+
+Returns: `unknown`
+
+## IsWhitelisted
+
+Returns whether the given player is whitelisted.
+
+```lua
+exports.qbx_core:IsWhitelisted(source)
+```
+
+- source: `integer`
+
+Returns: `boolean`
+
+## ~~AddPermission~~
+
+:::warning
+Deprecated as of v1.8.0. Use ox_lib ACE permissions instead
+:::
+
+Adds the given permission to the given player.
+
+```lua
+exports.qbx_core:AddPermission(source, permission)
+```
+
+- source: `integer`
+- permission: `string`
+
+## ~~RemovePermission~~
+
+:::warning
+Deprecated as of v1.8.0. Use ox_lib ACE permissions instead
+:::
+
+Removes the given permission from the given player.
+
+```lua
+exports.qbx_core:RemovePermission(source, permission)
+```
+
+- source: `integer`
+- permission: `string`
+
+## ~~HasPermission~~
+
+:::warning
+Deprecated as of v1.8.0. Use ACE permissions instead.
+:::
+
+Returns whether the given player has the given permission.
+
+```lua
+exports.qbx_core:HasPermission(source, permission)
+```
+
+- source: `integer`
+- permission: `string`
+
+Returns: `boolean`
+
+## ~~GetPermission~~
+
+:::warning
+Deprecated as of v1.8.0. Use ACE permissions instead.
+:::
+
+Gets the given player's permissions.
+
+```lua
+exports.qbx_core:GetPermission(source)
+```
+
+- source: `integer`
+
+Returns: `table<string, boolean>`
+
+## IsOptin
+
+Returns whether the given player is optin to admin reports.
+
+```lua
+exports.qbx_core:IsOptin(source)
+```
+
+- source: `integer`
+
+Returns: `boolean`
+
+## ToggleOptin
+
+Opts the given player in and out of admin reports.
+
+```lua
+exports.qbx_core:ToggleOptin(source)
+```
+
+- source: `integer`
+
+## IsPlayerBanned
+
+Returns whether the given player is banned, and a message to be shown to the player.
+
+```lua
+exports.qbx_core:IsPlayerBanned(source)
+```
+
+- source: `integer`
+
+Returns:
+
+- banned: `boolean`
+- playerMessage: `string`
+  - A message written to be shown to the player.
+
+## Notify
+
+:::info
+See [`lib.notify`] for more details.
+:::
+
+Text box popup for the given player which disappears after a given amount of time.
+
+```lua
+exports.qbx_core:Notify(source, text, notifyType, duration, subTitle, notifyPosition, notifyStyle, notifyIcon, notifyIconColor)
+```
+
+- source: `integer`
+- text: `table | string`
+  - The text of the notification.
+  - Can be a string, or a table containing:
+    - text?: `string`
+    - caption?: `string`
+- notifyType?: `'inform' | 'error' | 'success' | 'warning'`
+  - Default: `'inform'`
+- duration?: `integer`
+  - The duration in milliseconds for which the notification will remain on screen.
+  - Default: `5000`
+- subTitle?: `string`
+  - Additional text under the title.
+- notifyPosition?: `'top' | 'top-right' | 'top-left' | 'bottom' | 'bottom-right' | 'bottom-left' | 'center-right' | 'center-left'`
+  - Default: `top-right` (changable in config)
+- notifyStyle?: `table`
+  - Custom styling. Refer to [`lib.notify`].
+- notifyIcon?: `string`
+  - Font Awesome 6 icon name.
+- notifyIconColor?: `string`
+  - Custom color for `notifyIcon`.
+
+[`lib.notify`]: https://overextended.dev/ox_lib/Modules/Interface/Client/notify#libnotify
+
+## Login
+
+Logs into an existing character or creates a new one, and returns whether it was successful. \
+This is the preferred function for creating characters if the owning player is online.
+
+```lua
+exports.qbx_core:Login(source, citizenid, newData)
+```
+
+- source: `integer`
+- citizenid?: `string`
+- newData?: [`PlayerEntity`](../types/player.mdx#playerentity)
+
+Returns: `boolean`
+
+## GetOfflinePlayer
+
+Gets a Player object using the given citizenid and returns it, or `nil` if nothing was found.
+
+```lua
+exports.qbx_core:GetOfflinePlayer(citizenid)
+```
+
+- citizenid: `string`
+
+Returns: [`Player?`](../types/player.mdx#player)
+
+## Logout
+
+Logs the given player out of their current character.
+
+```lua
+exports.qbx_core:Logout(source)
+```
+
+- source: `integer`
+
+## CreatePlayer
+
+Creates a new character and saves it to the database.
+
+```lua
+exports.qbx_core:CreatePlayer(playerData, offline)
+```
+
+- playerData: `PlayerData`
+- offline: `boolean`
+
+Returns: [`Player`](../types/player.mdx#player)
+
+## Save
+
+Save the given player's info to the database.
+
+```lua
+exports.qbx_core:Save(source)
+```
+
+- source: `integer`
+
+## SaveOffline
+
+Saves the given PlayerData to the database.
+
+```lua
+exports.qbx_core:SaveOffline(playerData)
+```
+
+- playerData: [`PlayerEntity`](../types/player.mdx#playerentity)
+
+## DeleteCharacter
+
+Delete a character permanently by the given citizenid.
+
+:::warning
+This action cannot be undone.
+:::
+
+```lua
+exports.qbx_core:DeleteCharacter(citizenid)
+```
+
+- citizenid: `string`
+
+## GenerateUniqueIdentifier
+
+Returns unique values for player identifiers.
+
+```lua
+exports.qbx_core:GenerateUniqueIdentifier(type)
+```
+
+- type: `'citizenid' | 'AccountNumber' | 'PhoneNumber' | 'FingerId' | 'WalletId' | 'SerialNumber'`
+
+Returns: `string | number`
+
+## UpsertJobData
+
+Inserts or overwrites fields of the given job temporarily.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:UpsertJobData(jobName, data)
+```
+
+- jobName: `string`
+- data: [`JobData`](../types/job.mdx#jobdata)
+
+## UpsertGangData
+
+Inserts or overwrites fields of the given gang temporarily.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:UpsertGangData(gangName, data)
+```
+
+- gangName: `string`
+- data: [`GangData`](../types/gang.mdx#gangdata)
+
+## UpsertJobGrade
+
+Inserts or overwrites fields of the given job's grade temporarily.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:UpsertJobGrade(jobName, grade, data)
+```
+- jobName: `string`
+- grade: `integer`
+- data: [`JobGradeData`](../types/job.mdx#jobgradedata)
+
+## UpsertGangGrade
+
+Inserts or overwrites fields of the given gang's grade temporarily.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:UpsertGangGrade(gangName, grade, data)
+```
+
+- gangName: `string`
+- grade: `integer`
+- data: [`GangGradeData`](../types/gang.mdx#ganggradedata)
+
+## RemoveJobGrade
+
+Removes the given job's grade temporarily.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:RemoveJobGrade(jobName, grade)
+```
+
+- jobName: `string`
+- grade: `integer`
+
+## RemoveGangGrade
+
+Removes the given gang's grade temporarily.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:RemoveGangGrade(gangName, grade)
+```
+
+- gangName: `string`
+- grade: `integer`
+
+## SetJob
+
+Overwrites current primary job with a new job. Removing the player from their current primary job.
+
+```lua
+exports.qbx_core:SetJob(identifier, jobName, grade)
+```
+
+- identifier: `source | citizenid`
+- jobName: `string`
+- grade: `integer`
+
+## SetJobDuty
+
+Sets the player's duty status.
+
+```lua
+exports.qbx_core:SetJobDuty(identifier, onDuty)
+```
+
+- identifier: `source | citizenid`
+- onDuty: `boolean`
+
+## SetPlayerPrimaryJob
+
+Sets the given player's primary job to the given job, only if they already have it.
+
+```lua
+exports.qbx_core:SetPlayerPrimaryJob(citizenid, jobName)
+```
+
+- citizenid: `string`
+- jobName: `string`
+
+## AddPlayerToJob
+
+Adds the given player to the given job, or overwrites their grade if they're already in that job.
+
+```lua
+exports.qbx_core:AddPlayerToJob(citizenid, jobName, grade)
+```
+
+- citizenid: `string`
+- jobName: `string`
+- grade: `integer`
+
+## RemovePlayerFromJob
+
+Removes the given player from the given job.
+Also updates the given player's primary job to unemployed if the given job is the player's primary.
+
+```lua
+exports.qbx_core:RemovePlayerFromJob(citizenid, jobName)
+```
+
+- citizenid: `string`
+- jobName: `string`
+
+## SetGang
+
+Overwrites current primary gang with a new job. Removing the player from their current primary gang.
+
+```lua
+exports.qbx_core:SetGang(identifier, jobName, gangName)
+```
+
+- identifier: `source | citizenid`
+- gangName: `string`
+- grade: `integer`
+
+## SetPlayerPrimaryGang
+
+Sets the given player's primary gang to the given gang, only if they already have it.
+
+```lua
+exports.qbx_core:SetPlayerPrimaryGang(citizenid, gangName)
+```
+
+- citizenid: `string`
+- gangName: `string`
+
+## AddPlayerToGang
+
+Adds the given player to the given gang, or overwrites their grade if they're already in that gang.
+
+```lua
+exports.qbx_core:AddPlayerToGang(citizenid, gangName, grade)
+```
+
+- citizenid: `string`
+- gangName: `string`
+- grade: `integer`
+
+## RemovePlayerFromGang
+
+Removes the given player from the given gang.
+Also updates the given player's primary gang to no gang if the given gang is the player's primary.
+
+```lua
+exports.qbx_core:RemovePlayerFromGang(citizenid, gangName)
+```
+
+- citizenid: `string`
+- gangName: `string`
+
+## HasPrimaryGroup
+
+Checks if the given player's current Job/Gang or citizenid matches against a single group, array of group, or group/grade or list of citizenids. Does not check if player is on or off duty
+
+```lua
+exports.qbx_core:HasPrimaryGroup(source, filter)
+```
+
+- source: `integer`
+- filter: `string` or `string[]` or `table<string, number>`
+  - A group/citizenid, array of groups/citizenids, or pairs of groups-grades required to pass the check.
+
+Returns:
+
+- success: `boolean`
+
+## HasGroup
+
+Checks if the given player's list of groups (Jobs/Gangs) or citizenid matches against a single group, array of group, or group/grade or list of citizenids. Does not check if player is on or off duty for any particular filter
+
+```lua
+exports.qbx_core:HasGroup(source, filter)
+```
+- source: `integer`
+- filter: `string` or `string[]` or `table<string, number>`
+  - A group/citizenid, array of groups/citizenids, or pairs of groups-grades required to pass the check.
+
+Returns:
+
+- success: `boolean`
+
+## GetGroups
+
+Returns a combined table of all the groups a given player currently has.
+
+```lua
+exports.qbx_core:GetGroups(source)
+```
+
+- source: `integer`
+
+Returns:
+
+- `table<string, number>`
+
+## IsGradeBoss
+
+Returns boolean on if a given group/grade combination is a boss grade. Currently this is based on the presence of a `isboss` boolean being true in the grade definition
+
+```lua
+exports.qbx_core:IsGradeBoss(group, grade)
+```
+
+- group: `string`
+- grade: `integer`
+
+Returns:
+
+- success: `boolean`
+
+## GetGroupMembers
+
+Returns a table of all citizenids and associated grade for a given group and type
+
+```lua
+exports.qbx_core:GetGroupMembers(group, type)
+```
+
+- group: `string`
+- type: `job | gang`
+
+Returns:
+
+- `table<citizenid, number>`
+
+## DeleteVehicle
+
+Deletes the vehicle entity from the game world. Preferred over the native DeleteEntity function as DeleteVehicle will remove persistence from the vehicle to allow it to be deleted.
+
+```lua
+exports.qbx_core:DeleteVehicle(entity)
+```
+
+- entity: `number`
+
+## EnablePersistence
+
+Marks a vehicle to be persisted, which will respawn the vehicle with the same properties if it is deleted by the server. Idempotent.
+
+```lua
+exports.qbx_core:EnablePersistence(entity)
+```
+
+- entity: `number`
+
+## DisablePersistence
+
+Removes the persistence attribute from a vehicle, allowing it to be deleted without being respawned. Idempotent. No-op if the vehicle is not already persisted.
+
+```lua
+exports.qbx_core:DisablePersistence(entity)
+```
+
+- entity: `number`
+
+## GetVehicleClass
+
+Equivalent to [GetVehicleClass](https://docs.fivem.net/natives/?_0x29439776AAA00A62) client native, but for the server. Works by asking a random client for all the vehicle models and their classes, then caching this while the server is online.
+Due to this, may not work if there is no client on to query.
+
+```lua
+exports.qbx_core:GetVehicleClass(hash)
+```
+
+- hash: `number`
+
+## SearchPlayers
+
+Searches both online and offline players on a set of filters and returns players which match all filtered values.
+
+Filters:
+- license?: license string. i.e. 'license2:xxx'
+- job?: name of the job
+- gang?: name of the gang
+- metadata?: `table<string, number|string|boolean>`
+  - strict?: `boolean` if true, metadata number values match on exact equivalence, else numbers match if value is greater than or equal to filter.
+
+```lua
+exports.qbx_core:SearchPlayers(filters)
+```
+
+- filters: `table<string, any>`
+
+Returns:
+
+- [`Player[]`](../types/player.mdx#player)
+
+### Example Usage
+Searching for the value of a nested metadata key
+```lua
+local licensedDrivers = exports.qbx_core:SearchPlayers({
+  metadata = {
+    ['licences.driver'] = true
+  }
+})
+```
+
+## CreateSessionId
+
+Sets the sessionId statebag on an entity to a unique number.
+SessionIds are useful in cases where an entity could be deleted and recreated but needs a stable identifier such as vehicle persistence.
+
+```lua
+exports.qbx_core:CreateSessionId(entity)
+```
+
+- entity: `integer`
+
+Returns:
+
+- sessionId: `integer`
+
+## GetMoney
+
+Gets the specific money type of a player.
+
+```lua
+exports.qbx_core:GetMoney(identifier, moneyType)
+```
+
+- identifier: `source | citizenid`
+- moneyType: `'cash' | 'bank' | 'crypto'`
+
+Returns:
+
+- amount: `number` or false if invalid money type or unable to find player
+
+## AddMoney
+
+Adds the specific money type to a player.
+
+```lua
+exports.qbx_core:AddMoney(identifier, moneyType, amount, reason)
+```
+
+- identifier: `source | citizenid`
+- moneyType: `'cash' | 'bank' | 'crypto'`
+- amount: `number`
+- reason?: `string`
+
+Returns:
+
+- success: `boolean`
+
+## RemoveMoney
+
+Removes the specific money type from a player.
+
+```lua
+exports.qbx_core:RemoveMoney(identifier, moneyType, amount, reason)
+```
+
+- identifier: `source | citizenid`
+- moneyType: `'cash' | 'bank' | 'crypto'`
+- amount: `number`
+- reason?: `string`
+
+Returns:
+
+- success: `boolean`
+
+## SetMoney
+
+Sets the specific money type for a player.
+
+```lua
+exports.qbx_core:SetMoney(identifier, moneyType, amount, reason)
+```
+
+- identifier: `source | citizenid`
+- moneyType: `'cash' | 'bank' | 'crypto'`
+- amount: `number`
+- reason?: `string`
+
+Returns:
+
+- success: `boolean`

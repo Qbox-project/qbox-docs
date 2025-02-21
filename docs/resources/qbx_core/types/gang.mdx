@@ -1,0 +1,29 @@
+---
+sidebar_label: gang
+keywords: [qbox, fivem, qbx_core, types]
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Gangs
+
+## GangData
+
+**Fields**
+
+- label: `string`
+
+## Gang
+
+Extends [`GangData`](#gangdata)
+
+**Fields**
+
+- grades: [`table<integer, GangGradeData>`](#ganggradedata)
+
+## GangGradeData
+
+**Fields**
+
+- name: `string`
+- isboss?: `boolean`
+- bankAuth?: `boolean`

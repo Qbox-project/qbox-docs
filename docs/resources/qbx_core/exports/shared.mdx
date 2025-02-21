@@ -1,0 +1,108 @@
+---
+title: Shared Exports
+sidebar_label: shared
+keywords: [qbox, fivem, qbx_core, exports]
+description: Documentation for shared exports. Learn about available functions for retrieving data like all the jobs, gangs, ... .
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Shared Exports
+
+## GetJobs
+
+Returns the jobs table.
+
+```lua
+exports.qbx_core:GetJobs()
+```
+
+Returns: [`table<string, Job>`](../types/job.mdx)
+
+## GetGangs
+
+Returns the gangs table.
+
+```lua
+exports.qbx_core:GetGangs()
+```
+
+Returns: [`table<string, Gang>`](../types/gang.mdx)
+
+## GetJob
+
+Returns the given job if it exists.
+
+```lua
+exports.qbx_core:GetJob(jobName)
+```
+
+- jobName: `string`
+
+Returns: [`Job?`](../types/job.mdx)
+
+## GetGang
+
+Returns the given gang if it exists.
+
+```lua
+exports.qbx_core:GetGang(gangName)
+```
+- gangName: `string`
+
+Returns: [`Gang?`](../types/gang.mdx)
+
+## GetVehiclesByName
+
+Returns a table mapping vehicle name to vehicle.
+
+```lua
+exports.qbx_core:GetVehiclesByName(vehicle)
+```
+
+- vehicle?: `string`
+
+Returns: [`table<string, Vehicle>`](../types/vehicle.mdx#vehicle)
+
+## GetVehiclesByHash
+
+Returns a table mapping vehicle hash to vehicle.
+
+```lua
+exports.qbx_core:GetVehiclesByHash(vehicle)
+```
+
+- vehicle?: `number`
+
+Returns: [`table<number, Vehicle>`](../types/vehicle.mdx#vehicle)
+
+## GetVehiclesByCategory
+
+Returns a table mapping vehicle category to vehicles.
+
+```lua
+exports.qbx_core:GetVehiclesByCategory()
+```
+
+Returns: [`table<string, Vehicle[]>`](../types/vehicle.mdx#vehicle)
+
+## GetWeapons
+
+Returns the weapons table.
+
+```lua
+exports.qbx_core:GetWeapons(weapon)
+```
+
+- weapon?: `number`
+
+Returns: `table<number, Weapon>`
+
+## GetLocations
+
+Returns the locations table.
+
+```lua
+exports.qbx_core:GetLocations()
+```
+
+Returns: `table<string, vector4>`

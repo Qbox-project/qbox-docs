@@ -1,0 +1,31 @@
+---
+title: Server Exports
+sidebar_label: server
+keywords: [qbox, fivem, qbx_management, exports]
+description: Documentation for server-side exports in the qbx_management resource. These exports provide functionality for registering and managing boss menus, handling group finances, and other management-related features for jobs and gangs within the Qbox framework.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Server Exports
+
+## RegisterBossMenu
+
+Creates a boss menu.
+
+:::warning
+  This is a runtime-only change.
+  This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_management:RegisterBossMenu(menuInfo)
+```
+
+- menuInfo: `table`
+  - groupName: `string`
+  - type: `'gang' | 'job'`
+  - coords: `vector3`
+  - size?: `vector3`
+    - Default: `vec3(1.5, 1.5, 1.5)`
+  - rotation?: `number`
+    - Default: `0.0`
