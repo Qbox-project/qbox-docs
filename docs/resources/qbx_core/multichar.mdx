@@ -1,0 +1,15 @@
+---
+title: MultiCharacter
+sidebar_label: multicharacter
+sidebar_position: 2
+keywords: [qbox, fivem, qbx_core, multichar, characters]
+description: Documentation for the multi-character system in qbx_core. Learn how to configure and customize character management, including using external character systems.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+### Can I use my own multicharacter?
+
+Yes, you can. To disable the built in multicharacter change this setting to true in `qbx_core/config/client.lua`
+```lua filename="qbx_core/config/client.lua"
+    useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
+```
