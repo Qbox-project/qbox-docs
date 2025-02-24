@@ -1,0 +1,38 @@
+---
+title: Discord Rich Presence
+sidebar_label: discord rich presence
+sidebar_position: 2
+keywords: [qbox, fivem, qbx_core, discord, rich presence]
+description: Tutorial on how to change the discord rich presence shown while you play FiveM.
+---
+
+:::info
+The config file that we will be editing is inside `qbx_core/configs/client.lua`. See https://github.com/Qbox-project/qbx_core/blob/424541030f1d60548d55a2172e4f1e310a9503b2/config/client.lua#L54-L78
+:::
+
+## 1. Create a Discord Application
+
+**First you need to create a Discord application. Go to the [Discord Developer Portal](https://discord.com/developers/applications) and create a new application.**
+![Create a new application](/img/discord/step_1.png)
+
+**Now copy the Application ID and paste it the config file.**
+![Copy the Application ID](/img/discord/step_2.png)
+![Paste the Application ID](/img/discord/step_3.png)
+
+## 2. Upload an Image
+
+**Discord rich presence makes use of images to display on the rich presence. You can upload images in the `Rich Presence` tab of your application. Then click on `Add Image(s)`.**
+![Upload an image](/img/discord/step_4.png)
+
+## 3. Edit the Config File
+
+Now all that is left to do for you is editing the config file however you like. `icon` will be the image name. In our case `duck`. And the text will be what is displayed on Discord when you hover over the image.
+You can also change the contents of the buttons or delete them entirely. Just remove [these lines](https://github.com/Qbox-project/qbx_core/blob/424541030f1d60548d55a2172e4f1e310a9503b2/client/discord.lua#L17-L18) in your core
+![Edit the config file](/img/discord/step_5.png)
+
+![Result](/img/discord/result.png)
+
+:::warning
+There is now a setting in FiveM where you can disable the Discord Rich Presence. If you have this enabled, the Discord Rich Presence will not show up.
+![Disable Discord Rich Presence](/img/discord/warning.png)
+:::
