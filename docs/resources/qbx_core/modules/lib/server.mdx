@@ -1,0 +1,51 @@
+---
+title: Server Lib
+sidebar_label: server
+keywords: [qbox, fivem, qbx_core, modules, lib]
+description: Documentation for server-side library functions in the qbx_core resource. These functions provide utilities for spawning vehicles, managing entities, and handling server-side operations within the Qbox framework.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Server Lib
+
+## spawnVehicle
+
+Creates a vehicle on the server-side and returns its net ID. If this is a player owned vehicle, and the persistence convar is enabled, the spawned vehicle will be persisted.
+
+```lua
+qbx.spawnVehicle(params)
+```
+
+- params: `table`
+  - model: `integer`
+    - A vehicle modle hash.
+  - spawnSource: `integer | vector3 | vector4`
+    - The handle of an entity or coords to spawn the vehicle at.
+  - warp?: `boolean | integer`
+    - An optional ped ID to warp into the vehicle after it spawns.
+    - If `spawnSource` is a ped ID, you can pass `true` to warp the ped specified there instead.
+  - props?: `table`
+    - Refer to ox_lib's [Vehicle Properties](https://overextended.dev/ox_lib/Modules/VehicleProperties/Client#vehicle-properties).
+  - bucket? `integer`
+    - An optional routing bucket to move the spawned entity to.
+
+Returns:
+
+- netId: `integer`
+- entity: `integer`
+
+```lua
+-- spawns the vehicle at `myVectorCoords` and warps `myPed` inside
+qbx.spawnVehicle({
+  model = `asbo`,
+  spawnSource = myVectorCoords,
+  warp = myPed,
+})
+
+-- spawns the vehicle at `myPed` and warps the same ped inside
+qbx.spawnVehicle({
+  model = `asbo`,
+  spawnSource = myPed,
+  warp = true, -- causes `myPed` to be warped into the vehicle
+})
+```
