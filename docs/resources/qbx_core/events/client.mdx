@@ -19,7 +19,7 @@ image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.pn
 
 ## Non-Networked Events
 
-### QBCore:Client:OnPlayerLoaded
+### OnPlayerLoaded
 
 Triggered when the player finishes spawning.
 
@@ -29,7 +29,7 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function() end)
 
 ## Networked Events
 
-### QBCore:Client:SetDuty
+### SetDuty
 
 Triggered when the player's job duty is updated.
 
@@ -39,7 +39,7 @@ RegisterNetEvent('QBCore:Client:SetDuty', function(onDuty) end)
 
 - onDuty: `boolean`
 
-### QBCore:Client:OnPermissionUpdate
+### OnPermissionUpdate
 
 Triggered when the player's permissions are updated. \
 Only works for permissions set via Qbox.
@@ -48,7 +48,7 @@ Only works for permissions set via Qbox.
 RegisterNetEvent('QBCore:Client:OnPermissionUpdate', function() end)
 ```
 
-### qbx_core:client:playerLoggedOut
+### playerLoggedOut
 
 Triggered when the player logs out and no longer exists in qbx_core's memory.
 
@@ -56,7 +56,7 @@ Triggered when the player logs out and no longer exists in qbx_core's memory.
 RegisterNetEvent('qbx_core:client:playerLoggedOut', function() end)
 ```
 
-### QBCore:Client:OnJobUpdate
+### OnJobUpdate
 
 Triggered when the player's job is updated.
 
@@ -66,7 +66,7 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(job) end)
 
 - job: [`PlayerJob`](../types/player.mdx#playerjob)
 
-### QBCore:Client:OnGangUpdate
+### OnGangUpdate
 
 Triggered when the player's gang is updated.
 
@@ -76,7 +76,7 @@ RegisterNetEvent('QBCore:Client:OnGangUpdate', function(gang) end)
 
 - gang: [`PlayerGang`](../types/player.mdx#playergang)
 
-### qbx_core:client:onGroupUpdate
+### onGroupUpdate
 
 Triggered when the player's groups are updated. If grade is nil then group was removed otherwise group was added
 
@@ -87,7 +87,7 @@ RegisterNetEvent('qbx_core:client:onGroupUpdate', function(groupName, groupGrade
 - groupName: `string`
 - groupGrade?: `number`
 
-### QBCore:Client:OnMoneyChange
+### OnMoneyChange
 
 Triggered when the player's cash/bank balance is updated.
 
@@ -100,7 +100,7 @@ RegisterNetEvent('QBCore:Client:OnMoneyChange', function(moneytype, amount, oper
 - operation: `'add' | 'remove' | 'set'`
 - reason: `string`
 
-### qbx_core:client:onSetMetaData
+### onSetMetaData
 
 Triggered when player.Functions.setMetaData() is used.
 
