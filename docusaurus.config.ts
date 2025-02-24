@@ -87,7 +87,11 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/qbox-logo2.jpg',
+    metadata: [
+      {name: 'keywords', content: 'qbox, qbus, qbus project, qbus documentation, qbox documentation, qbox project, fivem, redm, cfx, citizenfx, fivem framework'},
+      {name: 'og:image', content: 'https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png'},
+    ],
     navbar: {
       title: 'Qbox Documentation',
       logo: {
