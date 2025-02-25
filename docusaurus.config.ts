@@ -78,7 +78,7 @@ const config: Config = {
     ],
     algolia: {
       appId: '7JRFEYG1CO',
-      apiKey: '9a68c479d440b6111fbf412929f5e655',
+      apiKey: '329ea77a61e40a081b6e1f86126c6658',
       indexName: 'Qbox Docs',
       contextualSearch: true,
       searchParameters: {},
