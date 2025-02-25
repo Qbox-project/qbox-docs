@@ -31,22 +31,6 @@ const config: Config = {
     locales: ['en'],
   },
 
-  themes: [
-    [
-      require.resolve("@easyops-cn/docusaurus-search-local"),
-      /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
-      ({
-        // ... Your options.
-        // `hashed` is recommended as long-term-cache of index file is possible.
-        hashed: true,
-        // For Docs using Chinese, The `language` is recommended to set to:
-        // ```
-        // language: ["en", "zh"],
-        // ```
-      }),
-    ],
-  ],
-
   presets: [
     [
       'classic',
@@ -92,6 +76,15 @@ const config: Config = {
       {name: 'keywords', content: 'qbox, qbus, qbus project, qbus documentation, qbox documentation, qbox project, fivem, redm, cfx, citizenfx, fivem framework'},
       {name: 'og:image', content: 'https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png'},
     ],
+    algolia: {
+      appId: '7JRFEYG1CO',
+      apiKey: '9a68c479d440b6111fbf412929f5e655',
+      indexName: 'Qbox Docs',
+      contextualSearch: true,
+      searchParameters: {},
+      searchPagePath: 'search',
+      insights: false,
+    },
     navbar: {
       title: 'Qbox Documentation',
       logo: {
