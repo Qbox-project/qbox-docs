@@ -12,6 +12,26 @@ Some of these exports use custom types.
 You can learn more about those in the Types section of this resource.
 :::
 
+## CreateJob
+
+Adds or overwrite the given job.
+
+:::warning
+This is a runtime-only change. This won't persist across restarts and won't modify files.
+:::
+
+```lua
+exports.qbx_core:CreateJob(jobName, job)
+```
+
+- jobName: `string`
+- job: [`table<Job>`](../types/job.mdx)
+
+Returns:
+
+- success: `boolean`
+- message: `string`
+
 ## CreateJobs
 
 Adds or overwrites the given jobs.
@@ -25,6 +45,11 @@ exports.qbx_core:CreateJobs(jobs)
 ```
 
 - jobs: [`table<string, Job>`](../types/job.mdx)
+
+Returns:
+
+- success: `boolean`
+- message: `string`
 
 ## RemoveJob
 
