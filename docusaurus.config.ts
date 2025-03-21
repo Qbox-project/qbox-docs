@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -72,9 +72,14 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     // image: 'img/qbox-logo2.jpg',
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },
     metadata: [
-      {name: 'keywords', content: 'qbox, qbus, qbus project, qbus documentation, qbox documentation, qbox project, fivem, redm, cfx, citizenfx, fivem framework'},
-      {name: 'og:image', content: 'https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png'},
+      { name: 'keywords', content: 'qbox, qbus, qbus project, qbus documentation, qbox documentation, qbox project, fivem, redm, cfx, citizenfx, fivem framework' },
+      { name: 'og:image', content: 'https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png' },
     ],
     algolia: {
       appId: '7JRFEYG1CO',
@@ -112,27 +117,30 @@ const config: Config = {
         },
         {
           href: 'https://discord.gg/Z6Whda5hHA',
-          label: 'Discord',
+          className: "header-discord-link",
           position: 'right',
         },
         {
           href: 'https://github.com/Qbox-project',
-          label: 'GitHub',
+          className: "header-github-link",
           position: 'right',
         },
       ],
     },
-    footer: {
-      style: 'dark',
-      links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} Qbox Project 📦`,
-    },
+    // footer: {
+    //   style: 'dark',
+    //   links: [],
+    //   copyright: `Copyright © ${new Date().getFullYear()} Qbox Project 📦`,
+    // },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      darkTheme: prismThemes.oneDark, //oneDark
       additionalLanguages: ['lua'],
     },
   } satisfies Preset.ThemeConfig,
+  stylesheets: [
+    'https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap'
+  ],
 };
 
 export default config;
