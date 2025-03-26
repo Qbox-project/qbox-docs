@@ -31,6 +31,10 @@ const config: Config = {
     locales: ['en'],
   },
 
+  plugins: [
+    'docusaurus-plugin-image-zoom'
+  ],
+
   presets: [
     [
       'classic',
@@ -43,21 +47,21 @@ const config: Config = {
           editUrl:
             'https://github.com/Qbox-project/qbox-docs',
         },
-        // blog: {
-        //   showReadingTime: true,
-        //   feedOptions: {
-        //     type: ['rss', 'atom'],
-        //     xslt: true,
-        //   },
-        //   // Please change this to your repo.
-        //   // Remove this to remove the "edit this page" links.
-        //   editUrl:
-        //     'https://github.com/Qbox-project/qbox-docs',
-        //   // Useful options to enforce blogging best practices
-        //   onInlineTags: 'warn',
-        //   onInlineAuthors: 'warn',
-        //   onUntruncatedBlogPosts: 'warn',
-        // },
+        blog: {
+          showReadingTime: true,
+          feedOptions: {
+            type: ['rss', 'atom'],
+            xslt: true,
+          },
+          // Please change this to your repo.
+          // Remove this to remove the "edit this page" links.
+          editUrl:
+            'https://github.com/Qbox-project/qbox-docs',
+          // Useful options to enforce blogging best practices
+          onInlineTags: 'warn',
+          onInlineAuthors: 'warn',
+          onUntruncatedBlogPosts: 'warn',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -70,6 +74,18 @@ const config: Config = {
   ],
 
   themeConfig: {
+    zoom: {
+      selector: '.markdown :not(em) > img',
+      background: {
+        light: 'rgb(255, 255, 255)',
+        dark: 'rgb(50, 50, 50)'
+      },
+      config: {
+        // options you can specify via https://github.com/francoischalifour/medium-zoom#usage
+        margin: 24,
+        scrollOffset: 0,
+      }
+    },
     // Replace with your project's social card
     // image: 'img/qbox-logo2.jpg',
     colorMode: {
@@ -109,7 +125,7 @@ const config: Config = {
           position: 'left',
           label: 'Resources',
         },
-        // {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/blog', label: 'Tutorials', position: 'left'},
         {
           href: 'https://hosting.qbox.re/',
           label: 'Hosting',
