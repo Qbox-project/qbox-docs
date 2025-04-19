@@ -1,0 +1,104 @@
+---
+authors: ihyajb
+title: "How to get FiveM IntelliSense in VSCode"
+keywords: [qbox, fivem, vscode, addon, intellisense, custom weapons]
+description: Learn how to install and setup FiveM/RedM IntelliSense in VSCode with addon inventory and qbox autocomple support
+slug: /vscode-intellisense
+---
+
+Getting FiveM/RedM IntelliSense in VSCode is actually really easy. Thanks to the hard work of the Overextended team, they have created a VSCode extention that automaticly sets most of that up for you! Below we will go over how to install the extention and also setup extra support for autocompled inventory and qbox calls.
+
+{/* truncate */}
+
+---
+
+## What is the CFX Lua Extension?
+
+The **CFX Lua VSCode extension** provides:
+
+- Works alongside Lua Language Server to provide function and type declarations from Cfx's
+    - [Lua runtime](https://github.com/citizenfx/fivem/blob/master/code/components/citizen-scripting-lua/src/LuaScriptRuntime.cpp)
+    - [Lua dialect](https://github.com/citizenfx/fivem/blob/master/code/components/citizen-scripting-lua/src/LuaScriptRuntime.cpp)
+    - [Environment Globals](https://github.com/citizenfx/fivem/blob/master/data/shared/citizen/scripting/lua/scheduler.lua)
+    - Game natives.
+- Autocompletion for native CFX functions.
+- Type-checking using Lua LSP (via EmmyLua-style annotations).
+- In-editor documentation for native functions.
+- Support for both server and client natives.
+
+![vscode intellisense](/img/blogs/vscode-intellisense/vscode-intellisense-1.png)
+
+---
+
+## Installation
+
+### 1. Open VS Code
+
+Make sure you have [Visual Studio Code](https://code.visualstudio.com/) installed.
+
+### 2. Install the extension and its dependencies
+
+- Open the Extensions sidebar (`Ctrl+Shift+X` or `Cmd+Shift+X` on Mac)
+- Search for  `lua`
+- Find **Lua (by sumneko)** and install
+- Search for `cfx lua`
+- Find **CFX Lua (by Overextended)** and install
+
+---
+
+## Setup & Configuration
+
+Once installed, you’re ready to go! Here are a few best practices to ensure a smooth experience.
+
+### 1. Use the Right Folder Structure
+
+Make sure your project follows a structure like this:
+
+```bash
+resources/
+├── my_resource/
+│   ├── client/
+│   │   └── client.lua
+│   ├── server/
+│   │    └── server.lua
+│   └── fxmanifest.lua
+```
+
+### 2. Add Type Annotations (Optional but Recommended)
+
+Improve IntelliSense and type safety by annotating functions:
+
+```lua
+-- Check if player is whitelisted, kept like this for backwards compatibility or future plans
+---@param source Source
+---@return boolean
+function IsWhitelisted(source)
+    if not serverConfig.whitelist then return true end
+    if IsPlayerAceAllowed(source --[[@as string]], serverConfig.whitelistPermission) then return true end
+    return false
+end
+```
+
+---
+
+## Tips & Tricks
+
+- Hover over native functions (e.g., `GetPlayerRoutingBucket`, `SetEntityCoords`) to view documentation.
+- You can install support for exports from the inventory or qbox core (see full example below)
+    - [ox_types](https://github.com/overextended/ox_types) adds support for export calls from ox_inventory
+    - [qbox_types](https://github.com/ihyajb/qbox_types) adds support for export calls from qbx_core, qbx_medical and more!
+
+```lua
+"Lua.workspace.library": [
+    "F:/GitHub/ox_types/types",
+    "F:/GitHub/qbox_types/types",
+    "F:/FivemServer/resources/ox_lib"
+],
+```
+![inventory exports](/img/blogs/vscode-intellisense/inventory.png)
+
+---
+
+## You're Ready to Code!
+
+That’s it! Your VS Code environment is now set up FiveM Lua development. No more tab-switching to docs. Just clean, typed, and documented code... *hopefully*.
