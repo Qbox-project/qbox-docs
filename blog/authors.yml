@@ -5,3 +5,11 @@ chatdisabled:
   image_url: https://github.com/ChatDisabled.png
   socials:
     github: ChatDisabled
+  
+scorpion:
+  name: Scorpion
+  title: Volunteer for the Qbox Project
+  url: https://github.com/Scorpion7162
+  image_url: https://cdn.discordapp.com/avatars/625338242425815050/3a7b6dbbbde9851e2d739b0198170a05.webp?size=1024&format=webp&width=410&height=410
+  socials:
+    github: Scorpion7162
