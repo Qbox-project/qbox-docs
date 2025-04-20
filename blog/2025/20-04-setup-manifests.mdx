@@ -1,0 +1,190 @@
+authors: Scorpion
+title: "How fxmanifest's work with FiveM"
+keywords: [qbox, fivem, gta5, fxmanifest, resource, addon]
+description: Learn what fxmanifests are, how they work, and how to use them in your FiveM resources.
+slug: /how-fxmanifests-work
+---
+import ReactPlayer from 'react-player'
+
+fxmanifests are essentially the backbone of your resource, this tells the server what each file does, and how each file performs their tasks.
+
+{/*truncate */}
+
+## __resource.lua
+
+In some older resources, you may have seen the file __resource.lua. You may wonder, where is the code that tells the resource what each part of code should do if the fxmanifest doesnt exist. The __resource.lua does exactly this, it is just an older version.
+
+## How to start an fxmanifest
+
+When writing an fxmanifest, you have to ensure that the file you are writing the manifest into is actually called 'fxmanifest' and it should be a lua file, something like the image below;
+
+https://r2.fivemanage.com/image/49PUZpggNXt8.png
+
+
+Open the file, and there are 2 main things you have to intially define with each resource, no matter what. 
+The `fx_version` and the `game`
+
+### For the fx_version, you have 3 main options: 
+`cerulean` - Newest and the most secure (recommended)
+`bodacious` - Older
+`adamant` - Oldest, legacy
+
+### For the game, you have 4 options:
+`gta5` - This is for FiveM, this is the one you will be using for qbox.
+`gta4` - This is for LibertyM (Mostly unused)
+`rdr3` - This is for RedM 
+`common` - This will run any of the games, however it cannot use specific natives. **THIS IS NOT RECOMMENDED**
+
+This is what your fxmanifest should look like at a bare minimum.
+https://r2.fivemanage.com/image/wwP3TeercaC4.png
+
+## Specifics of the manifest 
+
+### Defining Client and server sided scripts
+
+The `fxmanifest.lua` is where you define how your FiveM resource works. If your code is meant to run on the player's game (the client), list it under client scripts. If it's for the server, use server scripts. Keeping this organized is important so everything runs in the right place.
+
+The way to define this is by going into the fxmanifest and adding;
+
+`client_script 'client_lua_resource.lua'`
+
+Be sure to change the `'client_lua_resource'` to the file name of your resource.
+
+It is the same for the server side, the only difference is changing `client_script` to `server_script`
+Example:
+
+`server_script 'server_lua_resource.lua'`
+
+if your script is in a specific folder, you define the script like this
+
+`client_script 'foldername/client_lua_resource.lua'`
+
+
+### Defining multiple scripts in one folder
+
+You can define multiple files as one type of script fairly simply, by using a table.
+e.g:
+
+`client_scripts {
+    'clientfolder/*.lua'
+}`
+or
+`client_scripts {
+    'client.lua',
+    'client2.lua',
+}`
+
+:::info
+- The * is a wildcard, this means that anything in that folder that ends with .lua will be a client side script.
+- The Wildcard can also be used for folders, or any files in that folder. read more at the [Resource Manifest Documentation](https://docs.fivem.net/docs/scripting-reference/resource-manifest/resource-manifest/)
+:::
+
+## Shared scripts
+
+Shared scripts are used by both client and server. They're typically for things like configuration, constants, or utility functions that both sides need.
+This is how it is structured.
+
+`shared_script 'shared_file_name.lua'`
+Alternatively:
+`shared_scripts {
+    'shared_file_name.lua'
+}
+
+
+## Dependencies
+### Hard Dependencies
+Hard dependencies are defined in the fxmanifest.lua. This essentially checks if a resource that your script is dependant on is started/exists in the server. If not, then your resource wont start.
+
+You can put dependencies of; server build, onesync, specific natives, gamebuild, permissions with the server key and resources being started.
+e.g:
+
+`dependencies {
+    '/server:4500',                -- requires at least server build 4500
+    '/policy:subdir_file_mapping', -- requires the server key to have 'subdir_file_mapping' granted
+    '/onesync',                    -- requires state awareness to be enabled
+    '/gameBuild:h4',               -- requires at least game build 2189
+    '/native:0xE27C97A0',          -- requires native 0xE27C97A0 to be supported
+    'ox_lib',                      -- requires ox_lib to be started.
+}`
+
+### Soft Dependencies
+
+Soft dependencies are also defined in the fxmanifest.lua. This essentially checks if a resource that your script is dependant on is started/exists in the server. If not, then your resource will error, but it will still start.
+
+Soft dependcies are defined as a shared_script, this is how a soft dependcy is defined.
+
+`shared_script '@ox_lib/init.lua'`
+
+
+:::info
+The resource **WILL** not start if any of these dependencies are not found.
+:::
+
+## Files
+
+Files can be defined using `files{}` 
+
+e.g:
+
+`
+files{
+    'data/main.json'
+    'config.ts'
+}`
+
+
+## Vehicles in a manifest
+
+Defining vehicles in the fxmanifest is fairly simple, all you have to do is define the files, and tell the resource what each file does:
+
+e.g 
+
+```
+    fx_version 'cerulean' -- This comes from the "How to start an fxmanifest" header
+    game 'gta5' -- This comes from the "How to start an fxmanifest" header
+
+    data_file 'HANDLING_FILE' 'data/**/handling.meta' -- Wildcard folder using ** 
+    data_file 'VEHICLE_METADATA_FILE' 'data/**/vehicles.meta'
+    data_file 'CARCOLS_FILE' 'data/**/carcols.meta'
+    data_file 'VEHICLE_VARIATION_FILE' 'data/**/carvariations.meta'
+
+    files {
+    'data/**/*.meta' -- Defines all the meta files already.
+    }
+```
+
+
+
+## Other options 
+author: John Doe <j.doe@example.com>
+description: Example resource
+version: 1.0.0
+my_data: one
+my_data: three
+my_data: nine
+my_data_extra: {"two":42} (as JSON)
+my_data_extra: {"four":69}
+my_data_extra: {"ninety":"nein"}
+pizza_topping: pineapple
+
+```
+author 'John Doe <j.doe@example.com>'
+description 'Example resource'
+version '1.0.0'
+
+-- What to run
+client_scripts {
+    'client.lua',
+    'client_two.lua'
+}
+server_script 'server.lua'
+
+-- Extra data can be used as well
+my_data 'one' { two = 42 }
+my_data 'three' { four = 69 }
+
+-- due to Lua syntax, the following works too:
+my_data('nine')({ninety = "nein"})
+
+-- metadata keys can be arbitrary
+pizza_topping 'pineapple'```
