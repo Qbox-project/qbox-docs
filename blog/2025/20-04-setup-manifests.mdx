@@ -107,6 +107,10 @@ e.g:
     'ox_lib',                      -- requires ox_lib to be started.
 }`
 
+:::info
+The resource **WILL** not start if any of these  hard dependencies are not found.
+:::
+
 ### Soft Dependencies
 
 Soft dependencies are also defined in the fxmanifest.lua. This essentially checks if a resource that your script is dependant on is started/exists in the server. If not, then your resource will error, but it will still start.
@@ -115,10 +119,6 @@ Soft dependcies are defined as a shared_script, this is how a soft dependcy is d
 
 `shared_script '@ox_lib/init.lua'`
 
-
-:::info
-The resource **WILL** not start if any of these dependencies are not found.
-:::
 
 ## Files
 
