@@ -1,0 +1,476 @@
+---
+title: Commands
+sidebar_label: commands
+keywords: [qbox, fivem, qbx_core, commands, slash]
+description: Slash Commands for Qbox. Learn about the available slash commands and their usage.
+image: https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png
+---
+
+# Slash Commands
+
+Below is a list of commands available from qbx_core.
+These commands are located at `qbx-core/server/commands.lua` for further inspection
+
+## Teleport
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+TP To Player or Coords (Admin Only)
+
+Command: `/tp`
+
+Parameters:
+- ` ID of player or X position `
+    - required
+    - Type: ` integer `
+- ` Y position `
+    - optional
+    - Type: ` integer `
+- ` Z position `
+    - optional
+    - Type: ` integer `
+
+Example: 
+```lua
+/tp 2835.24, 1505.68, 24.72 -- Teleport to coordinates
+/tp 23                      -- Teleport to location of player with id 23
+```
+
+---
+
+## Teleport to Marker
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+TP To Marker (Admin Only)
+
+Command: `/tpm`
+
+Example:
+```lua
+/tpm -- Teleport to your waypoint marker
+```
+
+---
+
+## Toggle PVP
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Toggle PVP on the server (Admin Only)
+
+Command: `/togglepvp`
+
+Example:
+```lua
+/togglepvp -- Enable or disable server‑wide PVP
+```
+
+---
+
+## Add Permission
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Give Player Permissions (God Only)
+
+Command: `/addpermission`
+
+Parameters:
+- ` ID of player `
+    - required
+    - Type: ` integer `
+- ` Permission level `
+    - required
+    - Type: ` string `
+
+Example:
+```lua
+/addpermission 23 god -- Grant the player with ID 23 the “god” permission
+```
+
+---
+
+## Remove Permission
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Remove Player Permissions (God Only)
+
+Command: `/removepermission`
+
+Parameters:
+- ` ID of player `
+    - required
+    - Type: ` integer `
+- ` Permission level `
+    - required
+    - Type: ` string `
+
+Example:
+```lua
+/removepermission 23 god -- Revoke the “god” permission from player 23
+```
+
+---
+
+## Open Server
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Open the server for everyone (Admin Only)
+
+Command: `/openserver`
+
+Example:
+```lua
+/openserver -- Lift the server lock and allow all players to join
+```
+
+---
+
+## Close Server
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Close the server for people without permissions (Admin Only)
+
+Command: `/closeserver`
+
+Parameters:
+- ` Reason for closing (optional) `
+    - optional
+    - Type: ` string `
+
+Example:
+```lua
+/closeserver Maintenance restart in 5 minutes
+```
+
+---
+
+## Spawn Vehicle
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Spawn Vehicle (Admin Only)
+
+Command: `/car`
+
+Parameters:
+- ` Model name of the vehicle `
+    - required
+    - Type: ` string `
+- ` Keep the vehicle you\'re in right now `
+    - optional
+    - Type: ` boolean `
+
+Example:
+```lua
+/car sultan           -- Spawn a Sultan and delete your current vehicle
+/car sultan true      -- Spawn a Sultan but keep your current vehicle
+```
+
+---
+
+## Delete Vehicle
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Delete Vehicle (Admin Only)
+
+Command: `/dv`
+
+Parameters:
+- ` Radius to delete vehicles in (meters) `
+    - optional
+    - Type: ` number `
+
+Example:
+```lua
+/dv         -- Delete the vehicle you are in
+/dv 20      -- Delete all vehicles within a 20 meter radius
+```
+
+---
+
+## Give Money
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Give a Player Money (Admin Only)
+
+Command: `/givemoney`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+- ` Type of money (cash, bank, crypto) `
+    - required
+    - Type: ` string `
+- ` Amount of money `
+    - required
+    - Type: ` number `
+
+Example:
+```lua
+/givemoney 23 cash 1000 -- Give player 23 $1,000 in cash
+```
+
+---
+
+## Set Money
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Set Player Money Amount (Admin Only)
+
+Command: `/setmoney`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+- ` Type of money (cash, bank, crypto) `
+    - required
+    - Type: ` string `
+- ` Amount of money `
+    - required
+    - Type: ` number `
+
+Example:
+```lua
+/setmoney 23 bank 5000 -- Set player 23’s bank balance to $5,000
+```
+
+---
+
+## Job Info
+Check Your Job
+
+Command: `/job`
+
+Example:
+```lua
+/job -- Display your current job, grade, and duty status
+```
+
+---
+
+## Set Job
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Set a Player’s Job (Admin Only)
+
+Command: `/setjob`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+- ` Job name `
+    - required
+    - Type: ` string `
+- ` Job grade `
+    - optional
+    - Type: ` number `
+
+Example:
+```lua
+/setjob 23 police 3 -- Make player 23 a Police Sergeant (grade 3)
+```
+
+---
+
+## Change Job
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Change Active Job of Player (Admin Only)
+
+Command: `/changejob`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+- ` Job name `
+    - required
+    - Type: ` string `
+
+Example:
+```lua
+/changejob 23 tow -- Switch player 23’s active job to Tow Truck Driver
+```
+
+---
+
+## Add Job
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Add Job to Player (Admin Only)
+
+Command: `/addjob`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+- ` Job name `
+    - required
+    - Type: ` string `
+- ` Job grade `
+    - optional
+    - Type: ` number `
+
+Example:
+```lua
+/addjob 23 mechanic -- Give player 23 the Mechanic job at grade 0
+```
+
+---
+
+## Remove Job
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Remove Job from Player (Admin Only)
+
+Command: `/removejob`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+- ` Job name `
+    - required
+    - Type: ` string `
+
+Example:
+```lua
+/removejob 23 mechanic -- Remove the Mechanic job from player 23
+```
+
+---
+
+## Gang Info
+Check Your Gang
+
+Command: `/gang`
+
+Example:
+```lua
+/gang -- Display your current gang and grade
+```
+
+---
+
+## Set Gang
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Set a Player’s Gang (Admin Only)
+
+Command: `/setgang`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+- ` Gang name `
+    - required
+    - Type: ` string `
+- ` Gang grade `
+    - optional
+    - Type: ` number `
+
+Example:
+```lua
+/setgang 23 ballas 2 -- Put player 23 in the Ballas gang at grade 2
+```
+
+---
+
+## Out of Character Chat
+OOC Chat Message
+
+Command: `/ooc`
+
+Parameters:
+- ` Message to send `
+    - required
+    - Type: ` string `
+
+Example:
+```lua
+/ooc Anyone selling a car? -- Send an OOC message within 20 meters
+```
+
+---
+
+## Me Action
+Show local message
+
+Command: `/me`
+
+Parameters:
+- ` Message to send `
+    - required
+    - Type: ` string `
+
+Example:
+```lua
+/me checks the engine -- Role‑play action text visible to nearby players
+```
+
+---
+
+## Check ID
+Check your server ID
+
+Command: `/id`
+
+Example:
+```lua
+/id -- Display your current player ID
+```
+
+---
+
+## Logout
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Log out of your current character (Admin Only)
+
+Command: `/logout`
+
+Example:
+```lua
+/logout -- Force your character to log out
+```
+
+---
+
+## Delete Character
+:::info
+    This command is restricted to players in the `group.admin` permission group
+:::
+Delete a player’s character (Admin Only)
+
+Command: `/deletechar`
+
+Parameters:
+- ` Player ID `
+    - required
+    - Type: ` integer `
+
+Example:
+```lua
+/deletechar 23 -- Permanently delete the character belonging to player 23
+```
+
+
