@@ -79,3 +79,11 @@ code {
   font-family: 'Commit Mono', 'Segoe UI', sans-serif !important;
   font-size: 0.85rem !important;
 }
+
+.tebex-logo {
+  content: url('/img/tebex_logo_black.svg');
+}
+
+[data-theme='dark'] .tebex-logo {
+  content: url('/img/tebex_logo_white.svg');
+}
