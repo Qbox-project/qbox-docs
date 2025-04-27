@@ -1,0 +1,73 @@
+---
+title: Installation
+sidebar_label: Installation
+description: Learn how to install and configure the Weapon Audio resource, including how to apply custom audio to weapons.
+keywords: [qbox, fivem, tebex, weapon audio, installation]
+---
+
+# Installation
+
+## Downloading the resource
+
+Any and all resources escrowed or not will be delivered using the Cfx.re asset system. You can find the asset manager hub at the following link: https://portal.cfx.re/assets/granted-assets
+
+## Starting the Script on FiveM
+
+1. Place the script anywhere at the same level as your `server.cfg` or make any kind of subdirectory. You will more likely than not have a folder called `resources` where all your currently used scripts reside. You can put `chat_weaponaudio` in here as well.
+
+2. Add the following codeblock to your `server.cfg` or any other `.cfg` that is read on server startup:
+
+```lua
+ensure chat_weaponaudio
+```
+
+## Editing weapons.meta file
+
+Now all you need to do is go into your `weapons.meta` file and replace the `<Audio>` entry with any of the available audio items from `chat_weaponaudio`. This will look something like this:
+
+### Original
+```xml
+<Name>WEAPON_M338</Name>
+<Model>w_mg_m338</Model>
+<Audio>AUDIO_ITEM_COMBATMG</Audio>
+<Slot>SLOT_WEAPON_M338</Slot>
+```
+
+### Modified
+```xml
+<Name>WEAPON_M338</Name>
+<Model>w_mg_m338</Model>
+<Audio>audio_item_m60</Audio>
+<Slot>SLOT_WEAPON_M338</Slot>
+```
+
+:::info
+This is for the Sig Sauer M338 found on [gta5-mods.com](https://www.gta5-mods.com/weapons/sig-sauer-m338-replace-fivem-animated). Since this is a MG, we used one of the 2 MG audio items from the audio pack.
+:::
+
+:::danger
+Do not use the wrong type of audio item for the wrong weapon types. The Glock 17 is made for single fire weapons. If you apply this on an automatic weapon the audio will be scuffed.
+:::
+
+## Available Audio Items
+
+### Pistols
+- audio_item_glock17
+- audio_item_glock18  
+- audio_item_deagle
+- audio_item_fnfnx45
+- audio_item_m1911
+- audio_item_sp45
+- audio_item_tec9
+
+### SMG
+- audio_item_mp5
+- audio_item_mpx
+- audio_item_p90
+
+### AR
+- audio_item_mk18
+
+### LMG  
+- audio_item_m60
+- audio_item_m249

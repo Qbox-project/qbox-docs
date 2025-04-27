@@ -125,6 +125,12 @@ const config: Config = {
           position: 'left',
           label: 'Resources',
         },
+        {
+          type: 'docSidebar',
+          sidebarId: 'tebexSidebar',
+          position: 'left',
+          label: 'Tebex',
+        },
         {to: '/blog', label: 'Tutorials', position: 'left'},
         // {
         //   href: 'https://hosting.qbox.re/',
