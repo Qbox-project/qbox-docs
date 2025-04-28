@@ -1,0 +1,29 @@
+---
+title: "Logging Functionality"
+---
+
+For your convenience we exposed the logging function. Don't use `ox_lib` built in logging? No problem! If you navigate to `server/utils.lua` you will find the following function:
+
+```lua
+function Log(source, event, message, ...)
+    local formattedMessage = logMessages[message]:format(...)
+    lib.logger(source, event, formattedMessage)
+end
+```
+
+Simply replace the `lib.logger` function with your own logging function. The `source`, `event` and `formattedMessage` variables are passed to the function so you can use them as you see fit.
+Here is an example of how you can use the `JD_logsV3` logging service:
+```lua
+function Log(source, event, message, ...)
+    local formattedMessage = logMessages[message]:format(...)
+    exports.JD_logsV3:createLog({
+        EmbedMessage = formattedMessage,
+        player_id = source,
+        channel = "Channel name from channels.json | Discord Channel ID | Discord Webhook URL",
+        screenshot = true,
+        title = 'Custom Title',
+        color = '#A1A1A1',
+        icon = '✅'
+    })
+end
+```
