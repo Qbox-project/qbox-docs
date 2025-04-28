@@ -132,11 +132,11 @@ const config: Config = {
           label: 'Tebex',
         },
         {to: '/blog', label: 'Tutorials', position: 'left'},
-        // {
-        //   href: 'https://hosting.qbox.re/',
-        //   label: 'Hosting',
-        //   position: 'right',
-        // },
+        {
+          href: 'https://hosting.qbox.re/',
+          label: 'Hosting',
+          position: 'right',
+        },
         {
           href: 'https://discord.gg/Z6Whda5hHA',
           className: "header-discord-link",
