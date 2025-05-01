@@ -1,73 +1,63 @@
 ---
 authors: ihyajb
-title: "How to get FiveM IntelliSense in VSCode"
-keywords: [qbox, fivem, vscode, addon, intellisense, custom weapons]
-description: Learn how to install and setup FiveM/RedM IntelliSense in VSCode with addon inventory and qbox autocomple support
-slug: /vscode-intellisense
+title: "How to Set Up VSCode for FiveM and RedM Lua Scripting"
+keywords: [qbox, fivem, vscode, addon, intellisense]
+description: Learn how to setup VSCode for FiveM/RedM script development
+slug: /vscode-setup
 ---
 
-Getting FiveM/RedM IntelliSense in VSCode is actually really easy. Thanks to the hard work of the Overextended team, they have created a VSCode extention that automaticly sets most of that up for you! Below we will go over how to install the extention and also setup extra support for autocompled inventory and qbox calls.
+Getting VSCode setup for FiveM/RedM scripting is actually really easy. The exentions listed in this blog automatically set most of that up for you! Below we will go over some suggested extensions and addons for VSCode.
 
 {/* truncate */}
 
 ---
 
-## What is the CFX Lua Extension?
+## Overview
 
-The **CFX Lua VSCode extension** provides:
+The extensions listed below will provide:
 
-- Works alongside Lua Language Server to provide function and type declarations from Cfx's
-    - [Lua runtime](https://github.com/citizenfx/fivem/blob/master/code/components/citizen-scripting-lua/src/LuaScriptRuntime.cpp)
-    - [Lua dialect](https://github.com/citizenfx/fivem/blob/master/code/components/citizen-scripting-lua/src/LuaScriptRuntime.cpp)
-    - [Environment Globals](https://github.com/citizenfx/fivem/blob/master/data/shared/citizen/scripting/lua/scheduler.lua)
-    - Game natives.
-- Autocompletion for native CFX functions.
+- Autocompletion for native FiveM/RedM/CFX functions.
 - Type-checking using Lua LSP (via EmmyLua-style annotations).
 - In-editor documentation for native functions.
-- Support for both server and client natives.
+- Git functionality like in-editor blame annotations, hovers, CodeLens, and more
 
 ![vscode intellisense](/img/blogs/vscode-intellisense/vscode-intellisense-1.png)
+![GitLens](/img/blogs/vscode-intellisense/current-line-blame.png)
 
 ---
 
 ## Installation
 
-### 1. Open VS Code
+### 1. Install / Open VSCode
 
 Make sure you have [Visual Studio Code](https://code.visualstudio.com/) installed.
 
-### 2. Install the extension and its dependencies
+### 2. Install the suggested extensions
 
-- Open the Extensions sidebar (`Ctrl+Shift+X` or `Cmd+Shift+X` on Mac)
-- Search for  `lua`
-- Find **Lua (by sumneko)** and install
-- Search for `cfx lua`
-- Find **CFX Lua (by Overextended)** and install
+- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+- [Lua Language Server](https://marketplace.visualstudio.com/items?itemName=sumneko.lua)
+- [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+- [CfxLua IntelliSense](https://marketplace.visualstudio.com/items?itemName=ihyajb.cfxlua-intellisense)
 
 ---
 
-## Setup & Configuration
+## Tips & Tricks
 
-Once installed, you’re ready to go! Here are a few best practices to ensure a smooth experience.
+- Hover over native functions (e.g., `GetPlayerRoutingBucket`, `SetEntityCoords`) to view documentation
+- Improve IntelliSense and type safety by annotating functions
+- You can download support for export autocompletes of the inventory and core resources
+    - [ox_types](https://github.com/CommunityOx/ox_types) adds support for export calls from Overextended resources *(ox_inventory, ox_doorlock, etc)*
+    - [qbox_types](https://github.com/ihyajb/qbox_types) adds support for export calls from QBox resources *(qbx_core, qbx_medical, etc)*
+:::warning
+    After downloading either of the addons, store them in a place you will remember (you will need the file path later)
+:::
 
-### 1. Use the Right Folder Structure
+#### The below image shows `ox_types` adding autocomplete for inventory exports:
+![inventory exports](/img/blogs/vscode-intellisense/inventory.png)
 
-Make sure your project follows a structure like this:
-
-```bash
-resources/
-├── my_resource/
-│   ├── client/
-│   │   └── client.lua
-│   ├── server/
-│   │    └── server.lua
-│   └── fxmanifest.lua
-```
-
-### 2. Add Type Annotations (Optional but Recommended)
-
-Improve IntelliSense and type safety by annotating functions:
-
+#### The below codeblock shows a correctly annotated function:
+- `---@param source Source` tells the intellisense the function expects a source (aka a players server ID) as the first arg
+- `---@return boolean` tells the intellisense the function will return a boolean (aka `true` or `false`)
 ```lua
 -- Check if player is whitelisted, kept like this for backwards compatibility or future plans
 ---@param source Source
@@ -78,27 +68,28 @@ function IsWhitelisted(source)
     return false
 end
 ```
-
 ---
 
-## Tips & Tricks
+## Setup & Configuration
 
-- Hover over native functions (e.g., `GetPlayerRoutingBucket`, `SetEntityCoords`) to view documentation.
-- You can install support for exports from the inventory or qbox core (see full example below)
-    - [ox_types](https://github.com/overextended/ox_types) adds support for export calls from ox_inventory
-    - [qbox_types](https://github.com/ihyajb/qbox_types) adds support for export calls from qbx_core, qbx_medical and more!
+The below codeblock shows what your library settings should look like after downloading `ox_types`, `qbox_types` or both
+
+*(To get to the settings, press `F1` and type `settings`)*
+:::info
+    We add the locally stored `ox_lib` resource path as it automatically adds support for `lib` autocompletes such as `lib.notify`
+:::
 
 ```lua
 "Lua.workspace.library": [
+    // EXISTING LIBRARYS HERE
     "F:/GitHub/ox_types/types",
     "F:/GitHub/qbox_types/types",
-    "F:/FivemServer/resources/ox_lib"
+    "F:/CoolRoleplayServer/resources/[ox]/ox_lib"
 ],
 ```
-![inventory exports](/img/blogs/vscode-intellisense/inventory.png)
 
 ---
 
 ## You're Ready to Code!
 
-That’s it! Your VS Code environment is now set up FiveM Lua development. No more tab-switching to docs. Just clean, typed, and documented code... *hopefully*.
+That’s it! Your VSCode environment is now set up FiveM/RedM Lua development. No more tab-switching to docs. Just clean, typed, and documented code... *hopefully*.
