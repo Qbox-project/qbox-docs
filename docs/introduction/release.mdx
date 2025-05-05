@@ -48,12 +48,12 @@ Guidelines for indicating that a resource is stable and ready for release.
 
 ## Dependencies
 
-1. Dependencies are declared and enforced using [lib.checkDependency](https://overextended.dev/ox_lib/Modules/Version/Shared). fxmanifest dependencies should be used intentionally; understanding the behavior of restarting a resource.
+1. Dependencies are declared and enforced using [lib.checkDependency](https://coxdocs.dev/ox_lib/Modules/Version/Shared). fxmanifest dependencies should be used intentionally; understanding the behavior of restarting a resource.
 2. Dependencies are stable.
 
 ## Release Automation & Documentation
 
-1. The first line of code executed by the server is [lib.versionCheck](https://overextended.dev/ox_lib/Modules/Version/Server#libversioncheck).
+1. The first line of code executed by the server is [lib.versionCheck](https://coxdocs.dev/ox_lib/Modules/Version/Server#libversioncheck).
 2. The resource has a `.github` folder with bug/suggestion templates, automated version updater & release script.
 3. The resource has a README which contains marketing material about the resource and it's features. Note that this is not technical documentation.
 4. The resource's public API (events & exports) are documented on the technical docs (here).
