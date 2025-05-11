@@ -72,6 +72,11 @@ Yes, you can. To disable the built in multicharacter change this setting to true
 ```lua filename="qbx_core/config/client.lua"
     useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
 ```
+:::info[Stuck in loading screen?]
+Your multicharacter most likely never calls the loading screen to shutdown. You can fix this 2 ways:
+1. Open your `server.cfg` and edit `setr loadscreen:externalShutdown` to be `false`
+2. Edit your multicharacter resources to call the `ShutdownLoadingScreen()` and `ShutdownLoadingScreenNui()` natives. Like qbx_core does [here](https://github.com/Qbox-project/qbx_core/blob/6e50abaf966295a4245c901a37ecb64343d63677/client/character.lua#L387-L388)
+:::
 
 ### Can I use my own notification system?
 
