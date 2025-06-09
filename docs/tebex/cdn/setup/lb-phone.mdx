@@ -1,0 +1,68 @@
+---
+title: "LB Phone"
+---
+
+This guide will go over how to set up the Qbox CDN with [LB Phone](https://store.lbscripts.com/package/5356987)
+
+## Whitelisting the CDN Domain
+
+First we'll need to whitelist the qbox domain. Navigate to `config > config.lua` and search for the following `Config.UploadWhitelistedDomains`.
+In this table you'll need to add `qbox.re` to the list of domains. It should look like this:
+
+```lua
+-- Set to false/empty to disable
+Config.UploadWhitelistedDomains = { -- domains that are allowed to upload images to the phone (prevent using devtools to upload images)
+    "fivemanage.com",
+    "fmfile.com",
+    "qbox.re",
+    "cfx.re" -- lb-upload
+}
+```
+
+## Changing upload method
+
+In the same config file we will search for `Config.UploadMethod`. This will give you 3 different options for all the file types. Change them all to `qbox` like so:
+
+```lua
+Config.UploadMethod.Video = "Qbox" -- "Fivemanage" or "LBUpload" or "Custom"
+Config.UploadMethod.Image = "Qbox" -- "Fivemanage" or "LBUpload" or "Custom"
+Config.UploadMethod.Audio = "Qbox" -- "Fivemanage" or "LBUpload" or "Custom"
+```
+
+## Adding the Qbox upload method
+
+Now we are done in the config file. Next we will go to `shared > upload.lua`. Here you will see a big table with all kinds of upload methods for different services.
+We will be adding one for Qbox in here.
+:::danger
+Add this **inside** the `UploadMethods` table, alongside all the other options!
+:::
+```lua
+Qbox = {
+    Default = {
+        url = "https://cdn.qbox.re/api/storage/upload",
+        field = "file",
+        headers = {
+            ["Authorization"] = "API_KEY"
+        },
+        success = {
+            path = "url"
+        },
+    },
+},
+```
+<details>
+    <summary>This is what your complete table would look like</summary>
+    <CardImage cardImageUrl="https://media.qbox.re/image/i5KoiHvZGwAgAhDJBebLsLSxxwD0ZCu5Xhlek5v.png" />
+</details>
+
+## Adding your API key
+
+Navigate to `server > apiKeys.lua`. Here you will see a table with all the API keys for the different upload methods. Simply add the same API key that you generated in the Qbox CDN dashboard.
+
+```lua
+API_KEYS = {
+    Video = "API_KEY_HERE",
+    Image = "API_KEY_HERE",
+    Audio = "API_KEY_HERE",
+}
+```
