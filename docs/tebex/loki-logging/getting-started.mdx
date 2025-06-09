@@ -1,0 +1,34 @@
+---
+title: Getting Started
+sidebar_position: 1
+---
+
+# Getting Started
+
+The moment you support us on [Ko-fi](https://ko-fi.com/qbox) you will receive the appropriate roles in Discord (make sure to link your Discord account to your Ko-fi account so you actually receive your Discord benefits).
+
+Now head to https://logging.qbox.re/ and authenticate with your Discord account. You will see a small dashboard, but this won't be used for anything besides regenerating your API key.
+The moment you authenticate for the first time, a new Grafana organization will be created for you at https://grafana.qbox.re/.
+Your login credentials will be your Discord ID as username and `admin` as password. Afterwhich it will ask you to change your password.
+:::danger
+It goes without saying, but please actually do so. Change your password 🙏
+:::
+Once done, you will now have full control and access to your very own Grafana organization. Everything will be installed for you already to get you started.
+But I would recommend you to go through the [Grafana documentation](https://grafana.com/docs/grafana/latest/) to get a better understanding of how Grafana works and how to use it.
+<CardImage cardImageUrl="https://media.qbox.re/image/8QAdwCAXrELugkqEeQ_nhR1A7lJsdTjssFc.png" />
+
+## Setting up ox_lib
+
+If you are using Qbox and ran our recipe deployer, you will have a file called `ox.cfg`. Otherwise just use `server.cfg`. Either way, search if you have already set the `ox:logger` convar.
+If not, you can copy the following lines into your `server.cfg` or `ox.cfg` file:
+
+```lua
+set ox:logger "loki"
+set loki:endpoint "logging.qbox.re"
+set loki:tenant "tenant-id"
+```
+
+Replace `tenant-id` with your actual tenant ID, which you can find in the small dashboard at https://logging.qbox.re/. Now if you start your server and connect with it.
+You should already see a few default logs showing up in Grafana. Don't know where? Navigate to `Dashboards > All Logs` inside Grafana. This will be your main dashboard for viewing all logs.
+
+And that is it. Don't forget to bookmark both the URLs above for quick access.

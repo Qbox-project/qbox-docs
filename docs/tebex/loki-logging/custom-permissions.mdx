@@ -1,0 +1,67 @@
+---
+title: Custom Permissions
+sidebar_position: 3
+---
+
+# Custom Permissions
+
+The moment you invite someone to your Grafana organization, they will have access to all dashboards. However, you can restrict their access to specific dashboards by creating teams.
+This way we can create dedicated log searching teams or restrict which logs a certain someone can see.
+
+<Card shadow='tl'>
+    <CardImage cardImageUrl="https://media.qbox.re/image/sBZx1BJ9YgBrEUm-CJA57BQUtQZ4SzPVu-tk2BPyJg0wt-.png" style={{ padding: '1rem' }} />
+    <CardFooter className='text--center'> 
+      <div className='avatar'>
+        <div className='avatar__intro'>
+          <div className='avatar__name'>What an invited user with the `Viewer` role would see</div>
+        </div>
+      </div>
+    </CardFooter> 
+</Card>
+ㅤ
+
+First we'll remove all roles from all dashboards. For this you'll need to open each dashboard manually and click on the `Edit` button in the top right corner. And then the `Settings` button.
+Here you can open the tab called `Permissions` and remove all roles. This will make sure that no one has access to any dashboard by default.
+
+<ReactPlayer url="https://media.qbox.re/video/Wp3jETbF4jDPYifuwYz9m95xT8x8hiExKbn.mp4" controls={true} width='100%' height='100%' loop={true} playing={true} />
+
+<Card shadow='tl'>
+    <CardImage cardImageUrl="https://media.qbox.re/image/9wGnu86mJe3iUKH8sP0HXVZv6fzMLBp1d9Wf.png" style={{ padding: '1rem' }} />
+    <CardFooter className='text--center'> 
+      <div className='avatar'>
+        <div className='avatar__intro'>
+          <div className='avatar__name'>Now the invited user won't see anything</div>
+        </div>
+      </div>
+    </CardFooter> 
+</Card>
+ㅤ
+
+Next, we can create a team that will have access to the dashboard. To do this, go to `Administration > Users and access` tab in the left sidebar and click on `Teams`. Here you can create a new team by clicking on the `New team` button.
+Now just give it a descriptive name and add all the users you want to this team.
+
+<ReactPlayer url="https://media.qbox.re/video/4AWOu_xVvtdI3UVCUfuqjWW9RC7AL53VJ8.mp4" controls={true} width='100%' height='100%' loop={true} playing={true} />
+
+<Columns>
+  <Column>
+    Now go back to the `permissions` tab of the dashboard and add the team you just created. For this example we will just give this team the `Viewer` role.
+  </Column>
+  <Column style={{ maxWidth: '300px', minWidth: '250px' }}>
+    <CardImage cardImageUrl="https://media.qbox.re/image/98yyye6YeVKe0S4C8Gwm6L1c0yCnqrX5sv5nlsEufeA3.png" />
+  </Column>
+</Columns>
+
+<Card shadow='tl'>
+    <CardImage cardImageUrl="https://media.qbox.re/image/sBZx1BJ9YgBrEUm-CJA57BQUtQZ4SzPVu-tk2BPyJg0wt-.png" style={{ padding: '1rem' }} />
+    <CardFooter className='text--center'> 
+      <div className='avatar'>
+        <div className='avatar__intro'>
+          <div className='avatar__name'>Now the invited user will be able to see the dashboard again because they are a member of the team we just created</div>
+        </div>
+      </div>
+    </CardFooter> 
+</Card>
+ㅤ
+
+This way you can create multiple teams with different roles and permissions. For example, you can create a team for developers that have access to all dashboards, and a team for moderators that only have access to specific dashboards.
+This allows you to have complete control over who can see what in your Grafana organization. Just like Discord roles and adding or removing people from channels.
