@@ -1,0 +1,317 @@
+---
+authors: codexis
+title: "How to Install FiveM Server on Linux"
+keywords: [qbox, fivem, server, linux, ubuntu, debian, mariadb, installation]
+description: Complete step-by-step guide to install and configure a FiveM server on Linux (Ubuntu/Debian) with MariaDB database setup.
+slug: /linux-server-tutorial
+---
+
+This comprehensive guide will walk you through setting up a complete FiveM server environment on a Linux machine (Ubuntu or Debian). We'll cover database setup, FiveM server installation, and automation using systemd services.
+
+{/* truncate */}
+
+## Prerequisites
+
+Before we begin, make sure you have:
+- A fresh Ubuntu 20.04+ or Debian 11+ server (check [1of1servers](https://1of1servers.com/))
+- Root or sudo access
+- At least 4GB RAM and 20GB free disk space
+- A CPU with a minimum of 2 cores and a clock speed of at least 3 GHz.
+- Basic familiarity with Linux command line
+
+## Step 1: System Updates and Dependencies
+
+First, let's update the system and install essential packages:
+
+```bash
+# Update package lists
+sudo apt update && sudo apt upgrade -y
+
+# Install essential packages
+sudo apt install -y curl wget unzip tar jq systemctl
+```
+
+## Step 2: Database Setup (MariaDB)
+
+### Method 1: Native MariaDB Installation
+
+Install MariaDB directly on your server:
+
+```bash
+# Install MariaDB server
+sudo apt install -y mariadb-server mariadb-client
+
+# Start and enable MariaDB service
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+
+# Secure MariaDB installation
+sudo mysql_secure_installation
+```
+
+During the secure installation process:
+1. Set a strong root password
+2. Remove anonymous users (Y)
+3. Disallow root login remotely (Y)
+4. Remove test database (Y)
+5. Reload privilege tables (Y)
+
+Create a database for your FiveM server:
+
+```bash
+# Login to MariaDB
+sudo mysql -u root -p
+
+# Create database and user (replace 'your_password' with a strong password)
+CREATE DATABASE fivem_server;
+CREATE USER 'fivem_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON fivem_server.* TO 'fivem_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### Method 2: Docker MariaDB Installation
+
+If you prefer using Docker:
+
+```bash
+# Install Docker
+sudo sh <(curl -sSL https://get.docker.com)
+
+# Add your user to docker group
+sudo usermod -aG docker $USER
+
+# Log out and back in, then run MariaDB container
+docker run -d \
+  --name fivem-mariadb \
+  --restart unless-stopped \
+  -e MYSQL_ROOT_PASSWORD=your_root_password \
+  -e MYSQL_DATABASE=fivem_server \
+  -e MYSQL_USER=fivem_user \
+  -e MYSQL_PASSWORD=your_password \
+  -p 3306:3306 \
+  -v mariadb_data:/var/lib/mysql \
+  mariadb:latest
+```
+
+## Step 3: FiveM Server Setup
+
+### Create Server Directory and User
+
+```bash
+# Create a dedicated user for FiveM (optional but recommended)
+sudo adduser fivem --disabled-login --gecos ""
+
+# Switch to the fivem user
+sudo su - fivem
+
+# Create server directory
+mkdir -p /home/fivem/server
+cd /home/fivem/server
+```
+
+### Create the Automated Server Script
+
+Create the server management script that automatically downloads the latest FiveM artifacts:
+
+```bash
+nano /home/fivem/server.sh
+```
+
+Add the following content:
+
+```bash
+#!/bin/bash
+
+ARTIFACTS_URL="https://artifacts.jgscripts.com/json"
+DOWNLOAD_DIR="/tmp/fivem_artifact"
+EXTRACT_DIR="/home/fivem/server"
+
+mkdir -p "$DOWNLOAD_DIR"
+LATEST_ARTIFACT=$(curl -s "$ARTIFACTS_URL" | jq -r '.linuxDownloadLink')
+
+if [ -z "$LATEST_ARTIFACT" ]; then
+    echo "Failed to find the latest artifact."
+    exit 1
+fi
+
+echo "Downloading the latest FiveM artifact..."
+wget -q -O "$DOWNLOAD_DIR/fx.tar.xz" "$LATEST_ARTIFACT"
+
+if [ $? -ne 0 ]; then
+    echo "Failed to download the artifact."
+    exit 1
+fi
+
+mkdir -p "$EXTRACT_DIR"
+
+echo "Extracting fx.tar.xz..."
+tar -xJf "$DOWNLOAD_DIR/fx.tar.xz" -C "$EXTRACT_DIR"
+
+if [ $? -ne 0 ]; then
+    echo "Failed to extract the artifact."
+    exit 1
+fi
+
+echo "FiveM artifact successfully downloaded and extracted to $EXTRACT_DIR"
+rm -rf "$DOWNLOAD_DIR"
+
+echo "Starting FiveM server..."
+cd "$EXTRACT_DIR"
+
+if [ -f "run.sh" ]; then
+    chmod +x run.sh
+    ./run.sh
+else
+    echo "run.sh not found in $EXTRACT_DIR."
+    exit 1
+fi
+```
+
+Make the script executable:
+
+```bash
+chmod +x /home/fivem/server.sh
+```
+
+The script is now set up to automatically download the latest artifacts and start the server.
+
+## Step 4: Create Systemd Service
+
+Exit from the fivem user and create a systemd service as root:
+
+```bash
+# Exit from fivem user
+exit
+
+# Create the service file
+sudo nano /etc/systemd/system/fivem.service
+```
+
+Add the following content:
+
+```ini
+[Unit]
+Description=FiveM Server
+After=network.target mariadb.service
+
+[Service]
+Type=simple
+User=fivem
+Group=fivem
+WorkingDirectory=/home/fivem/server
+ExecStart=/home/fivem/server.sh
+Restart=on-failure
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=fivem-server
+
+# Environment variables
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Enable and Start the Service
+
+```bash
+# Reload systemd to recognize the new service
+sudo systemctl daemon-reload
+
+# Enable the service to start on boot
+sudo systemctl enable fivem.service
+
+# Start the service
+sudo systemctl start fivem.service
+```
+
+:::warning
+After starting the server for the first, you'll need to check the status using `systemctl status fivem.service` to get the txAdmin pin code, which you will use to access the txAdmin web interface.
+:::
+
+## Step 5: Service Management
+
+Here are useful commands to manage your FiveM server:
+
+```bash
+# Check service status
+sudo systemctl status fivem.service
+
+# View logs
+sudo journalctl -u fivem.service -f
+
+# Stop the server
+sudo systemctl stop fivem.service
+
+# Restart the server
+sudo systemctl restart fivem.service
+
+# Disable auto-start on boot
+sudo systemctl disable fivem.service
+```
+
+## Step 6: Firewall Configuration (Optional)
+
+Configure your firewall to allow FiveM traffic:
+
+```bash
+# For UFW (Ubuntu Firewall)
+sudo ufw allow 30120/tcp
+sudo ufw allow 30120/udp
+
+# For iptables
+sudo iptables -A INPUT -p tcp --dport 30120 -j ACCEPT
+sudo iptables -A INPUT -p udp --dport 30120 -j ACCEPT
+
+# Save iptables rules (Debian/Ubuntu)
+sudo iptables-save > /etc/iptables/rules.v4
+```
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+**Service won't start:**
+```bash
+# Check service status and logs
+sudo systemctl status fivem.service
+sudo journalctl -u fivem.service --no-pager
+
+# Verify script permissions
+ls -la /home/fivem/server.sh
+
+# Test script manually
+sudo su - fivem
+cd /home/fivem
+./server.sh
+```
+
+**Database connection issues:**
+```bash
+# Test database connectionx
+mysql -u fivem_user -p
+
+# Check if MariaDB is running
+sudo systemctl status mariadb
+```
+
+**Download failures:**
+```bash
+# Test artifact URL manually
+curl -s "https://artifacts.jgscripts.com/json" | jq
+
+# Check internet connectivity
+ping -c 4 artifacts.jgscripts.com
+```
+
+## Security Considerations
+
+1. **Firewall**: Only open necessary ports (30120 for FiveM, 3306 for database if remote access needed)
+2. **User permissions**: Run FiveM under a dedicated user with minimal privileges
+3. **Database security**: Use strong passwords and limit database user privileges
+4. **Updates**: Regularly update your system and FiveM server
+5. **Backup**: Implement regular backups of your database and server files
+
+Your FiveM server should now be running and accessible! The server will automatically start on boot and restart if it crashes. You can connect to it using the IP address of your server on port 30120.
