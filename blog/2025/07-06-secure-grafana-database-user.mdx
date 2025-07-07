@@ -1,0 +1,113 @@
+---
+authors: novamonkey  
+title: "Setting Up and Securing a Database User for Grafana"  
+keywords: [grafana, postgres, mysql, database, security, setup]  
+description: Learn how to create and secure a database user for Grafana dashboards using PostgreSQL or MySQL.  
+slug: /secure-grafana-database-user  
+---
+
+Grafana connects to databases like **PostgreSQL**, **MySQL**, **InfluxDB**, and more to query data and build dashboards. But connecting with an overprivileged user account is risky. In this guide, you’ll learn how to **create a limited-access database user** just for Grafana—and how to secure it properly.
+
+{/* truncate */}  
+
+## Why Use a Dedicated Database User?
+
+Grafana doesn't need full database access. It just needs to **read** data. Creating a **read-only user** reduces the chance of accidental or malicious changes.
+
+Benefits:
+- **Limits damage** if Grafana is compromised
+- **Follows the principle of least privilege**
+- **Easier to audit and revoke**
+
+---
+
+## MySQL / MariaDB Example  
+
+### 1. Create the Grafana User
+
+```sql
+CREATE USER 'grafana_user'@'192.168.1.100' IDENTIFIED BY 'StrongPassword123!';
+```
+
+Replace `192.168.1.100` with your Grafana server's IP.
+
+### 2. Grant Read-Only Access
+
+```sql
+GRANT SELECT ON my_database.* TO 'grafana_user'@'192.168.1.100';
+FLUSH PRIVILEGES;
+```
+Change `my_database` with your Fivem server's database name.
+
+### 3. Verify Permissions
+
+```sql
+SHOW GRANTS FOR 'grafana_user'@'192.168.1.100';
+```
+
+---
+
+## Connecting Grafana to the Database  
+
+In Grafana:
+
+1. Go to **Connections > Add new data source**
+2. Select **MySQL**
+3. Enter:
+   - **Host:** IP or domain of your DB server
+   - **Database name**
+   - **Username:** `grafana_user`
+   - **Password**
+4. Click **Save & Test**
+
+---
+
+## Security Best Practices  
+
+- ✅ Use **strong, unique passwords**
+- ✅ Allow connections only from Grafana’s IP
+- ✅ Avoid using `root` or `admin` users
+- ✅ Rotate credentials periodically
+- ✅ Enable SSL for encrypted connections (if supported)
+
+:::info
+In production, always limit the users access **to the ip of the grafana server only**
+:::
+
+
+
+---
+
+## Using HeidiSQL (GUI) Instead of SQL Commands
+
+If you prefer not to use raw SQL queries, you can use a graphical interface like **HeidiSQL** to set up and secure a Grafana database user without writing code.
+
+### Step-by-Step (MySQL/MariaDB):
+
+1. **Connect to Your Server**  
+   Open HeidiSQL and create a new session. Enter your server's IP, port (default: 3306), and root/admin credentials.
+
+2. **Create a New User**  
+   - Navigate to the **User Manager** tab
+   - Click **Add** to create a new user (e.g., `grafana_user`)
+   - Set a strong password
+
+3. **Grant Read-Only Access**
+   - In the **Database-level privileges**, select your target database
+   - Grant only `SELECT` privilege
+   - Avoid granting `INSERT`, `UPDATE`, `DELETE`, or `DROP`
+
+4. **Restrict Access by Host**  
+   - Set the host to Grafana's IP address (e.g., `192.168.1.100`) instead of `%` (any host)
+   - This limits where the user can connect from
+
+5. **Apply Changes**
+   - Click **Save** or **Apply**
+   - Your new user is ready to use in Grafana
+
+---
+
+## Visual Overview
+
+![HeidiSQL User Privileges](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/HeidiSQL-User-Manager.png/800px-HeidiSQL-User-Manager.png)
+
