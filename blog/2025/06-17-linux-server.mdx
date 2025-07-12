@@ -28,7 +28,7 @@ First, let's update the system and install essential packages:
 sudo apt update && sudo apt upgrade -y
 
 # Install essential packages
-sudo apt install -y curl wget unzip tar jq systemctl
+sudo apt install -y curl wget unzip tar jq
 ```
 
 ## Step 2: Database Setup (MariaDB)
@@ -260,10 +260,14 @@ Configure your firewall to allow FiveM traffic:
 # For UFW (Ubuntu Firewall)
 sudo ufw allow 30120/tcp
 sudo ufw allow 30120/udp
+sudo ufw allow 40120/tcp
+sudo ufw allow 40120/udp
 
 # For iptables
 sudo iptables -A INPUT -p tcp --dport 30120 -j ACCEPT
 sudo iptables -A INPUT -p udp --dport 30120 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 40120 -j ACCEPT
+sudo iptables -A INPUT -p udp --dport 40120 -j ACCEPT
 
 # Save iptables rules (Debian/Ubuntu)
 sudo iptables-save > /etc/iptables/rules.v4
