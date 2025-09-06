@@ -21,6 +21,7 @@ scorpion:
   image_url: https://r2.fivemanage.com/image/Z9ftITFQ52WP.png
   socials:
     github: Scorpion7162
+
 ilomilo:
   name: ilomilo
   title: Full Stack Developer
@@ -28,3 +29,11 @@ ilomilo:
   image_url: https://i.imgur.com/ypvcHw9.png
   socials:
     github: iloomilo 
+  
+codexis:
+  name: Codexis
+  title: Volunteer for the Qbox Project
+  url: https://github.com/CodexisPhantom
+  image_url: https://github.com/CodexisPhantom.png
+  socials:
+    github: CodexisPhantom
