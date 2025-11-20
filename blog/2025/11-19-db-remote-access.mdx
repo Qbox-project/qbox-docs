@@ -1,0 +1,185 @@
+---
+authors: chatdisabled
+title: "Remotely accessing MariaDB"
+keywords: [qbox, fivem, mariadb, remote access, database backups, grafana db datasource]
+description: Learn how to configure your MariaDB database for remote access, enabling database backups and connecting external tools like Grafana for monitoring and analytics.
+slug: /db-remote-access
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+It is beneficial to be able to interact with your database from outside your machine.
+Whether you need to perform backups, connect monitoring tools like Grafana, or access your database from different machines, configuring remote access to your MariaDB instance is essential when running a FiveM server with QBox.
+
+{/* truncate */}
+
+In this guide, we'll walk through the steps to safely enable remote connections to your MariaDB database while maintaining security best practices.
+
+:::info
+This tutorial is purely targeted at MariaDB (which you should be using for Qbox anyway).
+:::
+
+## Step 1: Configure MariaDB Binding
+
+By default, MariaDB only listens on `localhost` (127.0.0.1). To allow remote connections, you need to modify the binding address.
+To do this, you will need to locate the configuration file for MariaDB. Depending on your system, it could be in one of these locations:
+
+- **Unix/BSD**: `/etc/my.cnf`
+- **Debian/Ubuntu**: `/etc/mysql/my.cnf`
+- **Windows**: `C:\Program Files\MariaDB X.X\data\my.ini`
+
+> or any other custom location where you installed it
+
+Once you open this file, it will probably look something like this
+
+```ini
+[mysqld]
+datadir=C:/Program Files/MariaDB 12.0/data
+port=3306
+innodb_buffer_pool_size=4042M
+[client]
+port=3306
+plugin-dir=C:\Program Files\MariaDB 12.0/lib/plugin
+```
+
+Here we will add a line telling MariaDB to listen on all network interfaces by adding the following line under the `[mysqld]` section:
+
+```ini
+bind-address = 0.0.0.0
+```
+
+Your file should now look like this
+
+```ini
+[mysqld]
+datadir=C:/Program Files/MariaDB 12.0/data
+port=3306
+innodb_buffer_pool_size=4042M
+bind-address = 0.0.0.0
+[client]
+port=3306
+plugin-dir=C:\Program Files\MariaDB 12.0/lib/plugin
+```
+
+### Restart MariaDB
+
+For these changes to take effect, we will need to restart MariaDB. This will temporarily stop your database service, so plan accordingly.
+
+:::warning
+If your server is currently live, please wait in between restarts to do this.
+:::
+
+**Linux (systemd):**
+```bash
+sudo systemctl restart mariadb
+```
+
+**Windows (Command Prompt as Administrator):**
+```cmd
+net stop MariaDB
+net start MariaDB
+```
+
+
+## Step 2: Create a Remote Access User
+
+For security reasons, we will create a user without destructive permissions.
+In case of hijacking or if someone guesses your password, there will be no damage done. We will need to open the MySQL interface first.
+
+<Tabs>
+   <TabItem value="Windows" label="Windows" default>
+      On Windows you simply press the Windows key and search for `mariadb`.
+      You will find `MySQL Client (MariaDB X.X (x64))`, open this. Now fill in your root password or simply press enter if you have none.
+   </TabItem>
+   <TabItem value="linux" label="Linux">
+      In the CLI simply enter `mariadb` and press enter. If you are currently root in Linux or have sudo, you will automatically access the MariaDB environment.
+      But if it asks for a password, simply fill in the password for your MySQL root user and then press enter.
+   </TabItem>
+</Tabs>
+
+Now we will create a SQL user called `special_user` with the password `strong_password_here`. You can copy and paste the following.
+:::info
+Please change the password to something strong. Save it, remember it, and keep it secure.
+:::
+
+```sql
+CREATE USER 'special_user'@'%' IDENTIFIED BY 'strong_password_here';
+GRANT SELECT ON *.* TO 'special_user'@'%';
+GRANT SHOW VIEW, TRIGGER ON *.* TO 'special_user'@'%';
+FLUSH PRIVILEGES;
+```
+
+**Permissions explained:**
+- `SELECT` - Read data from tables
+- `SHOW VIEW` - View database views and schemas
+- `TRIGGER` - Read trigger information
+
+To verify the user was created successfully, run:
+
+```sql
+SELECT USER, HOST FROM mysql.user;
+```
+
+which outputs:
+
+```powershell
++--------------+-----------+
+| User         | Host      |
++--------------+-----------+
+| special_user | %         |
+| root         | 127.0.0.1 |
+| root         | ::1       |
+| root         | computer  |
+| mariadb.sys  | localhost |
+| root         | localhost |
++--------------+-----------+
+```
+
+You should see `special_user` listed with host `%` among the other users.
+
+> Notice that root is listed with the host `127.0.0.1`. This means that despite MariaDB now being accessible for remote connections, root is not.
+> So even if root doesn't have a password set it is safe from outside attacks.
+
+:::warning
+If this is not the case, you should disallow root from the host `%` or add a strong password for the root account.
+:::
+
+## Step 3: Configure Firewall Rules
+
+Allow port 3306 (default MariaDB port) through the firewall:
+
+<Tabs>
+   <TabItem value="Windows" label="Windows" default>
+      1. Open Windows Defender Firewall with Advanced Security
+      2. Click "Inbound Rules" → "New Rule"
+      3. Select "Port" → "Next"
+      4. Choose "TCP" and enter port `3306`
+      5. Select "Allow the connection"
+      6. Apply to desired profiles and complete the wizard
+   </TabItem>
+   <TabItem value="linux" label="Linux">
+      ```bash
+      sudo ufw allow 3306/tcp
+      sudo ufw reload
+      ```
+   </TabItem>
+</Tabs>
+
+:::info
+If your database is located on a machine behind a DDoS provider, they might block connections on non-gaming-related ports.
+If this is the case, contact your hosting provider for solutions.
+:::
+
+## Conclusion
+
+You have successfully configured your MariaDB database for remote access. By following this guide, you've:
+
+- Modified the MariaDB binding to listen on all network interfaces
+- Created a dedicated remote user with appropriate read-only permissions
+- Configured your firewall to allow remote connections
+- Secured your root account by keeping it local-only
+
+This setup allows you to safely perform remote backups, connect monitoring tools like Grafana, and manage your database from outside your machine while maintaining security best practices.
+The `special_user` account provides read-only access, ensuring that even if credentials are compromised, your data remains protected from destructive actions.
+
+Remember to keep your passwords strong, update MariaDB regularly, and monitor your connections for any suspicious activity.
