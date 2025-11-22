@@ -1,0 +1,17 @@
+---
+title: Database Backups
+sidebar_position: 2
+---
+
+# Database Backups
+
+Through the CDN dashboard, we also offer database backups at no additional cost.
+This means that whatever the size of the database, it will not be counted towards the CDN limits of 20|60|120GB.
+The Ducklin tier will get a maximum of 1 backup in total, which will be backed up once every day. Duck and Qboxxer both get 3 max in total, which will be backed up every 3 hours.
+
+To set this up, please first follow [this tutorial](/blog/db-remote-access). It will explain how you can set up a proper MySQL user to make backups.
+Afterwards, navigate to https://cdn.qbox.re/dashboard/database-backup and choose the organization you want to use at the top.
+Here you can fill in the credentials of the MySQL user you just created.
+If everything works, it will create an initial backup and afterwards it will create scheduled backups according to your donation tier.
+
+![Backup Dashboard](/img/qbox-cdn-db-backups.png)
