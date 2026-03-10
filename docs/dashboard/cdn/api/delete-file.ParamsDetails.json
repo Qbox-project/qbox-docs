@@ -1,0 +1,1 @@
+{"parameters":[{"schema":{"type":"string"},"in":"path","name":"path","required":true,"description":"URL-encoded storage key path. Example: acme-org%2Fimages%2Fexample.png"},{"schema":{"type":"string"},"in":"header","name":"authorization","required":true,"description":"API key or Bearer API key. Example: Bearer qbox_live_abc123"}]}

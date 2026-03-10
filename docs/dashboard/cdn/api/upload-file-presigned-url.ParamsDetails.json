@@ -1,0 +1,1 @@
+{"parameters":[{"schema":{"type":"string"},"in":"path","name":"token","required":true,"description":"URL-encoded presigned upload token. Example: eyJ2IjoxLCJleHAiOjE3NDAwMDAwMDAsIm9yZ0lkIjoiYWJjIn0.signature"}]}

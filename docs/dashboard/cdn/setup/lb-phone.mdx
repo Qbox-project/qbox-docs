@@ -39,20 +39,18 @@ Add this **inside** the `UploadMethods` table, alongside all the other options!
 ```lua
 Qbox = {
     Default = {
-        url = "https://cdn.qbox.re/api/storage/upload",
+        url = "PRESIGNED_URL",
         field = "file",
-        headers = {
-            ["Authorization"] = "API_KEY"
-        },
         success = {
-            path = "url"
+            path = "data.url"
         },
+        sendPlayer = "metadata"
     },
 },
 ```
 <details>
     <summary>This is what your complete table would look like</summary>
-    <CardImage cardImageUrl="https://media.qbox.re/image/i5KoiHvZGwAgAhDJBebLsLSxxwD0ZCu5Xhlek5v.png" />
+    <CardImage cardImageUrl="https://r2.qbox.re/chatty/docs/lbphone-config-example.png" />
 </details>
 
 ## Adding your API key
@@ -65,4 +63,49 @@ API_KEYS = {
     Image = "API_KEY_HERE",
     Audio = "API_KEY_HERE",
 }
+```
+
+## Editing Presigned URL Function
+
+And lastly we will go to `server > custom > functions > functions.lua`. This file contains the function `GetPresignedUrl` which we will replace with the following:
+
+```lua
+function GetPresignedUrl(source, uploadType)
+    if not uploadType then
+        debugprint("GetPresignedUrl: Missing uploadType")
+        return nil
+    end
+
+    local apiKey = API_KEYS[uploadType]
+
+    if not apiKey or apiKey == "" then
+        debugprint("GetPresignedUrl: Missing API key for uploadType", uploadType)
+        return nil
+    end
+
+    local requestPromise = promise.new()
+
+    PerformHttpRequest("https://api.qbox.re/v1/file/presigned-url", function(statusCode, result)
+        local presignedUrl
+
+        if statusCode == 200 then
+            local ok, response = pcall(json.decode, result)
+
+            if ok and response and response.data and response.data.presignedUrl then
+                presignedUrl = response.data.presignedUrl
+            else
+                debugprint("GetPresignedUrl: Invalid response payload", result)
+            end
+        else
+            debugprint("GetPresignedUrl: Request failed", statusCode, result)
+        end
+
+        requestPromise:resolve(presignedUrl)
+    end, "GET", json.encode({ uploadType = uploadType }), {
+        ["Content-Type"] = "application/json",
+        ["Authorization"] = apiKey,
+    })
+
+    return Citizen.Await(requestPromise)
+end
 ```

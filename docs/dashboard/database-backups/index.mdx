@@ -1,0 +1,18 @@
+---
+title: 💽 Database Backups
+sidebar_position: 3
+---
+
+# Database Backups
+
+Far too often, servers get wiped by malicious actors or simple mistakes, and without an extra database backup, months of progress can disappear in an instant.
+That is exactly why database backups are available here, including on the free tier. No matter the size of your backups, they do not count toward your CDN storage limit.
+
+The free tier includes 1 backup every 24 hours. Ducklin includes 2 retained backups every 12 hours, Duck includes 6 retained backups every 6 hours, and Qboxxer includes 12 retained backups every hour.
+
+To get started, first follow [this tutorial](/blog/db-remote-access). It walks you through creating a proper MySQL user for backups, which also has the added benefit of being usable for Grafana later.
+After that, open the `Database Backups` page inside your organization.
+Enter the credentials for the MySQL user you just created, then optionally add a Discord webhook if you want notifications about the backup process.
+Once everything is configured, your backups will begin running automatically based on your tier.
+
+![Backup Dashboard](https://r2.qbox.re/chatty/docs/db-backups-page.png)

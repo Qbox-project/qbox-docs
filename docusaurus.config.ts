@@ -32,7 +32,51 @@ const config: Config = {
   },
 
   plugins: [
-    'docusaurus-plugin-image-zoom'
+    'docusaurus-plugin-image-zoom',
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            from: '/tebex/cdn/database-backups',
+            to: '/dashboard/database-backups',
+          },
+        ],
+        createRedirects(existingPath) {
+          if (existingPath.startsWith('/dashboard/cdn')) {
+            return [existingPath.replace('/dashboard/cdn', '/tebex/cdn')];
+          }
+
+          if (existingPath.startsWith('/dashboard/logging')) {
+            return [
+              existingPath.replace('/dashboard/logging', '/tebex/loki-logging'),
+              existingPath.replace('/dashboard/logging', '/tebex/logging'),
+            ];
+          }
+
+          return undefined;
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'api',
+        docsPluginId: 'classic',
+        config: {
+          cdnApi: {
+            specPath: 'https://api.qbox.re/openapi.json',
+            outputDir: 'docs/dashboard/cdn/api',
+            downloadUrl: 'https://api.qbox.re/openapi.json',
+            showInfoPage: false,
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+              categoryLinkSource: 'tag',
+            },
+          },
+        },
+      },
+    ],
   ],
 
   presets: [
@@ -42,6 +86,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
+          docItemComponent: '@theme/ApiItem',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
@@ -73,7 +118,23 @@ const config: Config = {
     ],
   ],
 
+  themes: ['docusaurus-theme-openapi-docs'],
+
   themeConfig: {
+    languageTabs: [
+      {
+        language: 'curl',
+      },
+      {
+        language: 'python',
+      },
+      {
+        language: 'javascript',
+      },
+      {
+        language: 'http',
+      },
+    ],
     zoom: {
       selector: '.markdown :not(em) > img',
       background: {
@@ -124,6 +185,12 @@ const config: Config = {
           sidebarId: 'resourcesSidebar',
           position: 'left',
           label: 'Resources',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'dashboardSidebar',
+          position: 'left',
+          label: 'Dashboard',
         },
         {
           type: 'docSidebar',
