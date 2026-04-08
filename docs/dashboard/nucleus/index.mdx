@@ -1,0 +1,31 @@
+---
+title: 🌐 Nucleus
+sidebar_position: 2
+---
+
+Nucleus is, at its core, a secure reverse proxy provided by Cfx.re for your FiveM server.
+It gives your server a license-key-linked web address that can be used, and was planned, for a plethora of things.
+You can read more about it in the [official forum post](https://forum.cfx.re/t/web-administration-and-cfx-re-project-nucleus/676286) announcing it.
+Unfortunately, 7 years later, after a whole ecosystem was built around it, [Cfx announced](https://forum.cfx.re/t/nucleus-reverse-proxy-deprecation/5387399) that they will be deprecating the Nucleus links on June 30, 2026.
+
+To keep supporting this ecosystem we now also offer a free alternative within the Qbox Dashboard.
+On your first visit to the Nucleus page you only need to fill in your server IP address and the port where the FXServer is listening on (default 30120).
+Alternatively you can check your `server.cfg` to which port FXServer is using.
+```bash
+endpoint_add_tcp "0.0.0.0:30120"
+endpoint_add_udp "0.0.0.0:30120"
+```
+![nucleus fill in form](https://r2.qbox.re/chatty/docs/nucleus-form.png)
+
+Now copy paste the convar that we provide to you in your `server.cfg`, for example:
+```bash
+set web_baseUrl "chatty.server.qbox.re"
+```
+![nucleus dashboard](https://r2.qbox.re/chatty/docs/nucleus.png)
+
+Now existing resources like [lb-upload](https://github.com/lbphone/lb-upload) will keep working and serve content through the `*.server.qbox.re` provided url.
+
+
+:::warning
+Nucleus is currently in public beta and is subject to change but not limited to: provided urls, limits, functionality, etc
+:::
