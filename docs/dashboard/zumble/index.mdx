@@ -1,0 +1,42 @@
+---
+title: 🎙️ Zumble
+sidebar_position: 3
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+[Zumble](https://github.com/AvarianKnight/rust-mumble) is a managed [Mumble](https://www.mumble.info/) voice server tuned for FiveM.
+It is a drop-in replacement for the default Mumble server bundled with FXServer, optimized for how FiveM actually uses voice: small audio packets, hundreds of channels created and removed per minute, and constant player movement in and out of proximity.
+
+## Why a managed Mumble server
+
+FXServer's bundled Mumble server works, but it is heavily limited by the TCP server. This often causes the well-known robotic voice effect at higher player counts.
+Using an external Mumble server resolves these issues and can significantly reduce pressure on your FXServer network thread, freeing resources for other server tasks.
+
+<Tabs>
+   <TabItem value="before" label="Before" default>
+      ![Before Zumble](/img/before-zumble.png)
+   </TabItem>
+   <TabItem value="after" label="After">
+      ![After Zumble](/img/after-zumble.png)
+   </TabItem>
+</Tabs>
+
+
+
+## Setup
+
+Open the Zumble page in the Qbox Dashboard. The first time you visit, click `Spin Up Server`.
+After the server is running, click **Show server.cfg** to copy the three convars required by FXServer:
+
+```bash
+setr voice_externalAddress "<your-zumble-host>"
+setr voice_externalPort <your-zumble-port>
+setr voice_hideEndpoints 1
+```
+
+Paste these into your `server.cfg`, restart your FiveM server, and your existing voice resource (pma-voice, saltychat, etc.) will route through Zumble automatically. No resource changes are required.
+:::tip
+You can paste these lines one by one into your server console, and all connected clients will automatically reconnect to Zumble without a full server restart.
+You should still add them to `server.cfg` so they persist after your next restart.
+:::
