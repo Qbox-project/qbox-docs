@@ -11,12 +11,13 @@
     "gen:api-docs": "docusaurus gen-api-docs all && node scripts/order-api-docs.mjs",
     "clean:api-docs": "docusaurus clean-api-docs all",
     "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
+    "deploy": "pnpm run build && wrangler deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "preview": "pnpm run build && wrangler dev"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",
@@ -36,7 +37,8 @@
     "@docusaurus/module-type-aliases": "3.10.1",
     "@docusaurus/tsconfig": "3.10.1",
     "@docusaurus/types": "3.10.1",
-    "typescript": "~5.7.3"
+    "typescript": "~5.7.3",
+    "wrangler": "^4.93.0"
   },
   "browserslist": {
     "production": [
