@@ -15,13 +15,12 @@ const config: Config = {
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'Qbox-project', // Usually your GitHub org/user name.
-  projectName: 'qbox-docs', // Usually your repo name.
-
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -109,10 +108,6 @@ const config: Config = {
         },
         theme: {
           customCss: './src/css/custom.css',
-        },
-        gtag: {
-          trackingID: 'G-S32Y3N3DLB',
-          anonymizeIP: true,
         },
       } satisfies Preset.Options,
     ],
@@ -229,6 +224,17 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
   stylesheets: [
     'https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap'
+  ],
+  clientModules: [
+    require.resolve('./src/clientModules/analytics.ts'),
+  ],
+  scripts: [
+    {
+      src: 'https://plausible.qbox.re/js/script.hash.outbound-links.pageview-props.tagged-events.js',
+      defer: true,
+      'data-domain': 'docs.qbox.re',
+    },
+    '/js/plausible-init.js',
   ],
 };
 
