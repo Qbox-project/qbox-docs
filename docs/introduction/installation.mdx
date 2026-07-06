@@ -22,9 +22,25 @@ url='https://www.youtube.com/watch?v=FQGsXn0bRcI' controls='true' volume='0.7' p
 :::
 
 :::danger[XAMPP IS NOT SUPPORTED AND SHOULD NEVER EVEN BE USED.]
-* We expect you to already have ``MariaDB`` installed.
-* Please download ``MariaDB`` from the official website: [MariaDB Downloads](https://mariadb.org/download/).
+* We expect you to already have **MariaDB** installed. **MySQL is not supported.**
+* Download MariaDB from the official website: [MariaDB Downloads](https://mariadb.org/download/).
+* **Minimum version:** MariaDB **10.9.0**
+* **Recommended:** MariaDB **12.3 LTS**, current long-term support release, maintained until June 2029.
 :::
+
+### MariaDB version requirements
+
+Qbox targets **MariaDB**, not MySQL or XAMPP. Several core SQL features depend on a recent server:
+
+| Feature | Used for | MariaDB minimum |
+| --- | --- | --- |
+| `JSON_VALUE()` | Unique phone, account, and metadata lookups in `qbx_core` | **10.6.1** |
+| `ADD COLUMN IF NOT EXISTS` | `qbx_core.sql` and runtime player-table migrations | 10.0.2 |
+| `CREATE INDEX IF NOT EXISTS` | Idempotent `users` identifier indexes on resource start | **10.9.0** |
+
+**Minimum to run Qbox:** MariaDB **10.9.0**. Core uses `JSON_VALUE()` (10.6.1+) and idempotent index creation on connect lookups (10.9.0+); the higher version is the effective floor.
+
+**Recommended for new servers:** MariaDB **12.3 LTS**. It is the current LTS branch and is supported until June 2029. Older LTS releases such as 10.11 or 11.8 also work, but 12.3 is the better default for new installs in 2026.
 
 ## Installation Steps
 
