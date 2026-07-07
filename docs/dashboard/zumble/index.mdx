@@ -40,3 +40,21 @@ Paste these into your `server.cfg`, restart your FiveM server, and your existing
 You can paste these lines one by one into your server console, and all connected clients will automatically reconnect to Zumble without a full server restart.
 You should still add them to `server.cfg` so they persist after your next restart.
 :::
+
+## Scheduled restart
+
+Zumble should be restarted daily. On busy servers, repeated client connects can cause the session ID counter to keep climbing until the service becomes unstable or crashes.
+
+:::warning
+A daily Zumble restart is required for long-running servers. Without it, voice may eventually fail after enough client reconnects.
+:::
+
+Open the Zumble page in the Qbox Dashboard and use the **Scheduled Restart** card:
+
+1. Choose a **Daily restart hour**. Times are shown in your browser timezone.
+2. Turn **Enabled** on.
+3. Click **Save Schedule**.
+
+:::tip
+Schedule Zumble to restart at the same time your FXServer restarts. Players are already disconnecting during the FXServer restart, so voice comes back cleanly when both services start again together.
+:::
