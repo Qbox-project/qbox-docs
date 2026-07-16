@@ -11,7 +11,6 @@ import { translate } from "@docusaurus/Translate";
 import CodeSamples from "docusaurus-theme-openapi-docs/lib/theme/CodeSamples";
 import Markdown from "docusaurus-theme-openapi-docs/lib/theme/Markdown";
 import TabItem from "@theme/TabItem";
-import { OPENAPI_RESPONSE_EXAMPLES } from "docusaurus-theme-openapi-docs/lib/theme/translationIds";
 
 interface ResponseExamplesProps {
   responseExamples: any;
@@ -76,7 +75,7 @@ export const ResponseExample: React.FC<ResponseExampleProps> = ({
     // @ts-ignore
     <TabItem
       label={translate({
-        id: OPENAPI_RESPONSE_EXAMPLES.EXAMPLE,
+        id: "theme.openapi.responseExamples.example",
         message: "Example",
       })}
       value="Example"

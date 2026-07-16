@@ -20,25 +20,25 @@
     "preview": "pnpm run build && wrangler dev"
   },
   "dependencies": {
-    "@docusaurus/core": "3.10.1",
-    "@docusaurus/plugin-client-redirects": "3.10.1",
-    "@docusaurus/preset-classic": "3.10.1",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/plugin-client-redirects": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
     "@mdx-js/react": "^3.1.1",
     "clsx": "^2.1.1",
     "docusaurus-plugin-image-zoom": "^3.0.1",
-    "docusaurus-plugin-openapi-docs": "^5.0.2",
-    "docusaurus-theme-openapi-docs": "^5.0.2",
+    "docusaurus-plugin-openapi-docs": "^5.1.2",
+    "docusaurus-theme-openapi-docs": "^5.1.2",
     "prism-react-renderer": "^2.4.1",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "react-player": "^2.16.1"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.10.1",
-    "@docusaurus/tsconfig": "3.10.1",
-    "@docusaurus/types": "3.10.1",
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
     "typescript": "~5.7.3",
-    "wrangler": "^4.93.0"
+    "wrangler": "^4.111.0"
   },
   "browserslist": {
     "production": [
@@ -54,5 +54,14 @@
   },
   "engines": {
     "node": ">=18.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "js-yaml": "^4.2.0",
+      "lodash": "^4.18.1",
+      "serialize-javascript": "^7.0.5",
+      "uuid": "^11.1.1",
+      "yaml": "1.10.3"
+    }
   }
 }
