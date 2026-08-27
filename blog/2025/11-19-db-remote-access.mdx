@@ -150,24 +150,48 @@ If this is not the case, you should disallow root from the host `%` or add a str
 
 ## Step 3: Configure Firewall Rules
 
-Allow port 3306 (default MariaDB port) through the firewall:
+Never open port 3306 (default MariaDB port) to the entire internet. Instead, only allow connections from [Cloudflare's IP ranges](https://www.cloudflare.com/ips/), so that only traffic proxied through Cloudflare (for example a Worker connecting via Hyperdrive) can reach your database. Anyone scanning your server directly will find the port closed.
 
 <Tabs>
    <TabItem value="Windows" label="Windows" default>
-      1. Open Windows Defender Firewall with Advanced Security
-      2. Click "Inbound Rules" → "New Rule"
-      3. Select "Port" → "Next"
-      4. Choose "TCP" and enter port `3306`
-      5. Select "Allow the connection"
-      6. Apply to desired profiles and complete the wizard
+      Open PowerShell as Administrator and run:
+
+      ```powershell
+      $cfIps = ((Invoke-RestMethod https://www.cloudflare.com/ips-v4) -split "\s+") +
+               ((Invoke-RestMethod https://www.cloudflare.com/ips-v6) -split "\s+") |
+               Where-Object { $_ }
+      New-NetFirewallRule -DisplayName "MariaDB (Cloudflare only)" `
+         -Direction Inbound -Protocol TCP -LocalPort 3306 `
+         -RemoteAddress $cfIps -Action Allow
+      ```
+
+      This creates a single inbound rule that only accepts connections to port 3306 from Cloudflare's address ranges.
+
+      If you previously created an unrestricted rule for port 3306 through the firewall wizard, delete it (or open its Properties → Scope tab and restrict "Remote IP address" to the same ranges), otherwise the open rule still applies.
    </TabItem>
    <TabItem value="linux" label="Linux">
       ```bash
-      sudo ufw allow 3306/tcp
+      for ip in $(curl -s https://www.cloudflare.com/ips-v4) $(curl -s https://www.cloudflare.com/ips-v6); do
+        sudo ufw allow from "$ip" to any port 3306 proto tcp
+      done
       sudo ufw reload
+      ```
+
+      If you previously ran `sudo ufw allow 3306/tcp`, remove that unrestricted rule:
+
+      ```bash
+      sudo ufw delete allow 3306/tcp
       ```
    </TabItem>
 </Tabs>
+
+:::warning
+Cloudflare occasionally updates its IP ranges. Re-run the commands above every few months (or automate them in a scheduled task/cron job) to stay current. The authoritative lists live at [cloudflare.com/ips-v4](https://www.cloudflare.com/ips-v4) and [cloudflare.com/ips-v6](https://www.cloudflare.com/ips-v6).
+:::
+
+:::info
+With this setup, direct connections from your own PC (e.g. HeidiSQL or a local Grafana install) will be blocked too — only traffic coming from Cloudflare gets through. If you need direct access from a machine with a fixed IP, add a separate rule allowing just that IP the same way. Avoid falling back to an allow-all rule.
+:::
 
 :::info
 If your database is located on a machine behind a DDoS provider, they might block connections on non-gaming-related ports.
@@ -180,7 +204,7 @@ You have successfully configured your MariaDB database for remote access. By fol
 
 - Modified the MariaDB binding to listen on all network interfaces
 - Created a dedicated remote user with appropriate read-only permissions
-- Configured your firewall to allow remote connections
+- Configured your firewall to only accept connections from Cloudflare's IP ranges
 - Secured your root account by keeping it local-only
 
 This setup allows you to safely perform remote backups, connect monitoring tools like Grafana, and manage your database from outside your machine while maintaining security best practices.
