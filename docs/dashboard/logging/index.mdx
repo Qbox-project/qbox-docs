@@ -1,5 +1,7 @@
 ---
 title: "🗃️ Logging"
+sidebar_position: 4
+description: Your own managed Grafana, Loki and Prometheus for FiveM server logs and metrics, with staff access from the Qbox Dashboard.
 ---
 
 <Columns>
@@ -33,16 +35,15 @@ That includes:
 
 - Full access to your own Grafana instance
 - Your own Loki instance for storing and querying logs
+- Prometheus for [server performance metrics](/dashboard/logging/metrics) from FXServer's `/perf` page
 - The ability to create as many dashboards as you need
 - Support for adding more data sources and building richer observability workflows
-- Team access so you can invite staff and control who can view or manage dashboards
+- Staff access without Grafana passwords: your team signs in with their Qbox account and gets the Grafana role that matches their dashboard access. See [Staff access to Grafana](/dashboard/logging/staff-access)
 - Direct access to the Grafana and Loki tooling you need for serious server operations
 
-By default, log retention is set to 90 days.
+Logging is included on the Ducklin, Duck and Qboxxer plans. The plan decides the memory and disk of your logging server, see [Plans](/dashboard#plans).
 
-:::warning
-You can change retention settings yourself, but this is intended for advanced users only. Editing Loki retention without understanding the storage and performance impact can lead to unnecessary disk usage or broken expectations around how long logs are kept.
-:::
+By default, logs are kept for 180 days. You can change this on the Logging page (90 days, 30 days, a custom period, and so on). Longer retention needs more disk, so keep an eye on the usage card if your server logs a lot.
 
 ## What can I do with it?
 
@@ -66,7 +67,7 @@ That is the real value here: faster investigations, better visibility, and infra
 
 ## Getting started
 
-Once your access is provisioned, you can sign in and begin using your Grafana and Loki environment right away. From there, you can connect your server logs, invite staff, build dashboards, and start tailoring the stack to your needs.
+Open **Logging** in the dashboard and press **Provision logging**. A few minutes later you can sign in to your Grafana with **Sign in with Qbox**, connect your server logs, give your staff access and build dashboards. [Getting Started](/dashboard/logging/getting-started) walks you through it.
 
 If you are new to Grafana, it is still worth spending a bit of time with the official documentation so you understand how dashboards, data sources, and queries fit together.
 

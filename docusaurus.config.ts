@@ -40,6 +40,14 @@ const config: Config = {
             from: '/tebex/cdn/database-backups',
             to: '/dashboard/database-backups',
           },
+          {
+            from: [
+              '/dashboard/logging/inviting-people',
+              '/tebex/loki-logging/inviting-people',
+              '/tebex/logging/inviting-people',
+            ],
+            to: '/dashboard/logging/staff-access',
+          },
         ],
         createRedirects(existingPath) {
           if (existingPath.startsWith('/dashboard/cdn')) {

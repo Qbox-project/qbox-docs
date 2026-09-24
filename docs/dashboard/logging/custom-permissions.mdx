@@ -1,12 +1,18 @@
 ---
-title: Custom Permissions
-sidebar_position: 3
+title: Dashboard Permissions
+sidebar_position: 4
+description: Use Grafana teams and dashboard permissions to decide which of your Grafana dashboards each staff member can see.
 ---
 
-# Custom Permissions
+# Dashboard permissions
 
-The moment you invite someone to your Grafana organization, they will have access to all dashboards. However, you can restrict their access to specific dashboards by creating teams.
-This way we can create dedicated log searching teams or restrict which logs a certain someone can see.
+When your staff [sign in with Qbox](/dashboard/logging/staff-access), their Grafana role (Viewer, Editor or Admin) applies to every dashboard. To restrict someone to specific dashboards, use Grafana teams and dashboard permissions.
+This way you can create dedicated log searching teams, or keep certain logs away from certain people.
+
+:::info
+Staff show up in Grafana's user list after they sign in for the first time. Ask them to sign in once before you add them to a team.
+Teams are managed in Grafana itself. Whoever loses Logging access in the dashboard can no longer sign in, whatever teams they are in.
+:::
 
 <Card shadow='tl'>
     <CardImage cardImageUrl="https://media.qbox.re/image/sBZx1BJ9YgBrEUm-CJA57BQUtQZ4SzPVu-tk2BPyJg0wt-.png" style={{ padding: '1rem' }} />

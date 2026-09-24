@@ -1,0 +1,53 @@
+---
+title: Server Metrics
+sidebar_position: 3
+description: Collect FXServer performance metrics from /perf, or any Prometheus endpoint, into your managed Grafana.
+keywords: [qbox, grafana, prometheus, metrics, fxserver, perf, performance]
+---
+
+# Server metrics
+
+Next to logs, your logging server can also collect **metrics**: numbers over time such as tick times, player counts or memory use. FXServer exposes these on its `/perf` page, and your logging server can read that page every 30 seconds and keep the history for you to chart in Grafana.
+
+Metrics are kept for 15 days (up to 1 GB) on the disk of your logging server.
+
+## Setup
+
+Only the organization owner can change this.
+
+1. Open **Logging** and find the **Server metrics** card.
+2. Press **Add endpoint**, give it a **Name** (for example *Main server*), and enter the **Metrics URL**: your server's public IP address and port followed by `/perf`, like `http://203.0.113.10:30120/perf`.
+3. If you protected the page with a username and password (see below), fill in **Basic auth username (optional)** and **Basic auth password (optional)**.
+4. Press **Save endpoints**.
+
+You can add up to 10 endpoints, for example one per FiveM server, or a resource that serves its own Prometheus-format metrics.
+
+:::info[Public IPv4 addresses only]
+The URL must use a public IPv4 address. Hostnames (like `play.myserver.com`) and private addresses (like `192.168.x.x`) are not accepted.
+:::
+
+## Protect the /perf page
+
+Anyone who knows your address can read `/perf` by default. FXServer can put a username and password on it; add these to your `server.cfg` with your own values:
+
+```cfg
+set sv_prometheusBasicAuthUser "metrics"
+set sv_prometheusBasicAuthPassword "a-long-random-password"
+```
+
+Then enter the same pair on the endpoint in the dashboard. The password is never shown again after saving; leave the field empty to keep the saved one.
+
+## Viewing the data
+
+In Grafana, pick the **Prometheus** data source, either in **Explore** or when adding a panel to a dashboard. Loki stays the default data source, so switch to Prometheus explicitly.
+
+## Troubleshooting
+
+**"Metrics collection is not available on this logging server yet."**
+Your logging server was created before metrics existed and has not been updated yet. Ask in the Qbox Discord.
+
+**"Saved settings are waiting to be applied."**
+The logging server is stopped. The endpoints are applied when it starts.
+
+**No data in Grafana.**
+Open the metrics URL in your browser. If it does not load there, your firewall or hosting provider blocks the port, or the address is wrong. If it asks for a password, check the username and password on the endpoint.

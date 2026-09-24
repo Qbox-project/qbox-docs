@@ -1,0 +1,98 @@
+---
+title: Staff Access to Grafana
+sidebar_position: 2
+description: Your staff sign in to your Grafana with their Qbox account. Their Grafana role follows the access you give them in the dashboard, and they lose it again when you take that access away.
+keywords: [qbox, grafana, loki, staff, permissions, sign in, discord roles]
+---
+
+# Staff access to Grafana
+
+You do not create Grafana accounts for your staff, and you do not send Grafana invites.
+Anyone who can open the **Logging** page of your organization in the dashboard can sign in to your Grafana with their Qbox account, and they get a Grafana role that matches the access you gave them.
+Take that access away in the dashboard and they are signed out of Grafana within minutes.
+
+This works together with [staff access through Discord](/dashboard/team/discord-access): give someone the right Discord role and they can open your Grafana, with nothing else to set up.
+
+## Which Grafana role people get
+
+| Access in the dashboard | Role in Grafana | What they can do in Grafana |
+| --- | --- | --- |
+| Organization owner | **Admin** | Everything, including Grafana users, teams and data sources |
+| A role with **Logging** set to **Manage** | **Editor** | Search logs freely in Explore, and create and edit dashboards |
+| A role with **Logging** set to **View** | **Viewer** | Open the dashboards you built. No Explore, no editing |
+| No Logging access | None | Cannot sign in |
+
+If someone holds several roles, the highest Logging level counts.
+The built-in **Admin**, **Member** and **Viewer** roles all include **Logging: View**, so they sign in as Viewer. For Editor, create a role of your own with **Logging: Manage**.
+Nobody gets Grafana *server* administrator through the dashboard, not even the owner.
+
+:::tip[Picking View or Manage]
+Viewers cannot use Grafana's **Explore** page, so they can only look at dashboards that already exist.
+If your moderators need to type their own log searches (for example "everything player X did in the last hour"), give them **Manage**. If they should only look at the dashboards you prepared, **View** is enough.
+
+Keep in mind that **Manage** also lets them restart and reconfigure the logging server on the dashboard's Logging page, and see the Loki password your FiveM server uses.
+:::
+
+Logging must be on your plan (Ducklin or higher) for anyone to sign in. See [Plans](/dashboard#plans).
+
+## Set it up
+
+There is nothing to switch on. Sign-in with Qbox is enabled on every managed Grafana. You only decide who gets which level:
+
+1. **Give the right roles Logging access.** Go to **Roles**, open the role your staff have (or create one, for example *Moderator*), and set **Logging** to **View** or **Manage**. See [Roles and permissions](/dashboard/team/roles).
+2. **Make sure your staff have that role.** Either [link it to a Discord role](/dashboard/team/discord-access) so they get it automatically, or [invite them by email](/dashboard/team/inviting-by-email) and pick the role in the invite.
+3. **Send them your Grafana link.** It is shown on the **Logging** page next to **Grafana**. Staff who can open the Logging page also get a **Sign in with Qbox** button at the top of that page.
+
+## What your staff do
+
+1. Open your Grafana link, or press **Sign in with Qbox** on the Logging page.
+2. On the Grafana login page, press **Sign in with Qbox Dashboard**. Ignore the username and password fields.
+3. If they are not signed in to the dashboard yet, they sign in there first (with Discord, for example) and are sent straight back to Grafana.
+
+Their Grafana account is created the first time they sign in. It shows their Qbox username; Grafana never receives their email address.
+
+## Changing or removing access
+
+Everything is controlled from the dashboard. You never need to edit or delete these users inside Grafana.
+
+| You do this in the dashboard | What happens in Grafana |
+| --- | --- |
+| Remove the member from the organization | Signed out within about 5 minutes and cannot sign in again |
+| Take away the role that gave Logging access | Same as above |
+| Take away their Discord role (Discord staff access) | Signed out within about 10 minutes |
+| Change their Logging level from View to Manage (or back) | Grafana signs them out; they sign in again and get the new role |
+| The organization moves to a plan without logging | Nobody can sign in with Qbox |
+
+:::warning[Change roles in the dashboard, not in Grafana]
+Every time someone signs in with Qbox, Grafana sets their role to what the dashboard says.
+If you promote a Viewer to Editor inside Grafana, it is undone at their next sign-in. Change their role in the dashboard instead.
+:::
+
+## Accounts that are not linked to the dashboard
+
+A few kinds of Grafana accounts are separate from your dashboard members, and removing someone from the dashboard does **not** touch them:
+
+- Accounts created with Grafana's own **Invite** button, or by hand under **Administration > Users and access > Users**.
+- Grafana **service accounts** and their tokens.
+- The built-in `admin` account, which is kept for recovery.
+
+If you invited staff through Grafana before this existed, move them to the dashboard (invite them there or give them the Discord role), let them sign in with **Sign in with Qbox Dashboard** once, then delete their old local account in Grafana under **Administration > Users and access > Users**.
+
+## Limit which dashboards someone sees
+
+The Grafana role decides *what kind* of things a person can do. To decide *which* dashboards they can see, use Grafana teams and dashboard permissions, as explained in [Dashboard Permissions](/dashboard/logging/custom-permissions).
+Your staff show up in Grafana's user list after their first sign-in, so ask them to sign in once before you add them to a team.
+
+## Troubleshooting
+
+**The login page has no "Sign in with Qbox Dashboard" button.**
+Your logging server is probably still starting or being updated. Wait a few minutes and reload. If it stays missing, ask for help in the Qbox Discord.
+
+**A page that only says `access_denied` after pressing the button.**
+The dashboard does not see Logging access for this person in your organization. On the **Members** page, open their menu and choose **View access** to see every page they can open. If they got their role from Discord, check that they still have the Discord role in your Discord server.
+
+**Someone was signed out of Grafana out of nowhere.**
+Their Logging level changed, or their dashboard session ended. Signing in again fixes it if they still have access.
+
+**A staff member is signed in to the dashboard with the wrong account.**
+They are sent back to Grafana as whoever is signed in to the dashboard. Sign out of the dashboard, sign in with the right account, and press the button again.
