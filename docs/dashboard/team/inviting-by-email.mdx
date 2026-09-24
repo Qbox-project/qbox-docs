@@ -1,0 +1,61 @@
+---
+title: Inviting by Email
+sidebar_position: 4
+description: Invite a single person to your organization by email, choose their roles, and manage pending invitations.
+keywords: [qbox, dashboard, invite, email, members, staff]
+---
+
+# Inviting by email
+
+Email invites are the simplest way to add one person, and they work on every plan. For a whole staff team that already has roles in your Discord, [staff access through Discord](/dashboard/team/discord-access) is less work.
+
+You need **Members** set to **Invite** or higher.
+
+## Sending an invite
+
+1. Open **Members** and press **Invite member**.
+2. Enter their **Email**.
+3. Pick their **Roles**. At least one is required; it starts on **Member**.
+4. Optionally change **Invitation expires in (days)**, anywhere from 1 to 30 (7 by default).
+5. Press **Send invitation**.
+
+They get an email with a link. You can only give roles whose access you have yourself.
+
+:::warning[Use the email address of their Qbox account]
+The invite can only be accepted by an account with the same email address, and it has to be verified.
+If they sign in with Discord or Google, that is the email address of their Discord or Google account. When in doubt, ask them which address they use.
+:::
+
+## What the invited person does
+
+1. They open the link from the email.
+2. If they have no Qbox account yet, they can create one right there with **Create account and join**. If they do, they press **Sign in to accept the invite**.
+3. They see which roles they will get under **You will join with**, and press **Accept invitation** (or **Decline**).
+
+They land in your organization straight away, and can [sign in to your Grafana](/dashboard/logging/staff-access) if their roles include Logging.
+
+## Managing invitations
+
+Pending and past invites are listed in the **Invitations** card on the **Members** page, with a status of **Pending**, **Expired**, **Accepted**, **Declined** or **Revoked**. Each has a menu with:
+
+- **Copy invite link**, to send the link yourself, for example in a Discord DM.
+- **Resend**, to send the email again.
+- **Revoke**, to cancel it. The link stops working.
+
+Only the owner sees the email address of an invite. Everyone else sees *Private invitation*.
+
+## Removing someone
+
+On the **Members** page, open their menu and choose **Remove from organization**. They lose access to the dashboard right away and to your Grafana within about 5 minutes.
+Members can also leave on their own with **Leave organization**. The owner cannot leave; transfer ownership first.
+
+## Troubleshooting
+
+**"Wrong account"**
+They are signed in with an account whose email differs from the one you invited. They can press **Sign out and use another account**, or you can revoke the invite and send a new one to the right address.
+
+**"Invitation expired"**
+Press **Resend** or send a new invite.
+
+**"Invitation not found" or "Invitation revoked"**
+The invite was cancelled or never existed. Send a new one.

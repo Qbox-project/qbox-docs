@@ -1,0 +1,105 @@
+---
+title: Staff Access through Discord
+sidebar_position: 3
+description: Let your Discord staff roles decide who gets into the dashboard and with which role. Covers the join link, sensitive roles, how quickly changes apply, and what happens when Discord is down.
+keywords: [qbox, dashboard, discord roles, staff access, join link, permissions]
+---
+
+# Staff access through Discord
+
+Instead of inviting every staff member by hand, you can say "whoever has this Discord role gets this dashboard role". Your staff then join with one link, and giving or taking away the Discord role in Discord is all you do from then on.
+
+This page explains how it behaves. For a first-time setup, follow [Enroll your staff](/dashboard/team/enroll-staff).
+
+## Where to find it
+
+**Members** page, **Discord access** tab. You need a [connected Discord server](/dashboard/discord) first; until then the tab shows **No Discord server is connected**.
+
+- Anyone with **Members** access can see this tab.
+- Changing it needs **Members** set to **Manage**.
+
+## Linking Discord roles to dashboard roles
+
+The card **Discord roles that give dashboard access** has one table per connected Discord server. Each row reads: **Discord role** gives **Gives dashboard role**.
+
+- Press **Add a role**, pick both sides, and press **Save**. **Discard changes** throws away unsaved edits.
+- A row with only one side filled in is not saved.
+- You can link several Discord roles to the same dashboard role, and one Discord role to several dashboard roles.
+- If you have more than one Discord server connected, a role in any of them counts.
+
+### Sensitive roles
+
+Some access is marked **Sensitive** because it gives control over the organization itself: **Manage** on Members, Roles, API keys, Database backups or Discord. The built-in **Admin** role includes several of these.
+
+A dashboard role with sensitive access can only be linked to a Discord role **by the owner**. Other managers see it greyed out with *Only the organization owner can map this sensitive role*, and cannot change or remove a link the owner made.
+When the owner picks one, the dashboard warns that anyone who can assign that Discord role can hand out these permissions. Only link it to a Discord role that just you, or people you fully trust, can give out.
+
+You also cannot link a dashboard role that has more access than you have yourself.
+
+## The join link
+
+The **Join link** card shows your organization's link, `https://dashboard.qbox.re/join/<your-slug>`. Share it with your staff.
+
+When someone opens it:
+
+| Situation | What they see |
+| --- | --- |
+| Not signed in | The sign-in page. **Continue with Discord** is quickest |
+| Signed in, but no Discord account linked | **Connect Discord first**, with **Connect your Discord account** or **Sign out and sign in with Discord** |
+| Has a linked Discord role | **You're in. Welcome aboard.** and your organization opens |
+| Already a member | **Your access is up to date.** |
+| None of their Discord roles are linked, or they are not in your Discord server | **No access yet**, with a **Try again** button |
+
+The link is safe to post: it gives nothing on its own. Whether your organization exists, has Discord connected, or the person simply lacks the role, the refusal looks the same.
+
+## How quickly changes apply
+
+The dashboard re-checks a person's Discord roles:
+
+- whenever they use the dashboard or Grafana and the last check is more than **5 minutes** old,
+- every time they press a button on an application post in Discord,
+- once an hour for everyone else, in batches.
+
+So in practice:
+
+| You change in Discord | Effect |
+| --- | --- |
+| Give someone a linked Discord role | They get the dashboard role on their next visit (or they open the join link if they are not a member yet) |
+| Take a linked Discord role away | They lose that dashboard role within about 5 minutes of their next visit, and Grafana signs them out within about 10 minutes |
+| Take away their last linked role | Same, and if they joined through the join link they are removed from the organization |
+
+**If Discord cannot be reached** (an outage, or the bot was kicked from your server), nobody loses anything. Access is only taken away when Discord clearly answers that the role is gone.
+
+## Mixing Discord access and email invites
+
+You can use both for the same person.
+
+- Someone you **invited by email** stays a member even if they lose every Discord role. They only lose the roles that came from Discord.
+- Roles you gave **by hand** are never removed by Discord, even if the same role is also linked to a Discord role.
+- On the **Members** page, roles that came from Discord show a Discord icon with the tooltip *Comes from their Discord role. Change it under Discord access.*
+
+:::note[You cannot override a role that comes from Discord]
+Unticking a Discord-given role under **Change roles** does not remove it; take the Discord role away in Discord instead.
+Ticking it does not keep it either: it still goes when the Discord role goes. To give someone a role permanently, give them a different dashboard role by hand.
+:::
+
+## Disconnecting a Discord server
+
+When you disconnect a server on the [Discord](/dashboard/discord) page, its role links are deleted and its roles stop giving access. People whose access came only from that server lose it at their next check. People you invited by email keep their membership.
+
+## Troubleshooting
+
+**A staff member sees "No access yet".**
+Check that they are in your Discord server, have one of the linked Discord roles, and signed in with (or linked) the same Discord account. Then have them press **Try again**.
+
+**"Connect Discord first" keeps coming back.**
+They are signed in with an account that has no Discord linked. Press **Connect your Discord account**, or sign out and use **Continue with Discord**.
+
+**The dashboard role I want is greyed out in the picker.**
+Either it has sensitive access and you are not the owner, or it gives access you do not have yourself.
+
+**Someone still has access after I removed their Discord role.**
+Their access ends at their next check, at most a few minutes after they next use the dashboard or Grafana. If they were invited by email, they keep the membership and any roles you gave them by hand: remove those on the **Members** page.
+
+**The role list for a server is empty or shows an error.**
+The Qbox bot is no longer in that Discord server. Add it back from the [Discord](/dashboard/discord) page and reload.

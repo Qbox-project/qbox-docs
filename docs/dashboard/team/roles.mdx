@@ -1,0 +1,134 @@
+---
+title: Roles and Permissions
+sidebar_position: 2
+description: Built-in and custom roles, what each access level allows on every page, role templates, and the rules that keep people from handing out more than they have.
+keywords: [qbox, dashboard, roles, permissions, access levels, admin, moderator, templates]
+---
+
+# Roles and permissions
+
+A role is a named set of access, like *Moderator* or *Developer*. You give roles to members, and a member can do everything that any of their roles allows. Change a role and everyone who holds it changes with it.
+
+Roles live on the **Roles** page. It is also linked from the **Members** page, so anyone who can see members can see what the roles mean.
+
+## Built-in roles
+
+| | Admin | Member | Viewer |
+| --- | --- | --- | --- |
+| Overview | View | View | View |
+| Media | Manage | Manage | View |
+| Retention & cleanup | Manage | Manage | View |
+| API keys | Manage | No access | No access |
+| Database backups | Manage | View | View |
+| Logging | View | View | View |
+| Nucleus | Manage | View | View |
+| Zumble | Manage | Manage | View |
+| Applications | Manage | No access | No access |
+| Discord | Manage | No access | No access |
+| Members | Manage | View | View |
+| Roles | Manage | No access | No access |
+| Audit log | View | No access | No access |
+
+Built-in roles have a lock icon and cannot be changed. To start from one, open it and press **Duplicate**.
+
+:::info
+Every built-in role has **Logging: View**, so its holders can sign in to your Grafana as a Viewer. Nobody gets Grafana Editor from a built-in role; create your own role with **Logging: Manage** for that.
+:::
+
+The **owner** is listed above the roles. The owner always has full access and is the only person who can use **Billing** and **Organization settings**. No role can give those out.
+
+## Creating a role
+
+1. Press **Create role**.
+2. In **Start a new role**, choose **Start from scratch** or one of the templates below.
+3. Fill in **Name**, **Colour** and an optional **Description**.
+4. Pick a level for each page. Pages you leave on **No access** do not appear in the member's sidebar.
+5. Press **Create role**.
+
+Templates are a starting point; you can change anything before saving.
+
+| Template | Meant for |
+| --- | --- |
+| **Whitelist Reviewer** | Reads applications, votes and comments. Sees nothing else. |
+| **Whitelist Manager** | Makes the final call on applications and maintains the forms. |
+| **Head of Staff** | Runs the staff team: applications, members, roles and the Discord link. |
+| **Developer** | Technical access: media, API keys, backups and the server services. |
+| **Media Manager** | Uploads and organizes media and keeps retention rules tidy. |
+
+An organization can have up to 50 roles of its own. The names Owner, Admin, Member and Viewer are taken.
+
+## Access levels per page
+
+Most pages have three levels: **No access**, **View** and **Manage**. A few have extra steps in between.
+
+| Page | View | Manage |
+| --- | --- | --- |
+| Overview | See storage totals and upload activity | (View only) |
+| Media | Browse and download media | Upload, move, rename and delete media and folders |
+| Retention & cleanup | See retention rules | Create, change and run retention rules |
+| API keys | See which keys exist and when they were used | Create, reveal, restrict and revoke keys. **Sensitive** |
+| Database backups | See backup history and status | Download backups, rotate the token and change the schedule. **Sensitive** |
+| Logging | See the logging server. Signs in to Grafana as **Viewer** | Set up, restart and change the logging server, see the Loki password. Signs in to Grafana as **Editor** |
+| Nucleus | See the proxy address and status | Change the server address, hostname and custom domain |
+| Zumble | See the voice server and its status | Set up, restart, schedule and remove the voice server |
+| Discord | See the connected Discord servers and their health | Connect and disconnect Discord servers. **Sensitive** |
+| Roles | See roles and what they give | Create, change and delete roles. **Sensitive** |
+| Audit log | Read the audit log | (View only) |
+
+**Applications** has extra steps between View and Manage. Each level includes the ones above it:
+
+| Level | Allows |
+| --- | --- |
+| View | Read submitted applications |
+| Review | Vote and leave internal notes |
+| Decide | Accept, deny or move to interview, and message the applicant |
+| Manage | Build forms and change application settings |
+
+**Members** has an extra **Invite** step:
+
+| Level | Allows |
+| --- | --- |
+| View | See members and pending invitations |
+| Invite | Invite people and cancel invitations |
+| Manage | Change members' roles, remove members, and choose which Discord roles give access. **Sensitive** |
+
+Pages with extra steps have an **Advanced** switch in the role editor to tick single actions. A combination that matches no level shows as **Custom**.
+
+### What "Sensitive" means
+
+Access marked **Sensitive** gives control over the organization itself: who is in it, what they can do, your API keys, your database backups and your Discord link.
+Treat roles that include it like you would an admin role in Discord. Only the owner can link such a role to a Discord role, see [Staff access through Discord](/dashboard/team/discord-access#sensitive-roles).
+
+## The rules
+
+These keep a staff member from promoting themselves or others past their own level:
+
+- **You cannot give access you do not have.** Levels above your own are greyed out with *You can't grant access you don't have*.
+- **You cannot change someone who has access you do not have**, including their roles or their membership.
+- **You cannot change your own roles.** Ask someone above you.
+- **A role that is still in use cannot be deleted.** The editor tells you how many members and pending invitations hold it. Take it off them first.
+- **Organization settings and Billing are owner only**, whatever a role says.
+
+## Giving roles to members
+
+On the **Members** page, open a member's menu and choose **Change roles**. Tick the roles they should have. Roles that come from Discord are handled on the **Discord access** tab instead, see [Staff access through Discord](/dashboard/team/discord-access).
+
+To check the result, choose **View access** in the same menu. It lists every page with the member's level, and which role gives it ("via Moderator").
+
+## Transferring ownership
+
+The owner can hand the organization to another member: **Members**, open their menu, **Transfer ownership**. They become the owner and you become an Admin. This cannot be undone from your side, so only do it when you mean it.
+
+## Troubleshooting
+
+**"Those roles give access you do not have yourself."**
+One of the roles you tried to give includes access above yours. Ask the owner, or someone who has that access, to do it.
+
+**"This member has access you do not have, so you cannot change their membership."**
+You can only change members whose access you fully cover.
+
+**"This role grants access through Discord. Only the organization owner can change its sensitive permissions or delete it."**
+The role is linked to a Discord role. Only the owner can add sensitive access to it or delete it.
+
+**"This organization has as many roles as it can hold."**
+Delete a role you no longer use.

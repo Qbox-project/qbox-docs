@@ -1,0 +1,111 @@
+---
+title: Enroll Your Staff
+sidebar_position: 1
+description: Step by step, give your staff team access to the dashboard and your Grafana through the Discord roles they already have. About fifteen minutes.
+keywords: [qbox, dashboard, staff, onboarding, discord roles, join link, grafana, moderators]
+---
+
+# Enroll your staff
+
+This guide takes your staff team from nothing to signed in to the dashboard and your Grafana, using the staff roles you already hand out in Discord.
+When it is done, adding a new moderator is as simple as giving them the Discord role, and taking it away removes their access again.
+
+It takes about fifteen minutes. Only the owner can do every step (some steps can also be done by a member with the right access).
+
+**What you need**
+
+- A plan with Discord servers, so Ducklin or higher. Grafana also needs logging, which every paid plan includes. See [Plans](/dashboard#plans).
+- Your own Discord account linked to your Qbox account (**Profile > Connected accounts**).
+- The **Manage Server** permission in your Discord server.
+
+:::tip[No Discord, or on the Free plan?]
+Invite people by email instead. Steps 1 and 2 below are the same, then follow [Inviting by email](/dashboard/team/inviting-by-email).
+:::
+
+## 1. Decide who needs what
+
+Write down your staff groups and what each should be able to do. A typical server looks like this:
+
+| Staff group | Discord role | Dashboard role | Access to give |
+| --- | --- | --- | --- |
+| Moderators | `@Moderator` | Moderator (your own) | **Logging**: View or Manage, **Applications**: Review |
+| Whitelist team | `@Whitelist` | Whitelist Reviewer (template) | **Applications**: Review |
+| Developers | `@Developer` | Developer (template) | Media, API keys, backups, server services, **Logging**: View |
+| Head admins | `@Head Admin` | Head of Staff (template) | Applications, members, roles and Discord. Add **Logging** yourself |
+
+**View or Manage for Logging?** With **View** your staff can open the Grafana dashboards you built. With **Manage** they can also search logs freely in Grafana's Explore page and build their own dashboards, but they can then also restart and change your logging server in the dashboard. More on this in [Staff access to Grafana](/dashboard/logging/staff-access).
+
+## 2. Create the dashboard roles
+
+1. Open **Roles** in the sidebar (it is also linked from the **Members** page).
+2. Press **Create role**. Pick a template such as **Whitelist Reviewer** or **Developer**, or **Start from scratch**.
+3. Give it a **Name** and **Colour**, and set the level for each page. For a moderator, set **Logging** to **View** (or **Manage**) and **Applications** to **Review**. Leave everything else on **No access**.
+4. Press **Create role**. Repeat for each staff group.
+
+See [Roles and permissions](/dashboard/team/roles) for what every level allows.
+
+## 3. Connect your Discord server
+
+Skip this if the **Discord** page already shows your server.
+
+1. Open **Discord** in the sidebar and press **Connect a server**.
+2. Follow the three steps in the dialog: link your own Discord account, press **Add the bot** to invite the Qbox bot to your server, and paste your server ID.
+3. Press **Connect**.
+
+The full walkthrough, including where to find your server ID, is on the [Discord](/dashboard/discord) page.
+
+## 4. Link your Discord staff roles to dashboard roles
+
+1. Open **Members** and switch to the **Discord access** tab at the top.
+2. In **Discord roles that give dashboard access**, press **Add a role**.
+3. Under **Discord role**, pick the role from your Discord server (for example `@Moderator`). Under **Gives dashboard role**, pick the dashboard role from step 2.
+4. Add a row for every staff group, then press **Save**.
+
+From now on, everyone who has one of those Discord roles can get in with the matching dashboard role.
+
+:::warning[Use Discord roles that only trusted staff can hand out]
+Anyone who can give out the Discord role can, through it, give out the dashboard access linked to it.
+Roles that let someone manage members, roles, API keys, backups or Discord are **sensitive**: only the owner can link those to a Discord role.
+:::
+
+## 5. Send your staff the join link
+
+The **Join link** card on the same tab has your link, which looks like `https://dashboard.qbox.re/join/your-server`. Press the copy button and post it in your staff channel.
+
+The link is safe to share. Opening it gives nothing on its own: only people who already hold one of the linked Discord roles get in.
+
+## 6. What your staff do
+
+1. Open the join link.
+2. Sign in, preferably with **Continue with Discord**. If they already have an account that signs in another way, the page asks them to **Connect your Discord account** first.
+3. The page checks their Discord roles, shows **You're in. Welcome aboard.**, and opens your organization.
+
+That is all. If they see **No access yet**, they are either not in your Discord server or do not have one of the linked roles yet. Give them the role and have them press **Try again**.
+
+## 7. Staff sign in to Grafana
+
+Anyone whose role includes Logging can now use your Grafana:
+
+1. Open your Grafana link (shown on the **Logging** page), or press **Sign in with Qbox** at the top of the Logging page.
+2. Press **Sign in with Qbox Dashboard** on the Grafana login page.
+
+Their Grafana account is created on the spot with the right role: Viewer for **View**, Editor for **Manage**. See [Staff access to Grafana](/dashboard/logging/staff-access).
+
+## 8. Check that it worked
+
+Open **Members**. Everyone who joined through Discord is listed, and roles that came from Discord show a small Discord icon ("Comes from their Discord role").
+Open anyone's menu and choose **View access** to see exactly which pages they can open and through which role.
+
+## Day to day
+
+| You want to | Do this |
+| --- | --- |
+| Add a new staff member | Give them the Discord role, then send them the join link |
+| Promote someone | Give them the higher Discord role. Their dashboard roles follow within about 5 minutes |
+| Remove someone | Take the Discord role away. They lose the dashboard role within about 5 minutes and are signed out of Grafana within about 10 |
+| Change what a group can do | Edit the dashboard role under **Roles**. Everyone who holds it changes at once |
+
+Someone who joined through the join link and has no linked Discord role left is removed from the organization automatically.
+If Discord cannot be reached for a while, nobody is removed: access is only taken away when Discord clearly says the role is gone.
+
+Details and edge cases are on [Staff access through Discord](/dashboard/team/discord-access).

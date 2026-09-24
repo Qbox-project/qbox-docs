@@ -1,0 +1,56 @@
+---
+title: "👥 Team & Access"
+sidebar_position: 1
+description: How members, roles and staff access work in the Qbox Dashboard, and the two ways to bring your staff in.
+keywords: [qbox, dashboard, staff, members, roles, permissions, discord roles, grafana access]
+---
+
+# Team & Access
+
+Your staff do not share one login. Everyone signs in with their own Qbox account, joins your organization as a **member**, and gets one or more **roles** that decide which pages they can open and what they can change there.
+
+## How access works
+
+- **The owner** can do everything, and is the only one who sees **Billing** and **Organization settings**.
+- **Everyone else** gets exactly what their roles give them. Roles add up, just like Discord roles: someone with *Moderator* and *Media Manager* can do everything both roles allow.
+- **Access follows the person everywhere it applies.** The same roles decide what they see in the dashboard, what they can do in your [Grafana](/dashboard/logging/staff-access), and which buttons work for them on application posts in Discord.
+
+Every organization comes with three built-in roles:
+
+| Role | What it gives |
+| --- | --- |
+| **Admin** | Runs the organization day to day. Everything except billing and ownership. |
+| **Member** | Works with media and the voice server, and can see the other services. |
+| **Viewer** | Read-only access to media and services. |
+
+Built-in roles cannot be changed. For anything more specific, create your own roles, for example *Moderator* or *Whitelist Reviewer*. See [Roles and permissions](/dashboard/team/roles).
+
+:::info[The built-in roles include Grafana]
+All three built-in roles can open the Logging page, so everyone who holds one can sign in to your Grafana as a Viewer.
+If someone should not see your logs, give them a role of your own with **Logging** set to **No access** instead.
+:::
+
+## Two ways to bring staff in
+
+| | Through Discord roles | Invite by email |
+| --- | --- | --- |
+| Best for | Your staff team, who already have a staff role in your Discord | A single person, for example a developer who is not in your Discord |
+| You do | Link a Discord role to a dashboard role once, then share one join link | Send an invite per person and pick their roles |
+| Joining | They open the join link and sign in with Discord | They open the link in the email and accept |
+| Removing | Take the Discord role away in Discord. The dashboard follows within minutes | Remove them on the **Members** page |
+| Needs | A connected Discord server (Ducklin plan or higher) | Nothing extra, works on every plan |
+
+You can use both at the same time. Follow [Enroll your staff](/dashboard/team/enroll-staff) for the full walkthrough, or jump straight to [Staff access through Discord](/dashboard/team/discord-access) or [Inviting by email](/dashboard/team/inviting-by-email).
+
+## What your staff get
+
+Once someone is a member with the right roles, there is nothing else to set up:
+
+- **Dashboard pages** appear in their sidebar as soon as their roles allow them.
+- **Grafana**: anyone with Logging access can press **Sign in with Qbox Dashboard** on your Grafana login page. Owners become Grafana Admin, **Manage** becomes Editor, **View** becomes Viewer. See [Staff access to Grafana](/dashboard/logging/staff-access).
+- **Applications**: reviewers can vote and decide in the dashboard, or with the buttons on the application posts in your Discord. See [Reviewing applications](/dashboard/applications/reviewing).
+
+## Keeping track
+
+The **Members** page lists everyone, their roles, and pending invitations. Open a member's menu and choose **View access** to see every page they can open and which role gives it to them.
+The [Audit log](/dashboard/team/audit-log) records who invited, removed or changed whom.
