@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Qbox Documentation',
   tagline: 'The official documentation for the Qbox Project',
-  favicon: 'https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png',
+  favicon: 'favicon.ico',
   trailingSlash: false,
   // Set the production url of your site here
   url: 'https://docs.qbox.re',
@@ -150,8 +150,7 @@ const config: Config = {
         scrollOffset: 0,
       }
     },
-    // Replace with your project's social card
-    // image: 'img/qbox-logo2.jpg',
+    image: 'img/qbox-logo2.png',
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: false,
@@ -159,7 +158,6 @@ const config: Config = {
     },
     metadata: [
       { name: 'keywords', content: 'qbox, qbus, qbus project, qbus documentation, qbox documentation, qbox project, fivem, redm, cfx, citizenfx, fivem framework' },
-      { name: 'og:image', content: 'https://files.fivemerr.com/images/b02ac973-403b-4ead-99bf-17bc307172d9.png' },
     ],
     algolia: {
       appId: '7JRFEYG1CO',
