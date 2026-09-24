@@ -1,0 +1,112 @@
+---
+title: ⚡ Resource Cache
+sidebar_position: 9
+description: Let players download your server's resources from a global CDN instead of from FXServer. Faster joins, and your server no longer spends its bandwidth and network thread on file downloads.
+keywords: [qbox, fivem, resource cache, fileserver_add, adhesive_cdnKey, cdn, downloads, hitch, fxserver]
+---
+
+# Resource Cache
+
+Every time a player joins, FiveM downloads your server's resources: scripts, maps, vehicles, clothing, everything that is streamed. By default all of that comes straight from FXServer, over your server's own connection.
+The Resource Cache puts a global CDN in front of those downloads. Players get the files from a Cloudflare location near them, and FXServer only sends each file once.
+
+## Why it matters
+
+On a small server with a few resources you barely notice downloads. On a busy server with gigabytes of cars, maps and clothing, they are one of the heaviest things FXServer does:
+
+- **Restarts turn into a traffic jam.** After every restart dozens of players reconnect at the same time, and each of them pulls the files they are missing. FXServer has to push all of that through its network thread and your server's upload bandwidth while it is also trying to run the game.
+- **Everyone in game feels it.** While the connection is saturated with downloads, players who are already playing get lag, rubber-banding and hitches, and the console fills with network thread hitch warnings.
+- **Joins are slow for players far away.** Someone on another continent downloads every file across the world from your one server.
+
+The Resource Cache takes that work away from FXServer, the same way [Zumble](/dashboard/zumble) takes voice off it:
+
+| | Without the Resource Cache | With the Resource Cache |
+| --- | --- | --- |
+| Who sends the files | FXServer, to every player, every time they need them | FXServer once per file, then the CDN |
+| Where players download from | Your server's location | A Cloudflare location close to each player |
+| After a restart | Every joining player downloads from your server at once | Players download from the CDN; your server keeps its bandwidth for the game |
+| Your network thread | Busy serving files during every join wave | Free to handle players and game traffic |
+
+The result is faster joins for players, less lag for everyone who is already on the server while others connect, and fewer hitches during restart waves.
+
+## Which plans include it
+
+The Resource Cache is included in the **Qboxxer** plan. On other plans the page shows "Resource Cache is not included in your plan". See [Plans](/dashboard#plans).
+
+## How it works
+
+1. You add two lines to your `server.cfg`. They tell every player to download resources from your own address, `https://<your-slug>.files.qbox.re`, instead of from FXServer directly.
+2. The first time any player asks for a file, the cache fetches it from your server once and keeps it.
+3. Every player after that gets the file from the cache. Your server is not involved at all.
+4. When you update a resource, FiveM asks for the new version automatically, so the cache picks up the change on its own. You never have to clear anything after an update.
+
+Your files are stored exactly as FXServer sends them, encrypted with your server's own CDN key, and kept separate from every other server's files.
+
+## Setup
+
+This takes about five minutes.
+
+### 1. Create the cache
+
+1. Open **Resource cache** in the dashboard. The first time, it shows **Set up the Resource Cache**.
+2. Under **Server details**, enter your server's public **Server IP** (a raw IP address; hostnames are not accepted) and **Server port**.
+3. Press **Create the cache**.
+
+### 2. Add the lines to server.cfg
+
+Press **Show server.cfg** on the **Download CDN** card. The **FiveM server.cfg snippet** window shows two lines like these, with your own key and address:
+
+```cfg
+adhesive_cdnKey "your-cdn-key"
+fileserver_add ".*" "https://your-slug.files.qbox.re"
+```
+
+Press **Copy both lines**, paste them into your `server.cfg`, and restart your server.
+
+- `adhesive_cdnKey` makes FXServer encrypt your files the same way for every player, which is what allows one copy to be cached and served to everyone. Keep it private, just like the rest of your `server.cfg`.
+- `fileserver_add` sends players to the cache for every resource download.
+
+:::tip[The first wave warms the cache]
+Right after setup the cache is empty, so the first players to join still pull files from your server (through the cache). From then on those files come from the cache. The **Cache hit ratio** climbs quickly after the first restart.
+:::
+
+## Keeping an eye on it
+
+The **Traffic** card covers the last 24 hours:
+
+| Number | What it means |
+| --- | --- |
+| **Downloads 24h** | File downloads the cache handled for your players |
+| **Cache hit ratio** | How many of those came from the cache instead of your server. Higher is better. It is low right after setup and climbs as players join |
+| **Data served 24h** | Roughly how much data players downloaded through the cache |
+| **From your server 24h** | What the cache had to fetch from your server. This is all your server still sends for downloads |
+| **Origin errors 24h** | Times the cache could not reach your server |
+
+The chart splits downloads into **Served from cache** and **Fetched from your server**. The card also shows how much the cache currently stores for you.
+
+## Managing the cache
+
+| You want to | Do this |
+| --- | --- |
+| Point the cache at a new server IP or port | Enter it on the **Origin server** card and press **Save origin**. Files already cached keep working |
+| Start over with an empty cache | **Purge cache** at the top of the page. Players download fresh copies on their next join. Your key and `server.cfg` stay the same |
+| Replace the CDN key (for example if your `server.cfg` leaked) | **Rotate CDN key** at the top of the page. The old key stops working at once: paste the new `adhesive_cdnKey` line into `server.cfg` and restart. Every player downloads everything again on their next join |
+| Stop using the cache | Remove or comment out both lines in `server.cfg` (or run `fileserver_remove ".*"`) and restart. Players download from FXServer directly again |
+
+:::info
+You do not need to purge after updating a resource. Purging is only for when something looks wrong with the cached files.
+:::
+
+## Troubleshooting
+
+**The Traffic card says "The CDN could not reach your server".**
+The cache tried to fetch a file and your server did not answer. Players cannot download files that are not cached yet while this happens. Check that your server is online, that the IP and port on the **Origin server** card are right, and that your firewall or host DDoS protection allows the address named in the message.
+
+**Players get stuck downloading after I rotated the key.**
+The new `adhesive_cdnKey` line is not in `server.cfg` yet, or the server has not restarted since. Paste the line from **Show server.cfg** and restart.
+
+**One or two players cannot download, but everyone else can.**
+Something on that player's own network is blocking the download address, usually an antivirus that scans web traffic or a router or internet provider "security" filter. Ask them to try another network or a VPN, or to turn on DNS over HTTPS in Windows. If it works that way, their network is the cause, not your server.
+
+**The hit ratio stays low.**
+Right after setup, a purge or a key rotation, the cache is still filling up. If it stays low for days, check **Origin errors**: when the cache cannot reach your server, files are never stored.
