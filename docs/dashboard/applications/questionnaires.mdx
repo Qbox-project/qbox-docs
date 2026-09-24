@@ -1,0 +1,84 @@
+---
+title: Questionnaires
+sidebar_position: 4
+description: Ask your players for feedback or let them vote on what comes next, with named or anonymous responses, on your portal page.
+keywords: [qbox, fivem, questionnaire, survey, poll, player feedback, anonymous]
+---
+
+# Questionnaires
+
+A questionnaire is a simple form for feedback or votes: "What should we add next?", "How was the last event?", "Which car pack do you want?".
+It uses the same question types as an application form, but there is nothing to review: no staff queue, no Discord post, no roles handed out. Players answer once and you read the results.
+
+Questionnaires live on the **Applications** page, so they need a plan that includes applications (see [Plans](/dashboard/applications#plans)). Only people with **Applications** set to **Manage** can create them, see the **Questionnaires** tab, and read the results.
+
+## Create a questionnaire
+
+1. Go to **Applications** → **Questionnaires** and press **New questionnaire**.
+2. Type a **Name**.
+3. Decide on **Anonymous responses** (see below). You cannot change this after publishing.
+4. Press **Create questionnaire**.
+
+On the **Questions & settings** tab, fill in the **Name**, an optional **Description**, and your questions. The question types are the same as on application forms: see [Questions](/dashboard/applications/forms#questions). **Pick one** and **Pick several** work well for votes.
+Press **Save draft** to keep your work without making it public.
+
+## Named or anonymous
+
+| | Named responses | Anonymous responses |
+| --- | --- | --- |
+| Players sign in with Discord | Yes | Yes |
+| One response per Discord account | Yes | Yes |
+| You see who answered | Yes, their Discord username | No, shown as "Anonymous player" |
+| Submission time is stored | Yes | No |
+
+Players still sign in for anonymous questionnaires, but only so each account can answer once. The answers are stored without their identity.
+
+:::tip
+In an anonymous questionnaire, avoid questions that make players identify themselves, like "What is your character's name?". The questionnaire cannot hide what they type into the answer.
+:::
+
+## Publish and open
+
+Press **Publish questionnaire**. The dashboard asks **Publish this questionnaire?**; press **Publish and open**. Players can respond right away.
+
+:::warning[Publishing locks the questions]
+After publishing, you cannot change the questions or switch between named and anonymous. That way everyone answers the same questionnaire. To ask something different, create a new questionnaire.
+:::
+
+Once it is published you have one button at the top:
+
+- **Close responses** stops new responses. The questionnaire stays on your portal page, marked as closed.
+- **Reopen responses** lets players answer again.
+
+## Share it
+
+The **Share** tab has the questionnaire's link, in the form `https://apply.qbox.re/<your-slug>/questionnaires/<questionnaire-address>`. Post it in your Discord.
+Players can also find it on your [portal page](/dashboard/applications/portal) under **Have your say**, with whether it is anonymous or named.
+
+## What players see
+
+1. They open the link and see whether their response is anonymous or shows their username.
+2. They press **Sign in with Discord to respond**.
+3. They answer and press **Submit response**. The page reminds them: "Your response is final once submitted."
+
+Each Discord account can respond once. Players never see the results.
+
+## Results
+
+The **Results** tab shows how many responses came in, a tally for every **Pick one** and **Pick several** question, and every response below it, with the player's username for named questionnaires. Press **Refresh** to load new responses.
+
+Results are only visible in the dashboard, to people with **Applications** set to **Manage**. Nothing about the results is shown on the portal.
+
+## Troubleshooting
+
+**Publish questionnaire is greyed out.**
+The questionnaire has no questions players can answer. Section headings alone are not enough.
+
+**A player gets "You have already responded to this questionnaire".**
+Each Discord account can respond once, and responses cannot be changed after they are sent.
+
+**Players see "This questionnaire is closed. It is no longer accepting responses."**
+You pressed **Close responses**. Press **Reopen responses** to accept answers again.
+
+**Players see "Questionnaire not found".**
+It has not been published yet, or the link is wrong. Copy the link again from the **Share** tab.

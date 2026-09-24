@@ -1,0 +1,152 @@
+---
+title: 🤖 Discord
+sidebar_position: 2
+description: Connect your community's Discord server to your organization so application forms can post there and your staff can get into the dashboard with a Discord role.
+keywords: [qbox, fivem, discord, discord bot, discord server, whitelist, applications, staff access]
+---
+
+# Discord
+
+Most FiveM communities already run everything through Discord. Connecting your Discord server to your organization lets the dashboard work with it directly. You connect it once, on the **Discord** page, and two features use it:
+
+- **Applications.** Players apply with their Discord account. Every new application is posted in a staff channel you pick, with buttons to vote, accept or deny, and the players you accept get the Discord roles you chose right away. See [Applications](/dashboard/applications).
+- **Staff access.** Your staff can get into the dashboard with a Discord role they already have, for example your Staff or Whitelist Team role, so you do not have to invite each of them. See [Discord access](/dashboard/team/discord-access).
+
+## Before you start
+
+Discord servers are part of the paid plans. How many you can connect depends on your plan:
+
+| Plan | Discord servers |
+| --- | --- |
+| Free | None |
+| Ducklin | 1 |
+| Duck | 3 |
+| Qboxxer | 10 |
+
+You also need:
+
+- **Discord set to Manage in the dashboard.** The owner always has it. For anyone else, it comes from their dashboard role, see [Roles](/dashboard/team/roles).
+- **The Manage Server permission in the Discord server.** Server owners and admins have it.
+- **A server that is not connected anywhere else.** A Discord server can belong to only one Qbox organization.
+
+## Connect your server
+
+On the **Discord** page, press **Connect a server**. A window called **Connect a Discord server** takes you through three steps. It calls the bot "the Qbox Apply bot"; that is the same Qbox bot these docs talk about.
+
+### 1. Connect your own Discord account
+
+The dashboard checks that you have the Manage Server permission in the server you pick, so it needs to know which Discord account is yours.
+If the step is not marked **Done**, press **Open connected accounts**, press **Connect** next to Discord under **Connected accounts**, and come back to the **Discord** page afterwards.
+
+### 2. Add the Qbox bot to your server
+
+Press **Add the bot**. Discord opens in a new tab. Pick your server and leave the permissions it asks for switched on:
+
+| Permission | Why the bot needs it |
+| --- | --- |
+| Manage Roles | To give and take away Discord roles when you accept, deny or interview a player |
+| View Channels | To see the channel you want applications posted in |
+| Send Messages | To post new applications there |
+| Embed Links | To show each application as a card with the answers and buttons |
+
+### 3. Paste your server ID
+
+Paste your server's ID into **Server ID** and press **Connect**. To find the ID:
+
+1. In Discord, open **User Settings**, then **Advanced**, and switch on **Developer Mode**.
+2. Right-click your server's icon in the server list on the left.
+3. Choose **Copy Server ID** and paste it into the dashboard.
+
+The same steps are in the window under **Where do I find my server ID?**.
+
+:::tip
+Sometimes Discord sends you straight back to the dashboard after you add the bot, with the server ID already filled in. You still need to press **Connect**.
+:::
+
+When you press **Connect**, the dashboard checks, in this order, that:
+
+1. your plan has room for another server,
+2. your own Discord account is connected,
+3. the Qbox bot is in the server,
+4. you have the Manage Server permission there,
+5. the server is not connected to another Qbox organization.
+
+If one of these fails, the window tells you which one. The fixes are under [Troubleshooting](#troubleshooting).
+
+## Keep the server healthy
+
+Every connected server is listed under **Discord servers** with its name, its ID, and how much uses it (for example "Used by 2 forms · 1 staff role"). Next to it is a badge:
+
+| Badge | What it means |
+| --- | --- |
+| **Not checked yet** | Nobody has run a check yet |
+| **Healthy** | The bot can post in every channel your forms use and give out every role they hand out |
+| **2 problems** (or any number) | Something stops the bot from doing its job. Open **What to fix** under the server |
+
+Press **Check** to run the check again. Do it after you set up a form, and whenever you change roles or channel permissions in Discord.
+
+:::info
+The check only looks at the channels and roles your application forms use. It does not look at the Discord roles you use for staff access.
+:::
+
+These are the problems it can find:
+
+| Problem | How to fix it |
+| --- | --- |
+| **The bot has left the Discord server** | Add it again with **Add the bot** in the **Connect a Discord server** window, then press **Check** |
+| **The bot cannot hand out roles** | Give the bot's role the **Manage Roles** permission in Discord under **Server Settings → Roles** |
+| **A role sits above the bot** | Move the bot's role above that role in **Server Settings → Roles**. Discord only lets a bot give out roles that sit below its own |
+| **A role belongs to another bot** | That role is controlled by another bot or integration and cannot be given out by hand. Pick a normal role in the form's settings |
+| **A role you picked is gone** | It was deleted in Discord. Pick a different role in the form's settings |
+| **A channel you picked is gone** | It was deleted in Discord. Pick a different review channel in the form's settings |
+| **The bot cannot post in a channel** | Give the bot **View Channel**, **Send Messages** and **Embed Links** in that channel, under **Edit Channel → Permissions** |
+
+## Disconnect a server
+
+Open the **⋯** menu next to the server and choose **Disconnect**. Before anything happens, the dashboard asks you to confirm and explains what changes:
+
+- Forms set to use that server stop reaching it.
+- Its Discord roles stop giving dashboard access. Anyone whose access came only from that server loses it at their next check. People you invited by email keep their membership.
+- The links between that server's Discord roles and your dashboard roles are deleted. If you connect the server again later, you set them up again.
+
+:::warning
+Only the organization owner can disconnect a server whose Discord roles give sensitive dashboard access.
+:::
+
+## When your plan is full
+
+Once every server on your plan is in use, **Connect a server** disappears and the page says, for example, "You are using all 3 Discord servers on the Duck plan. Disconnect one to swap it, or move up a plan for more."
+
+If you move to a smaller plan, the servers you already connected keep working. The limit only counts when you connect a new one.
+
+## Troubleshooting
+
+**"Connect your own Discord account first (step 1), then come back and connect the server."**
+Your dashboard account has no Discord account connected. Press **Open connected accounts** in step 1, connect Discord, and try again.
+
+**"The Qbox Apply bot is not in that Discord server. Add it with the button in step 2, then try again."**
+The bot was not added, or it was added to a different server. Press **Add the bot** again, pick the right server, and check that the ID you pasted belongs to that server.
+
+**"You need the Manage Server permission in that Discord server. Ask its owner to connect it, or to give you that permission."**
+The Discord account connected to your dashboard account cannot manage that server. This also happens when you connected a different Discord account (an alt, for example) than the one that runs the server. Ask the server owner to connect it, or to give you that permission.
+
+**"That Discord server already belongs to another Qbox organization. Disconnect it there first."**
+Someone connected it to a different organization, possibly an old one of yours. Disconnect it from that organization first.
+
+**"Your plan has no room for another Discord server. Disconnect one, or move up a plan under Billing."**
+Every server on your plan is in use. See [When your plan is full](#when-your-plan-is-full).
+
+**"Discord is rate limiting us. Wait a few seconds and try again."**
+Discord asked us to slow down for a moment. Wait a few seconds and press **Connect** again.
+
+**"A server ID is a long run of digits, like 1090123456789012345"**
+You pasted a link or a server name. Copy the ID with **Copy Server ID** as described in step 3.
+
+**"The Qbox Apply bot is no longer in this Discord server, so its roles cannot be listed. Add it back, then reload this page."**
+Someone removed the bot from your Discord server. Add it again with **Add the bot**, then reload the page.
+
+**"The bot's own role sits below this one, so it cannot give it out. Move the bot's role higher in your Discord server settings."**
+You see this when picking Discord roles. In Discord, open **Server Settings → Roles** and drag the bot's role above every role you want it to give out.
+
+**Staff with the right Discord role still cannot get into the dashboard.**
+Connecting the server is only the first half. You also choose which Discord roles give which dashboard access, under **Members** → **Discord access**. See [Discord access](/dashboard/team/discord-access).

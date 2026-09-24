@@ -1,0 +1,129 @@
+---
+title: Portal Page
+sidebar_position: 3
+description: Style your public page at apply.qbox.re and see exactly what players go through when they apply.
+keywords: [qbox, fivem, whitelist portal, apply.qbox.re, application page, branding]
+---
+
+# Portal page
+
+Your organization gets its own public page at `apply.qbox.re/<your-slug>`, where `<your-slug>` is your organization's slug, the same one you see in your dashboard links.
+It lists your open forms and questionnaires, and it is where players apply and follow their applications. You do not have to host anything.
+
+## Style your page
+
+Go to **Applications** → **Portal page**. The public link is at the top, with a copy button and **Open** to view the page in a new tab. A live preview next to the settings shows your changes as you make them.
+Press **Save changes** at the bottom when you are done, or **Discard** to undo them. Changing the page needs **Applications** set to **Manage**; anyone else can look but not change anything.
+
+The page uses your organization's name and logo at the top. Everything else is set here:
+
+### Appearance
+
+| Setting | What it does |
+| --- | --- |
+| **Accent colour** | The colour of the buttons and links on your page. Pick a preset or type a hex colour |
+| **Light or dark** | **Auto** follows each visitor's own device. **Dark** or **Light** forces one |
+
+### Banner
+
+The wide image across the top of the page. Press **Choose from media** and pick an image. It must be an image you uploaded to this organization's **Media** first; links to images elsewhere are not accepted. See [CDN](/dashboard/cdn).
+
+### About your server
+
+| Setting | What it does |
+| --- | --- |
+| **Tagline** | One short line under your server name, up to 120 characters. For example "Serious roleplay since 2019" |
+| **About** | What players read before they apply: who you are, how you play, what you expect. Plain text up to 2000 characters; your line breaks are kept |
+
+### Links
+
+Shown as buttons under your server name. Leave any of them empty to hide it.
+
+| Link | Notes |
+| --- | --- |
+| **Discord invite** | Must be a `discord.gg` or `discord.com/invite` link. Also shown to players when nothing is open |
+| **Website** | Any `https://` link |
+| **Store** | Any `https://` link, for example your Tebex store |
+| **Rules** | Any `https://` link to your rules |
+
+### Visibility
+
+| Setting | On | Off |
+| --- | --- | --- |
+| **Listed** | Google and other search engines may show your page in their results | The link still works for anyone you give it to, but search engines are asked to leave it out |
+| **Show forms that open later** | Forms with an opening time in the future are listed under **Opening soon**, so players know when to come back | They only appear once they open |
+
+### Custom domain
+
+The **Custom domain** card is marked as coming soon. Your page stays on `apply.qbox.re` for now.
+
+## What players see
+
+### Your page
+
+At `apply.qbox.re/<your-slug>` players see your banner, name, tagline, links and about text, then:
+
+- **Have your say**: your [questionnaires](/dashboard/applications/questionnaires), if you have any.
+- **Open now**: forms they can apply to right now.
+- **Opening soon**: open forms whose opening time has not arrived yet, so players know when to come back. Only shown when **Show forms that open later** is on.
+- **Recently closed**: forms whose closing time passed in the last two weeks.
+
+If nothing is open, they see "No applications are open right now." and a **Join our Discord** button if you set a Discord invite.
+
+Draft and closed forms are not listed. A form's questions are only shown while it is open.
+
+### Applying
+
+1. The player opens your form's link, or picks the form on your page.
+2. Signed out, they see **Sign in to apply**, a **Sign in with Discord to apply** button, and a read-only list of the questions under **What this form asks**, so they can prepare.
+3. They sign in with their Discord account. Their Discord account is how you know who they are.
+4. They answer the questions and press **Send application**. A quick captcha check may appear first.
+5. They land on their application page with "Your application is in."
+
+### When a player cannot apply
+
+Instead of the form, the player sees one of these, with an explanation:
+
+| Title | Why |
+| --- | --- |
+| **Applications are not open yet** | The opening time has not arrived. They see when it opens |
+| **Applications have closed** | The closing time has passed |
+| **Every spot is taken** | The form reached its **Maximum applications** |
+| **You already applied** | They have an application waiting for a decision. A **See your application** button takes them to it |
+| **You are already in** | You already accepted them on this form |
+| **Not just yet** | They were denied or withdrew recently, and the form's waiting period is not over. They see the date they can apply again |
+| **Join (your server) on Discord first** | The form requires Discord server membership and they are not in your server. After joining, they press **I joined, check again** |
+
+### Following an application
+
+Signed-in players find everything they sent under **My applications** in the account menu at the top of the page. Each application page shows:
+
+- **Progress**: Submitted, In review, Interview, Decision. The page updates itself while it is open.
+- **Interview note**, if you moved them to interview and wrote one.
+- The deny reason, if you wrote one.
+- **Messages**: the conversation with your staff. They can reply while the application is open. They are told on Discord when your staff send them a message.
+- **Your answers**: what they sent.
+- **Withdraw application**, while the application is still open. This closes it for good, and the form's waiting period applies before they can apply again.
+
+## Troubleshooting
+
+**"Pick an image from this organization's media."**
+The banner must come from your organization's own **Media**. Upload the image there first, then pick it with **Choose from media**.
+
+**"Use a discord.gg or discord.com/invite link."**
+The **Discord invite** field only takes Discord invite links. Create an invite in Discord that does not expire and paste it here.
+
+**The page warns that the portal link does not work.**
+Your organization's web address (its slug) is one the portal uses for itself, for example `api` or `applications`, so your page cannot be shown there. The slug cannot be changed from the dashboard, so ask for help in the support channels of the [Qbox Discord](https://discord.gg/qbox).
+
+**Players see "This form is not open".**
+The form is a draft, closed, or paused by your plan, or its web address changed. Check the form's status on its **Share** tab.
+
+**"Join (your server) on Discord first" even though the player joined.**
+Make sure they signed in with the same Discord account they joined with, then have them press **I joined, check again**.
+
+**"The captcha check did not pass. Give it a second and send again."**
+The player's browser did not finish the check in time. Waiting a moment and pressing **Send application** again fixes it. Their answers are not lost.
+
+**"This application is closed, so messages no longer go through."**
+The player tried to reply after the application was decided or withdrawn. Messages only work while it is open.

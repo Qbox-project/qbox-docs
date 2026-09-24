@@ -1,0 +1,215 @@
+---
+title: Building a Form
+sidebar_position: 1
+description: Create an application form, choose its questions, point it at your Discord server, and open it to players.
+keywords: [qbox, fivem, whitelist form, application form, questions, discord roles, publish]
+---
+
+# Building a form
+
+A form is the list of questions players answer when they apply, plus the rules around it: who reviews it, where it is posted on Discord, which Discord roles a decision hands out, and when it is open.
+
+You need **Applications** set to **Manage** to create or change forms.
+
+## Create a form
+
+1. Go to **Applications** → **Forms** and press **New form**.
+2. In **New application form**, type a **Name** (for example *Whitelist application*).
+3. Under **Starting point**, pick one:
+   - **Blank**: an empty form you build question by question.
+   - **FiveM whitelist**: a ready-made whitelist that asks about age, roleplay experience, a character backstory, a scenario, and your rules, split into sections. Edit it as much as you like.
+4. Press **Create form**. The form opens in the builder.
+
+You can rename the form and change its web address later.
+
+:::info
+Every form you create counts toward your plan, including drafts. If **New form** is greyed out, your plan is full: delete a form you no longer need, or upgrade. See [Plans](/dashboard/applications#plans).
+:::
+
+## The builder
+
+The builder has three tabs, **Questions**, **Settings** and **Share**, and two buttons at the top: **Save draft** and **Publish**.
+
+Everything you change on the **Questions** tab stays in a draft until you press **Publish**. Players never see a half-finished edit. If you try to leave with unsaved changes, the dashboard asks first.
+
+## Questions
+
+Press **Add question** and pick a type:
+
+| Type | What the player gets |
+| --- | --- |
+| **Short answer** | One line of text, such as a name or a Steam ID. Up to 300 characters |
+| **Long answer** | A paragraph or more. You can set a **Minimum characters** and **Maximum characters**, up to 4000 |
+| **Number** | Digits only. You can set a **Smallest allowed** and **Largest allowed** |
+| **Pick one** | A list of options; the player picks exactly one |
+| **Pick several** | A list of options; the player can tick more than one |
+| **Agreement** | A tick box they must accept, such as your server rules |
+| **Section heading** | Not a question. A heading and short description that break a long form into parts |
+
+Every question has a **Question** text and optional **Help text** shown under it. New questions are optional until you switch on **Required**, except **Agreement**, which is always required.
+Use the buttons on each question to move it up or down, duplicate it, or delete it.
+
+Limits:
+
+- Up to 60 questions per form, section headings included.
+- **Pick one** and **Pick several** need between 2 and 25 options.
+
+On a phone or small screen, switch between **Edit** and **Preview** at the top to see the form the way players do (**Applicant preview**).
+
+## Publishing
+
+Press **Publish** when your questions are ready. You get "Published version 1. New applications use it from now on." Every publish after that creates the next version.
+
+- **New applications use the latest published version.** Your edits after that sit in the draft again, and the header shows how many are not published yet.
+- **People already in review keep the questions they answered.** Changing or removing a question never changes an application someone already sent.
+- **Publishing does not open the form.** Whether players can apply at all is decided by **Open** or **Closed** on the **Share** tab.
+
+A form with no questions players can answer cannot be published. Section headings alone are not enough.
+
+## Settings
+
+The **Settings** tab holds everything except the questions. Press **Save settings** at the bottom when you are done; **Discard** undoes your changes.
+
+### Basics
+
+| Setting | What it does |
+| --- | --- |
+| **Form name** | The title players see at the top of the form |
+| **Description** | One or two lines under the title telling players what the form is for |
+| **Web address** | The last part of the form's link, for example `apply.qbox.re/<your-slug>/whitelist` |
+
+:::warning
+If you change the **Web address**, the old link stops working. Update any links you posted in Discord.
+:::
+
+### Who can review
+
+- **Everyone who may review applications**: everyone whose dashboard role lets them review applications sees this form.
+- **Only these dashboard roles**: only people with one of the roles you pick see this form's applications. Use this to keep, say, police recruitment away from your whitelist team.
+
+The owner and anyone who can manage forms always see every application, whatever you choose here.
+
+### Applying
+
+**Wait before applying again (days)** is how long a player waits after you deny them, or after they withdraw, before they can send this form again. It starts at 14 days; 0 turns it off. Players you accepted cannot apply to the same form again.
+
+**Vote target** is a guide for your reviewers. With a target of 5, votes show as "3 of 5". Nothing happens automatically when the target is reached: a person still accepts or denies. 0 hides it. The highest target is 50.
+
+### Discord
+
+This part needs a connected Discord server. If you have none, you see **No Discord server connected** with a **Connect Discord** button. See [Discord](/dashboard/discord).
+
+| Setting | What it does |
+| --- | --- |
+| **Discord server** | Which of your connected servers this form uses. The review channel and roles below come from this server |
+| **Review channel** | Where the Qbox bot posts each new application, with vote and decision buttons. Pick a channel only your staff can see, such as #staff-applications. Choose **Do not post in Discord** to review only in the dashboard |
+| **Applicants must be a member of** (your server) | On by default. Players who are not in your Discord server are asked to join first, then they can apply. Turn it off to let anyone apply |
+
+Then there are three groups of Discord roles, each with **Roles to add** and **Roles to remove** (up to 10 each):
+
+| Group | Typical use |
+| --- | --- |
+| **Roles when you accept someone** | Add your Whitelisted role, and remove the role they had while they waited |
+| **Roles when you deny someone** | Most servers only remove the role people get while they wait |
+| **Roles when you move someone to interview** | Add a role that opens your interview channel |
+
+:::tip
+The Qbox bot can only give out roles that sit below its own role in Discord. If a role shows "The bot's own role sits below this one, so it cannot give it out.", move the bot's role higher in Discord under **Server Settings → Roles**. After saving, press **Check** on the **Discord** page to make sure everything works. See [Keep the server healthy](/dashboard/discord#keep-the-server-healthy).
+:::
+
+If you pick a different **Discord server**, the dashboard asks **Move this form to another Discord server?** and empties the review channel and roles, because they belonged to the old server. Pick new ones, then save.
+A form that never had a server picked uses the Discord server you connected first.
+
+### Messages to the applicant
+
+When you decide, the Qbox bot sends the player a Discord direct message. If they have direct messages turned off, they can still read it on their application page.
+
+There is a box for each decision: **When you accept someone**, **When you deny someone** and **When you invite someone to an interview** (up to 1500 characters each). Leave a box empty and the grey wording in it is sent instead.
+
+You can use these in your text, and the bot fills them in:
+
+| Placeholder | Becomes |
+| --- | --- |
+| `{server}` | Your server name |
+| `{form}` | The name of this form |
+| `{applicant}` | The player's Discord name |
+| `{reason}` | The note you write with the decision |
+
+## Share
+
+The **Share** tab is where you open the form and get its link.
+
+### Open or closed
+
+| Status | What players see |
+| --- | --- |
+| **Draft** | Nothing. The form does not exist for players yet |
+| **Open** | They can open the link and apply |
+| **Closed** | The link still works, but it tells players the form is not open |
+
+**Open** is greyed out until the form is published ("Publish the form before you open it."). If it has never been published, press **Publish now** right there.
+
+### Public link
+
+The link players use, in the form `https://apply.qbox.re/<your-slug>/<form-address>`. It works as soon as the form exists, but only takes applications while the form is open. The form is also listed on your [portal page](/dashboard/applications/portal).
+
+### Availability window
+
+Optional opening and closing times, for recruitment rounds and the like. Times are in your own time zone.
+
+- **Opens at**: before this time, players see a countdown and the questions stay hidden. The form shows as **Scheduled**.
+- **Closes at**: after this time, players are told applications are closed. The form shows as **Ended**. The buttons **Close in 24 hours**, **Close in 7 days** and **Close Sunday 23:59** fill it in for you.
+- **Maximum applications**: once this many applications have come in, players are told every spot is taken. It counts every application sent since the opening time, or since the form was created if there is no opening time. Leave it empty (**No limit**) to accept any number.
+
+Press **Save availability** to keep your changes. When the window has ended, a **Reopen** button clears the closing time so the form takes applications again.
+
+:::info
+The **Open** or **Closed** switch always wins. While the form is closed, these times change nothing. They only apply to a form that is open.
+:::
+
+### Announcement
+
+A ready-made post with the form's name and link. Press **Copy announcement** and paste it in the Discord channel your players read.
+
+## Close, reopen or delete a form
+
+On the **Forms** tab, each form has an **Edit** button and a **⋯** menu with:
+
+- **Close applications** or **Open applications**.
+- **Move back to draft**, only when the form is closed.
+- **Delete**.
+
+A form that has received applications cannot be deleted, so you do not lose them. The dashboard says **This form cannot be deleted** and offers **Close it instead**. Closing keeps every application where it is, and you can open the form again at any time.
+Deleting a form nobody applied to removes it and everything you wrote in it. This cannot be undone.
+
+## Troubleshooting
+
+**"Your plan does not include application forms. Upgrade to create one."**
+You are on the Free plan. See [Plans](/dashboard/applications#plans).
+
+**"Your plan holds 1 form. Delete a form you no longer need, or upgrade your plan."**
+Every form counts, including drafts. Delete one you no longer need, or upgrade.
+
+**"Publish the form before you open it."**
+Press **Publish** (or **Publish now** on the **Share** tab) first, then open it.
+
+**"Add at least one question players can answer, then publish."**
+The form is empty, or only has section headings. Add a real question.
+
+**"Some questions still need fixing. Check the ones marked in red."**
+A question has no text, or a choice question has fewer than 2 options. Fix the ones marked in red.
+
+**"Another form already uses that web address. Pick a different one."**
+Each form in your organization needs its own web address. Change it under **Settings** → **Basics**.
+
+**"That Discord server is not connected any more. Pick another one."**
+The server this form used was disconnected. Pick another **Discord server** under **Settings**, or connect it again on the **Discord** page.
+
+**"That channel no longer exists in Discord. Pick another one, or choose not to post in Discord."**
+The review channel was deleted in Discord. Pick another **Review channel**, or **Do not post in Discord**.
+
+**"Applications have to close after they open."**
+The **Closes at** time is before the **Opens at** time. Fix one of them.
+
+**The form shows Paused by plan.**
+Your plan holds fewer forms than you have, so only your oldest published forms stay active. Closing a form does not free its place. Move an older form back to draft (close it first), delete one nobody applied to, or upgrade.

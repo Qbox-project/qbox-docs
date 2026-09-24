@@ -1,0 +1,88 @@
+---
+title: 📝 Applications
+sidebar_position: 3
+description: Whitelist and staff application forms on your own public page. Players apply with Discord, your staff review in the dashboard or straight from Discord, and every decision hands out the right Discord roles.
+keywords: [qbox, fivem, whitelist, whitelist application, staff application, discord roles, application form]
+---
+
+# Applications
+
+Running a whitelist usually means a Google Form, a spreadsheet, a staff channel full of screenshots, and someone handing out Discord roles by hand.
+Applications puts all of that in one place: players apply on your own page, your staff review and vote, and the Qbox bot tells the player the outcome and gives them their Discord roles.
+
+Use it for anything people apply for: your whitelist, staff or police recruitment, gang or business slots, content creator programs.
+
+## How it works
+
+1. **You build a form** in the dashboard, publish it and open it.
+2. **Players apply** on your portal page at `apply.qbox.re/<your-slug>`. They sign in with Discord, so you always know who is applying.
+3. **Your staff review.** The application shows up in the dashboard under **Applications**, and the Qbox bot posts it in a staff channel on your Discord with buttons to vote, accept, interview or deny.
+4. **Someone decides.** Accepting, denying or moving someone to interview sends the player a Discord message and adds or removes the Discord roles you set on the form.
+
+The player can follow their application on the portal, read your decision there, and message your staff while it is still open.
+
+## Plans
+
+Applications are part of the paid plans. The number of players who apply is never limited.
+
+| | Free | Ducklin | Duck | Qboxxer |
+| --- | --- | --- | --- | --- |
+| Application forms | None | 1 | 5 | Unlimited |
+| Discord servers | None | 1 | 3 | 10 |
+| Applicants | Unlimited | Unlimited | Unlimited | Unlimited |
+
+A custom domain for your portal page is shown as coming soon.
+
+On the Free plan, the Applications page shows **Applications are part of the paid plans** with a **View plans and billing** button. See [Plans](/dashboard#plans).
+
+Some things to know about the form limit:
+
+- **Drafts count.** A form counts toward your plan from the moment you create it, published or not. On Ducklin that means one form in total, so you cannot start a second draft next to it.
+- **After a downgrade**, your oldest published forms keep their places. The rest show **Paused by plan** in the dashboard and players cannot apply to them, just as if they were closed. To bring one back, move an older form back to draft, delete one, or upgrade.
+
+## Quick start
+
+While none of your forms is open, the **Forms** tab shows a checklist called **Set up applications** that tracks these five steps. You can hide it with the **X** in its corner.
+
+### 1. Connect your Discord server
+
+Press **Open Discord**. The Qbox bot needs to be in your Discord server to post applications and give out roles. Follow [Discord](/dashboard/discord); it takes a couple of minutes.
+
+### 2. Create your first form
+
+Press **New form**, give it a name, and pick **Blank** or the **FiveM whitelist** template. See [Building a Form](/dashboard/applications/forms).
+
+### 3. Point the form at Discord
+
+Press **Open settings**. On the form's **Settings** tab, pick the **Review channel** your staff watch and at least one Discord role to add or remove when you decide. For a whitelist that is usually "add Whitelisted when accepted". This step is done once the first form has a review channel and at least one decision role.
+
+### 4. Give your staff a reviewer role
+
+Press **Open roles**. Create a dashboard role for your whitelist team (for example *Whitelist Team*) and set **Applications** to **Review** or **Decide**. This step is done once any role other than Admin can review applications.
+Then give your staff that role, either by [linking it to a Discord role](/dashboard/team/discord-access) or by [inviting them by email](/dashboard/team/inviting-by-email). The full walkthrough is in [Enroll your staff](/dashboard/team/enroll-staff).
+
+### 5. Publish the form and open it
+
+Press **Open builder**. Press **Publish** at the top of the form, then set it to **Open** on the **Share** tab. Share the link from the **Share** tab in your Discord, and you are live.
+
+:::tip
+Publish and Open are two separate switches. **Publish** decides which questions new applicants get. **Open** decides whether anyone can apply at all. A form must be published before you can open it.
+:::
+
+## The Applications page
+
+The page has these tabs:
+
+| Tab | What it is for |
+| --- | --- |
+| **Review** | The queue of applications your staff work through |
+| **Forms** | Your forms, the setup checklist, and the button to make a new form |
+| **Questionnaires** | Feedback forms and polls for your players. Only shown to people with **Applications** set to **Manage** |
+| **Portal page** | How your public page at `apply.qbox.re` looks |
+
+## Read next
+
+- [Building a Form](/dashboard/applications/forms): questions, settings, opening and closing, the public link.
+- [Reviewing Applications](/dashboard/applications/reviewing): the queue, votes, notes, decisions, and the Discord buttons.
+- [Portal Page](/dashboard/applications/portal): your public page and what players see when they apply.
+- [Questionnaires](/dashboard/applications/questionnaires): quick feedback forms and polls, with or without names.

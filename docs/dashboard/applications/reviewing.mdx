@@ -1,0 +1,132 @@
+---
+title: Reviewing Applications
+sidebar_position: 2
+description: Work through incoming applications in the dashboard or straight from Discord, vote with your team, talk to the applicant, and accept, deny or interview.
+keywords: [qbox, fivem, whitelist review, applications, discord buttons, accept, deny, interview, votes]
+---
+
+# Reviewing applications
+
+Every application a player sends shows up in two places:
+
+- **In the dashboard**, under **Applications** → **Review**.
+- **On Discord**, as a post from the Qbox bot in the form's review channel, if you picked one. See [Discord settings](/dashboard/applications/forms#discord).
+
+Both show the same application. A vote or decision made in one shows up in the other.
+
+## Who can do what
+
+What someone can do depends on the **Applications** access of their dashboard role. Each level includes everything above it.
+
+| Level | What they can do |
+| --- | --- |
+| **View** | Read applications |
+| **Review** | Vote and write internal notes |
+| **Decide** | Accept, deny, move to interview, and message the applicant |
+| **Manage** | Build forms and change their settings, questionnaires, and the portal page |
+
+A form can also be limited to specific dashboard roles under **Who can review** in its settings. People outside those roles do not see that form's applications at all. The owner and anyone with **Manage** always see everything.
+To set up roles for your staff, see [Roles](/dashboard/team/roles) and [Enroll your staff](/dashboard/team/enroll-staff).
+
+## The queue
+
+The **Review** tab lists applications by stage:
+
+| Tab | What is in it |
+| --- | --- |
+| **Needs review** | Everything still waiting for a decision: New, In review and Interview together |
+| **New** | Sent, and nobody has voted yet |
+| **In review** | At least one person has voted, or it was moved back from interview |
+| **Interview** | You invited the player to an interview |
+| **More** → **Accepted**, **Denied**, **Withdrawn** | Finished applications, kept for the record |
+
+Use **Search by Discord username** to find a player, and **All forms** to show one form only.
+
+If the queue says **No form is open**, players cannot apply yet: publish and open a form first. **Nothing waiting** means every application has been dealt with.
+
+## Inside an application
+
+Open an application to see the player's answers and these panels:
+
+- **Votes**: press thumbs up or thumbs down to give your opinion. Press the same button again to take your vote back. If the form has a vote target, it shows as, for example, "3 of 5 yes votes". Votes are only a guide: nothing is decided until a person decides.
+- **Internal notes**: "Only staff can see these. The applicant never does." Type a note and press **Add note**. Good for things like "Checked their ban history, clean."
+- **Conversation with** (the player's name): "Everything here is visible to the applicant". Type a message and press **Send**. The player is told on Discord and can reply from their application page.
+- **Earlier applications**: everything this player sent you before.
+- **Decision**: the buttons that finish or move the application.
+
+## Making a decision
+
+The **Decision** panel has these buttons, depending on where the application is:
+
+| Button | What happens |
+| --- | --- |
+| **Accept** | The player is told on Discord and gets the roles the form hands out on accept. This is final |
+| **Move to interview** | The player is told they moved to the interview stage. You can add an optional note, for example when and where the interview happens |
+| **Back to review** | Moves the application back to In review, for example after an interview. No decision is sent to the player |
+| **Deny** | The player is told on Discord and the form's deny roles are applied. You can write a reason in **Reason (optional)**. This is final |
+
+:::warning[The applicant sees your notes]
+The interview note and the deny reason are shown to the player, both in their Discord message and on their application page. Write them as if the player is reading along, because they are. Use **Internal notes** for anything else.
+:::
+
+What the player gets:
+
+1. A Discord direct message from the Qbox bot with the message you set for that decision (see [Messages to the applicant](/dashboard/applications/forms#messages-to-the-applicant)), the interview note or reason if you wrote one, and a link to their application page.
+2. Their Discord roles change: the roles in **Roles to add** are given, the roles in **Roles to remove** are taken away.
+3. Their application page on the portal shows the new stage, plus the interview note or reason.
+
+If the player has direct messages turned off, the message cannot reach them on Discord. They may get it by email instead, and it is always on their application page.
+
+**Accepted** and **Denied** are final. They cannot be reopened. A denied player can apply again once the form's waiting period is over; an accepted player cannot apply to the same form again.
+
+## Reviewing from Discord
+
+Each application posted by the Qbox bot shows the player, the form, their answers and the votes so far, with these buttons:
+
+| Button | What it does |
+| --- | --- |
+| **Vote up** / **Vote down** | Adds your vote. Press the same one again to take it back |
+| **Accept** | Accepts the player right away |
+| **Interview** | Moves the player to interview. Hidden once they are at interview |
+| **Deny** | Opens **Deny application**, where you can type a **Reason (optional)** before denying |
+| **Open in dashboard** | Opens the application in the dashboard |
+
+The post updates itself as votes come in and when a decision is made. After a decision, only **Open in dashboard** is left. Very long applications show the first answers only; the rest are in the dashboard.
+
+To use the buttons, the person pressing them needs:
+
+- **Their Discord account connected to a dashboard account that is a member of your organization.** Staff who get access through a Discord role must have opened your [join link](/dashboard/team/discord-access#the-join-link) once.
+- **The right access level.** Voting needs **Review**; the other buttons need **Decide**.
+
+Their Discord roles are checked again on every press, so someone who just lost their staff role cannot use the buttons any more.
+
+When something is not allowed, the bot answers with a private reply that only the person who pressed sees:
+
+| Private reply | What it means |
+| --- | --- |
+| "Link your Discord account to the dashboard first: …" | The bot does not know who they are in the dashboard. The link takes them to your organization's join page. See [Discord access](/dashboard/team/discord-access) |
+| "You are not a reviewer for this form." | Their dashboard role cannot see this form, for example because of **Who can review** |
+| "Your role can read applications but not vote on them." | Their role has **View** only |
+| "Your role can vote, but deciding applications is not part of it." | Their role has **Review** but not **Decide** |
+| "Someone already handled this application." | Another staff member decided first |
+
+## Audit log
+
+Decisions, messages to the applicant, and changes to forms are recorded in the [audit log](/dashboard/team/audit-log), including decisions made with the Discord buttons. Votes and internal notes are not recorded there.
+
+## Troubleshooting
+
+**"Someone else changed this application first. Reloading it."**
+Two people worked on the same application at once. The dashboard reloads it so you see what happened before you decide.
+
+**The player did not get a Discord message.**
+They probably have direct messages turned off in Discord. The decision and your message are still on their application page on the portal, so point them there.
+
+**The player did not get their Discord role.**
+The Qbox bot's role sits below the role it should give, or the bot lacks **Manage Roles**. Press **Check** on the [Discord](/dashboard/discord#keep-the-server-healthy) page and follow **What to fix**.
+
+**Applications are not posted in Discord.**
+Check that the form has a **Review channel** set, not **Do not post in Discord**. Then press **Check** on the **Discord** page: the bot may be missing **View Channel**, **Send Messages** or **Embed Links** in that channel.
+
+**A staff member cannot see an application.**
+Their role may lack **Applications** access, or the form is limited to other roles under **Who can review**.
