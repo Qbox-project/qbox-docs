@@ -1,6 +1,6 @@
 ---
 title: 💽 Database Backups
-sidebar_position: 1
+sidebar_position: 5
 description: Automatic, off-site backups of your FiveM database with the qbx_db_backup resource. Included on every plan, nothing to install, and your database never has to be reachable from the internet.
 keywords: [qbox, fivem, database backups, mariadb, mysql, qbx_db_backup]
 ---
@@ -29,6 +29,7 @@ Every plan may back up once an hour. What differs between plans is how much back
 | Qboxxer | 8 GB |
 
 When the storage is full, the oldest backup is deleted automatically to make room for the new one. Backups are compressed, so a database that is 500 MB in MariaDB is usually well under 100 MB as a backup.
+The **Backup storage** card at the top of the page shows how much of your plan's backup storage is used.
 
 :::info
 Hourly is the most frequent the dashboard accepts. If you prefer fewer backups, set a longer interval on the resource (see below); the storage then covers a longer period.
@@ -44,7 +45,7 @@ Download the latest release from the [releases page](https://github.com/Qbox-pro
 
 ### 2. Get your token
 
-In the dashboard, open your organization, go to **Database Backups**, and press **Connect resource**.
+In the dashboard, open your organization, go to **Database backups**, and press **Connect resource**.
 A window shows the exact lines to add to your `server.cfg`, including a token that identifies your server.
 
 :::warning
@@ -75,6 +76,9 @@ If you do not want to wait, type `qbx_db_backup run` in the server console.
 ## Day to day
 
 Everything is automatic once it is set up. The dashboard lists every backup with its size and date; you can download or delete any of them.
+A backup that is still running cannot be deleted; wait until it shows **Ready** or **Failed**.
+
+Downloading a backup needs **Manage** access to Database backups in the member's [role](/dashboard/team/roles), because a backup contains your whole database, player data included. Members with **View** access only see the list.
 
 Useful console commands:
 
@@ -91,6 +95,11 @@ set qbx_db_backup_interval_hours "6"
 ```
 
 Any whole number of hours works; `0` turns the schedule off so only `qbx_db_backup run` makes backups.
+
+## Notifications
+
+To get a Discord message when a backup finishes or fails, paste a Discord webhook URL into **Discord notifications** on the **Backup resource** card and press **Save notifications**.
+Turn on **Notify on failures only** if you only want to hear about problems. Only Discord webhooks are supported; clear the URL and save to turn notifications off.
 
 ## Keeping it secure
 
@@ -129,6 +138,8 @@ Until now the dashboard connected to your database from the cloud, using a datab
 - Existing setups keep running until then, but the connection form is gone; you cannot create or edit one.
 - As soon as the first backup arrives from the resource, your organization switches over and the stored database credentials are deleted automatically.
 - On 30 September, any stored credentials that are left are deleted as well, and the old method stops for everyone.
+- Do not want to wait? Press **Remove saved connection now** in the banner at the top of the page. This deletes the stored credentials and stops the old schedule right away.
+- If the old cloud backups fail three times in a row, they are paused and the page shows a **Scheduled backups are paused** banner with the reason. Once the problem is fixed, press **Resume backups**, or better, install the resource.
 
 Installing the resource is all you need to do. Your existing backups stay downloadable.
 

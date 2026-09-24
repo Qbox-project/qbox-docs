@@ -1,6 +1,6 @@
 ---
 title: 🎙️ Zumble
-sidebar_position: 3
+sidebar_position: 8
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -22,12 +22,14 @@ Using an external Mumble server resolves these issues and can significantly redu
    </TabItem>
 </Tabs>
 
+## Which plans include it
 
+Zumble is included in the **Duck** and **Qboxxer** plans. On other plans the Zumble page shows "Zumble is not included in your plan". See [plans](/dashboard#plans).
 
 ## Setup
 
-Open the Zumble page in the Qbox Dashboard. The first time you visit, click `Spin Up Server`.
-After the server is running, click **Show server.cfg** to copy the three convars required by FXServer:
+Open the **Zumble** page in the Qbox Dashboard. The first time you visit, press **Provision Zumble**.
+After the server is running, press **Show server.cfg** on the **Managed Zumble** card to copy the three convars required by FXServer:
 
 ```bash
 setr voice_externalAddress "<your-zumble-host>"
@@ -41,6 +43,18 @@ You can paste these lines one by one into your server console, and all connected
 You should still add them to `server.cfg` so they persist after your next restart.
 :::
 
+## Managing the server
+
+The **Managed Zumble** card shows the server's status, port, and address. Its buttons:
+
+| Button | What it does |
+| --- | --- |
+| **Show server.cfg** | Shows the three lines for your `server.cfg` |
+| **Provision / Reconcile now** | A repair pass that puts the server back to the managed settings. It overwrites any manual changes. |
+| **Start**, **Stop**, **Restart** | Turns the voice server on, off, or restarts it |
+
+The **Usage snapshot** card shows the server's current **Memory**, **CPU**, and **Disk** use.
+
 ## Scheduled restart
 
 Zumble should be restarted daily. On busy servers, repeated client connects can cause the session ID counter to keep climbing until the service becomes unstable or crashes.
@@ -49,11 +63,13 @@ Zumble should be restarted daily. On busy servers, repeated client connects can 
 A daily Zumble restart is required for long-running servers. Without it, voice may eventually fail after enough client reconnects.
 :::
 
-Open the Zumble page in the Qbox Dashboard and use the **Scheduled Restart** card:
+Open the Zumble page in the Qbox Dashboard and use the **Scheduled restart** card:
 
-1. Choose a **Daily restart hour**. Times are shown in your browser timezone.
+1. Choose a **Daily restart hour**. Times are shown in your browser timezone, and the hour defaults to 12:00 in your timezone.
 2. Turn **Enabled** on.
-3. Click **Save Schedule**.
+3. Press **Save schedule**.
+
+To turn the daily restart off, press **Remove schedule**.
 
 :::tip
 Schedule Zumble to restart at the same time your FXServer restarts. Players are already disconnecting during the FXServer restart, so voice comes back cleanly when both services start again together.

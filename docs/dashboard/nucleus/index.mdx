@@ -1,29 +1,58 @@
 ---
 title: 🌐 Nucleus
-sidebar_position: 2
+sidebar_position: 7
 ---
 
 Nucleus is, at its core, a secure reverse proxy provided by Cfx.re for your FiveM server.
 It gives your server a license-key-linked web address that can be used, and was planned, for a plethora of things.
 You can read more about it in the [official forum post](https://forum.cfx.re/t/web-administration-and-cfx-re-project-nucleus/676286) announcing it.
-Unfortunately, 7 years later, after a whole ecosystem was built around it, [Cfx announced](https://forum.cfx.re/t/nucleus-reverse-proxy-deprecation/5387399) that they will be deprecating the Nucleus links on June 30, 2026.
+Unfortunately, 7 years later, after a whole ecosystem was built around it, Cfx.re [deprecated the Nucleus links](https://forum.cfx.re/t/nucleus-reverse-proxy-deprecation/5387399) on June 30, 2026.
 
-To keep supporting this ecosystem we now also offer a free alternative within the Qbox Dashboard.
-On your first visit to the Nucleus page you only need to fill in your server IP address and the port where the FXServer is listening on (default 30120).
-Alternatively you can check your `server.cfg` to which port FXServer is using.
+To keep supporting this ecosystem we offer a free alternative in the Qbox Dashboard. Nucleus is free on every plan.
+
+## Setup
+
+Open the **Nucleus** page. On your first visit it shows **Set up the Nucleus proxy**. Fill in the **Server details**:
+
+- **Server IP**: the public IP address of your FiveM server. Use a raw IPv4 or IPv6 address; hostnames are not accepted.
+- **Server port**: the port FXServer listens on, 30120 by default.
+
+Not sure which port your server uses? Check your `server.cfg`:
 ```bash
 endpoint_add_tcp "0.0.0.0:30120"
 endpoint_add_udp "0.0.0.0:30120"
 ```
 ![nucleus fill in form](https://r2.qbox.re/chatty/docs/nucleus-form.png)
 
-Now copy paste the convar that we provide to you in your `server.cfg`, for example:
+Press **Create the proxy**. The **Proxy URL** card then shows your **Public URL**, the **Server config** line, and the **Connect URL**.
+Copy the **Server config** line into your `server.cfg`, for example:
 ```bash
 set web_baseUrl "chatty.server.qbox.re"
 ```
 ![nucleus dashboard](https://r2.qbox.re/chatty/docs/nucleus.png)
 
 Now existing resources like [lb-upload](https://github.com/lbphone/lb-upload) will keep working and serve content through the `*.server.qbox.re` provided url.
+
+## Changing the server address
+
+If your server moves to a new IP or port, enter it in the **Upstream server** card and press **Save upstream**.
+Saving has a short cooldown. If you save too often, the button shows **Please wait** with a countdown.
+
+## Custom domain
+
+You can serve the proxy from your own hostname, such as `connect.example.com`, instead of the `server.qbox.re` one.
+
+1. At your DNS provider, add a **CNAME** record for your hostname that points at `server.qbox.re`. If your DNS is on Cloudflare, set the record to **DNS only** (grey cloud).
+2. In the **Custom domain** card, enter the hostname in **Custom hostname**. Enter only the hostname, without `https://`, a port, or a path.
+3. Press **Save domain**. The dashboard shows the DNS record to add, in case you have not done it yet.
+4. Wait for the status next to **Managed hostname** to change to **Active**. This usually takes a few minutes.
+5. Once it is active, the **Server config** line switches to your domain. Copy the new `set web_baseUrl` line into your `server.cfg`.
+
+To remove your domain, clear **Custom hostname** and press **Save domain**.
+
+## Deleting the proxy
+
+Press **Delete proxy** in the **Danger zone** card. This removes your proxy URL and all its routes, so your server is no longer reachable through it. It cannot be undone.
 
 
 :::warning
