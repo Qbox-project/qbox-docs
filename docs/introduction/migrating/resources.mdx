@@ -1,0 +1,112 @@
+---
+title: "Resource Equivalents"
+sidebar_label: "Resource equivalents"
+sidebar_position: 2
+keywords: [qbox, fivem, qbcore, migration, resources, qb-inventory, qb-target, qb-menu, ox_inventory, ox_target, ox_lib, replacements]
+description: The Qbox replacement for every stock QBCore resource, whether its data and API carry over, and what to do with resources Qbox has no replacement for.
+slug: /migrating/resources
+---
+
+# Resource equivalents
+
+Before you build anything, make a list of every resource on your QBCore server, and find out what happens to each one.
+
+## Make your list
+
+1. Open your QBCore server's `resources` folder. Every folder in it is a resource. Folders with a name in square brackets, like `[qb]` or `[standalone]`, are groups that contain more resources.
+2. Open your `server.cfg` and look at the `ensure` and `start` lines. Those are the resources your server actually starts. Anything in the folder that isn't started, directly or through its group, isn't used.
+3. Write every started resource in a list, for example in a spreadsheet, with a column for what to do with it.
+
+Then go through the tables below:
+
+- **Stock QBCore resources** (names starting with `qb-`) are in the tables. The Qbox recipe already installs the replacement, so **don't copy the QBCore resource** to the test server. Running both means double commands, menus and errors.
+- **Everything else** is one of your own scripts. You check those later, in [Your own scripts](/migrating/scripts).
+
+In the notes below, "provides `qb-something`" means the Qbox resource answers to the old name, so scripts that need `qb-something` keep working.
+
+## Core and frameworks
+
+| QBCore | Qbox | Notes |
+| --- | --- | --- |
+| `qb-core` | `qbx_core` | Provides `qb-core`, with a bridge for QBCore scripts. See [Your own scripts](/migrating/scripts) |
+| `qb-multicharacter` | Built into `qbx_core` | Characters carry over. See [multicharacter](/resources/qbx_core/multichar) to use your own |
+| `qb-spawn` | `qbx_spawn` | |
+| `connectqueue` | Built into `qbx_core` | Turn it on or off with `qbx:enableQueue` |
+| `qb-inventory` | `ox_inventory` | Convert player, stash, trunk and glovebox data with `convertqbinventory`. See [Convert inventories](/migrating/database#inventories) |
+| `qb-weapons` | `ox_inventory` | Weapons, ammo and attachments are ox_inventory items, with different names for ammo and attachments |
+| `qb-shops` | `ox_inventory` | Shops are configured in `ox_inventory/data/shops.lua` |
+| `qb-crafting` | `ox_inventory` | Crafting benches are configured in `ox_inventory/data/crafting.lua` |
+| `qb-target` | `ox_target` | **No `qb-target` exports.** ox_target only answers the older `qtarget` exports |
+| `qb-menu` | `ox_lib` | No `qb-menu` exports. Use context menus |
+| `qb-input` | `ox_lib` | No `qb-input` exports. Use input dialogs |
+| `progressbar` | `ox_lib` | `QBCore.Functions.Progressbar` still works. `exports['progressbar']` doesn't |
+| `PolyZone` | `ox_lib` | Qbox resources use ox_lib zones. Keep PolyZone only if your own scripts need it |
+| `qb-minigames` | `ox_lib`, `mhacking`, `ultra-voltlab`, `safecracker` | |
+| `qb-loading` | `loadscreen` | |
+| `screenshot-basic` | `screencapture` | Provides `screenshot-basic` |
+| `oxmysql`, `pma-voice`, `bob74_ipl` | Same | |
+
+## Characters, money and property
+
+| QBCore | Qbox | Notes |
+| --- | --- | --- |
+| `qb-banking` | `Renewed-Banking` | Personal balances carry over. Society balances need copying, see [Database](/migrating/database#society-balances). No `qb-banking` exports |
+| `qb-management` | `qbx_management` and `Renewed-Banking` | qbx_management is the boss menu. Renewed-Banking holds the money and provides `qb-management` |
+| `qb-clothing` | `illenium-appearance` | Skins convert with `/migrateskins qb-clothing`. Saved outfits don't, see [Database](/migrating/database#clothing) |
+| `qb-apartments`, `qb-houses`, `qb-interior` | `qbx_properties` | No import. Apartments, houses and their stashes don't carry over |
+| `qb-phone` | NPWD with `qbx_npwd` | Phone numbers and mail carry over. Contacts, messages and photos don't |
+| `qb-cityhall` | `qbx_cityhall` and `qbx_idcard` | |
+| `qb-crypto` | None | The `crypto` money type still exists |
+
+## Vehicles
+
+| QBCore | Qbox | Notes |
+| --- | --- | --- |
+| `qb-garages` | `qbx_garages` and `qbx_vehicles` | Owned vehicles carry over after a few fixes, see [Database](/migrating/database#fix-vehicles) |
+| `qb-vehicleshop` | `qbx_vehicleshop` | Run its `migrate.sql` to keep financing |
+| `qb-vehiclesales` | `qbx_vehiclesales` | |
+| `qb-vehiclekeys` | `qbx_vehiclekeys` | Provides `qb-vehiclekeys` and answers its main events and exports |
+| `qb-fuel` | `ox_fuel` | No `LegacyFuel` or `qb-fuel` exports. Fuel is stored in the `fuel` state bag |
+| `qb-mechanicjob` | `qbx_mechanicjob` | Provides `qb-mechanicjob` |
+
+## Jobs and activities
+
+| QBCore | Qbox |
+| --- | --- |
+| `qb-policejob` | `qbx_police` |
+| `qb-ambulancejob` | `qbx_ambulancejob` and `qbx_medical` |
+| `qb-prison` | `xt-prison` |
+| `qb-doorlock` | `ox_doorlock`, which converts qb-doorlock configs. See [Database](/migrating/database#other-data) |
+| `qb-busjob`, `qb-garbagejob`, `qb-newsjob`, `qb-recyclejob`, `qb-vineyard` | `qbx_busjob`, `qbx_garbagejob`, `qbx_newsjob`, `qbx_recyclejob`, `qbx_vineyard` |
+| `qb-taxijob`, `qb-towjob`, `qb-scrapyard`, `qb-lapraces` | `qbx_taxijob`, `qbx_towjob`, `qbx_scrapyard`, `qbx_lapraces`, each providing the `qb-` name |
+| `qb-bankrobbery`, `qb-jewelery`, `qb-storerobbery`, `qb-truckrobbery`, `qb-houserobbery` | `qbx_bankrobbery`, `qbx_jewelery`, `qbx_storerobbery`, `qbx_truckrobbery`, `qbx_houserobbery` |
+| `qb-diving` | `qbx_diving` and `qbx_divegear` |
+| `qb-drugs`, `qb-weed`, `qb-pawnshop`, `qb-streetraces` | `qbx_drugs`, `qbx_weed`, `qbx_pawnshop`, `qbx_streetraces` |
+| `qb-hotdogjob` | None |
+
+## Interface and world
+
+| QBCore | Qbox | Notes |
+| --- | --- | --- |
+| `qb-hud` | `qbx_hud` | |
+| `qb-radialmenu` | `qbx_radialmenu` | Answers `exports['qb-radialmenu']:AddOption` and `RemoveOption` |
+| `qb-scoreboard` | `qbx_scoreboard` | |
+| `qb-adminmenu` | `qbx_adminmenu` | |
+| `qb-smallresources` | `qbx_smallresources` | |
+| `qb-weathersync` | `Renewed-Weathersync` | Provides `qb-weathersync` and answers its main exports and events |
+| `qb-radio` | `mm_radio` | |
+| `interact-sound`, `menuv` | None | Qbox resources don't use them. Keep them if your own scripts do |
+
+The recipe also installs resources QBCore doesn't have, such as `qbx_seatbelt`, `qbx_customs`, `qbx_carwash` and `scully_emotemenu`. If one of them does the same as a script you already use, remove it from the test server: move its folder out of the server folder, for example to your desktop. Deleting the `ensure` line isn't enough, because `server.cfg` starts whole folders such as `[qbx]` at once.
+
+## Resources without a replacement
+
+A QBCore resource with no Qbox replacement, such as `qb-hotdogjob`, can usually keep running. Treat it like one of your own scripts and check it as described in [Your own scripts](/migrating/scripts). It's most likely to need work if it uses qb-inventory, qb-target or qb-menu.
+
+## Paid and third-party scripts
+
+Many paid scripts support Qbox directly. Look for a framework option in their config, such as `Config.Framework = 'qbx'`, and set it.
+
+If a script only supports QBCore, don't buy a replacement yet. Most QBCore scripts work on Qbox as they are. [Your own scripts](/migrating/scripts) shows how to check.
+
+Next: build your test server in [Server setup](/migrating/server-setup).

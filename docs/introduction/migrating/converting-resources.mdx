@@ -1,0 +1,207 @@
+---
+title: "Converting Resources to Qbox"
+sidebar_label: "Converting resources"
+sidebar_position: 7
+keywords: [qbox, fivem, qbcore, convert, port, resource, script, qbx_core, exports, ox_lib, ox_inventory]
+description: Port a resource's code from the QBCore core object to the native Qbox API, with a replacement table for the most used QBCore functions, events and resources.
+slug: /migrating/converting-resources
+---
+
+# Converting resources
+
+:::info[This page is for developers]
+It explains how to change a script's Lua code from QBCore to Qbox. If you don't write code, you don't need it. Your QBCore scripts keep working through the bridge, see [Your own scripts](/migrating/scripts).
+:::
+
+Converting is optional. The [bridge](/migrating/scripts#how-the-bridge-works) keeps QBCore code running, so you can convert one resource at a time, or one function at a time. QBCore calls and Qbox calls work side by side in the same resource.
+
+Converting is worth it for resources you maintain yourself: native calls skip the compatibility layer, and you stop depending on functions the bridge marks as deprecated.
+
+## The core object is gone
+
+Qbox has no core object. Instead of reading everything through `QBCore`, you call qbx_core exports and import small modules.
+
+```lua
+-- QBCore
+local QBCore = exports['qb-core']:GetCoreObject()
+local player = QBCore.Functions.GetPlayer(source)
+player.Functions.AddMoney('bank', 500, 'paycheck')
+
+-- Qbox
+exports.qbx_core:AddMoney(source, 'bank', 500, 'paycheck')
+```
+
+## Set up the manifest
+
+Most Qbox APIs build on ox_lib, which needs Lua 5.4. Add what you use:
+
+```lua title="fxmanifest.lua"
+lua54 'yes'
+
+shared_scripts {
+    '@ox_lib/init.lua',
+    '@qbx_core/modules/lib.lua', -- the qbx table: plates, vehicles, drawText and more
+}
+
+client_scripts {
+    '@qbx_core/modules/playerdata.lua', -- keeps QBX.PlayerData up to date
+    'client/*.lua',
+}
+
+server_scripts {
+    '@oxmysql/lib/MySQL.lua',
+    'server/*.lua',
+}
+```
+
+- [playerdata module](/resources/qbx_core/modules/playerdata) gives you `QBX.PlayerData` on the client, kept up to date. Use it instead of calling `GetPlayerData()` repeatedly.
+- [lib module](/resources/qbx_core/modules/lib) gives you the `qbx` table with helpers that replace many `QBCore.Functions` utilities.
+
+Leave `dependency 'qb-core'` out of converted resources. If the resource needs Qbox, declare `qbx_core`.
+
+## Replacement table
+
+### Players and money (server)
+
+| QBCore | Qbox |
+| --- | --- |
+| `QBCore.Functions.GetPlayer(source)` | `exports.qbx_core:GetPlayer(source)` |
+| `QBCore.Functions.GetPlayerByCitizenId(cid)` | `exports.qbx_core:GetPlayerByCitizenId(cid)` |
+| `QBCore.Functions.GetOfflinePlayerByCitizenId(cid)` | `exports.qbx_core:GetOfflinePlayer(cid)` |
+| `QBCore.Functions.GetPlayerByLicense(license)` | `exports.qbx_core:GetPlayer(license)` (accepts any identifier) |
+| `QBCore.Functions.GetPlayerByPhone(number)` | `exports.qbx_core:GetPlayerByPhone(number)` |
+| `QBCore.Functions.GetQBPlayers()` | `exports.qbx_core:GetQBPlayers()` |
+| `QBCore.Functions.GetPlayersOnDuty(job)` | `exports.qbx_core:GetDutyCountJob(job)` returns the count and the sources |
+| `Player.Functions.AddMoney(type, amount, reason)` | `exports.qbx_core:AddMoney(source, type, amount, reason)` |
+| `Player.Functions.RemoveMoney(type, amount, reason)` | `exports.qbx_core:RemoveMoney(source, type, amount, reason)` |
+| `Player.Functions.GetMoney(type)` | `exports.qbx_core:GetMoney(source, type)` |
+| `Player.Functions.SetJob(job, grade)` | `exports.qbx_core:SetJob(source, job, grade)` |
+| `Player.Functions.SetGang(gang, grade)` | `exports.qbx_core:SetGang(source, gang, grade)` |
+| `Player.Functions.SetJobDuty(onDuty)` | `exports.qbx_core:SetJobDuty(source, onDuty)` |
+| `Player.Functions.SetMetaData(key, value)` | `exports.qbx_core:SetMetadata(source, key, value)` |
+| `Player.Functions.GetMetaData(key)` | `exports.qbx_core:GetMetadata(source, key)` |
+| `QBCore.Functions.HasPermission(source, 'admin')` | `IsPlayerAceAllowed(source, 'admin')` |
+| `QBCore.Functions.Notify(source, text, type)` | `exports.qbx_core:Notify(source, text, type)` |
+
+Many qbx_core exports that take a `source`, such as `AddMoney`, `SetJob` and `SetMetadata`, also accept a citizen ID, which makes them work on offline characters too. See [server exports](/resources/qbx_core/exports/server) for the full list.
+
+### Shared data
+
+| QBCore | Qbox |
+| --- | --- |
+| `QBCore.Shared.Jobs` | `exports.qbx_core:GetJobs()` |
+| `QBCore.Shared.Gangs` | `exports.qbx_core:GetGangs()` |
+| `QBCore.Shared.Vehicles` | `exports.qbx_core:GetVehiclesByName()` |
+| `QBCore.Shared.VehicleHashes` | `exports.qbx_core:GetVehiclesByHash()` |
+| `QBCore.Shared.Weapons` | `exports.qbx_core:GetWeapons()` |
+| `QBCore.Shared.Locations` | `exports.qbx_core:GetLocations()` |
+| `QBCore.Shared.Items` | `exports.ox_inventory:Items()` |
+
+Job and gang grades are keyed by number. Use `grades[level]`, not `grades[tostring(level)]`.
+
+### Client
+
+| QBCore | Qbox |
+| --- | --- |
+| `QBCore.Functions.GetPlayerData()` | `QBX.PlayerData` (playerdata module) |
+| `QBCore.Functions.Notify(text, type, length)` | `exports.qbx_core:Notify(text, type, length)` |
+| `QBCore.Functions.Progressbar(...)` | [`lib.progressBar`](https://coxdocs.dev/ox_lib/Modules/Interface/Client/progress) |
+| `QBCore.Functions.HasItem(item, amount)` | `exports.ox_inventory:GetItemCount(item) >= amount` |
+| `QBCore.Functions.GetPlate(vehicle)` | `qbx.getVehiclePlate(vehicle)` |
+| `QBCore.Functions.DrawText3D(x, y, z, text)` | `qbx.drawText3d({ text = text, coords = vec3(x, y, z) })` |
+| `QBCore.Functions.GetClosestPlayer()` | [`lib.getClosestPlayer`](https://coxdocs.dev/ox_lib/Modules/GetClosestPlayer/Client) |
+| `QBCore.Functions.GetClosestVehicle()` | [`lib.getClosestVehicle`](https://coxdocs.dev/ox_lib/Modules/GetClosestVehicle/Shared) |
+| `QBCore.Functions.GetVehicleProperties(vehicle)` | [`lib.getVehicleProperties(vehicle)`](https://coxdocs.dev/ox_lib/Modules/VehicleProperties/Client) |
+| `QBCore.Functions.SetVehicleProperties(vehicle, props)` | [`lib.setVehicleProperties(vehicle, props)`](https://coxdocs.dev/ox_lib/Modules/VehicleProperties/Client) |
+| `QBCore.Functions.RequestAnimDict(dict)` | [`lib.requestAnimDict(dict)`](https://coxdocs.dev/ox_lib/Modules/Streaming/Client) |
+| `QBCore.Functions.LoadModel(model)` | [`lib.requestModel(model)`](https://coxdocs.dev/ox_lib/Modules/Streaming/Client) |
+| `exports['qb-core']:DrawText(text, position)` | `lib.showTextUI(text, { position = position })` |
+| `exports['qb-core']:HideText()` | `lib.hideTextUI()` |
+| `exports['qb-core']:ChangeText(text, position)` | `lib.hideTextUI()` then `lib.showTextUI(text, { position = position })` |
+| `exports['qb-core']:KeyPressed()` | `lib.hideTextUI()` |
+
+### Vehicles (server)
+
+| QBCore | Qbox |
+| --- | --- |
+| `QBCore.Functions.SpawnVehicle(source, model, coords, warp)` | `qbx.spawnVehicle({ model = model, spawnSource = coords, warp = ped })` |
+| `QBCore.Functions.CreateVehicle(...)` / `CreateAutomobile(...)` | `qbx.spawnVehicle(...)` |
+| `TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)` | `exports.qbx_vehiclekeys:GiveKeys(source, vehicle)` |
+
+Pass vehicle properties into `qbx.spawnVehicle` through `props` instead of setting them after the vehicle exists. See [server lib](/resources/qbx_core/modules/lib/server#spawnvehicle).
+
+### Callbacks and commands
+
+| QBCore | Qbox |
+| --- | --- |
+| `QBCore.Functions.CreateCallback(name, function(source, cb, ...) cb(result) end)` | `lib.callback.register(name, function(source, ...) return result end)` |
+| `QBCore.Functions.TriggerCallback(name, function(result) end, ...)` | `local result = lib.callback.await(name, false, ...)` |
+| `QBCore.Commands.Add(name, help, args, required, cb, 'admin')` | `lib.addCommand(name, { help = help, params = {...}, restricted = 'group.admin' }, cb)` |
+
+```lua
+-- QBCore
+QBCore.Functions.CreateCallback('myjob:server:getStock', function(source, cb, shopId)
+    cb(stock[shopId])
+end)
+
+QBCore.Functions.TriggerCallback('myjob:server:getStock', function(result)
+    print(result)
+end, 'shop_1')
+
+-- Qbox
+lib.callback.register('myjob:server:getStock', function(source, shopId)
+    return stock[shopId]
+end)
+
+local result = lib.callback.await('myjob:server:getStock', false, 'shop_1')
+print(result)
+```
+
+### Inventory
+
+Inventory calls go to [ox_inventory](https://coxdocs.dev/ox_inventory) directly.
+
+| QBCore | Qbox |
+| --- | --- |
+| `Player.Functions.AddItem(item, amount, slot, info)` | `exports.ox_inventory:AddItem(source, item, amount, metadata, slot)` |
+| `Player.Functions.RemoveItem(item, amount, slot)` | `exports.ox_inventory:RemoveItem(source, item, amount, nil, slot)` |
+| `Player.Functions.GetItemByName(item)` | `exports.ox_inventory:GetSlotWithItem(source, item)` |
+| `Player.Functions.GetItemsByName(item)` | `exports.ox_inventory:GetSlotsWithItem(source, item)` |
+| `QBCore.Functions.HasItem(source, item, amount)` | `exports.ox_inventory:GetItemCount(source, item) >= amount` |
+| `QBCore.Functions.CreateUseableItem(item, cb)` | `exports.qbx_core:CreateUseableItem(item, cb)`, or an `export` on the item in `ox_inventory/data/items.lua` |
+| `TriggerClientEvent('inventory:client:ItemBox', ...)` | Not needed. ox_inventory shows item notifications itself |
+
+Item metadata is called `metadata` in ox_inventory, and the stack size is `count`. QBCore code reads `item.info` and `item.amount`.
+
+### UI resources
+
+| QBCore | Qbox |
+| --- | --- |
+| `exports['qb-menu']:openMenu(menu)` | [`lib.registerContext`](https://coxdocs.dev/ox_lib/Modules/Interface/Client/context) and `lib.showContext(id)` |
+| `exports['qb-input']:ShowInput(data)` | [`lib.inputDialog(heading, rows)`](https://coxdocs.dev/ox_lib/Modules/Interface/Client/input) |
+| `exports['qb-target']:AddBoxZone(...)` | [`exports.ox_target:addBoxZone(...)`](https://coxdocs.dev/ox_target/Functions/Client) |
+| `exports['qb-target']:AddTargetEntity(entity, options)` | `exports.ox_target:addLocalEntity(entity, options)` |
+| `exports['qb-target']:AddTargetModel(models, options)` | `exports.ox_target:addModel(models, options)` |
+| `PolyZone` | [`lib.zones`](https://coxdocs.dev/ox_lib/Modules/Zones/Shared) and [`lib.points`](https://coxdocs.dev/ox_lib/Modules/Points/Lua/Client) |
+
+ox_target options restrict by group with `groups = { police = 0 }` where qb-target used `job = 'police'`.
+
+## Events
+
+Qbox kept the QBCore event names, so your handlers do not change:
+
+- `QBCore:Client:OnPlayerLoaded`, `QBCore:Client:OnPlayerUnload`
+- `QBCore:Client:OnJobUpdate`, `QBCore:Client:OnGangUpdate`, `QBCore:Client:SetDuty`
+- `QBCore:Server:OnPlayerLoaded`, `QBCore:Server:OnPlayerUnload`, `QBCore:Server:OnJobUpdate`, `QBCore:Server:OnMoneyChange`
+
+Two newer options are often simpler:
+
+- `LocalPlayer.state.isLoggedIn` on the client and `Player(source).state.isLoggedIn` on the server tell you whether a character is loaded, without tracking events yourself.
+- `qbx_core:client:onGroupUpdate` and `qbx_core:server:onGroupUpdate` fire when a character gains or loses any job or gang, including secondary ones.
+
+See [client events](/resources/qbx_core/events/client) and [server events](/resources/qbx_core/events/server).
+
+## Before you publish
+
+- Run through the [Developer's Guide](/developers). Don't touch core database tables; use exports.
+- Check the [Release Guidelines](/release) if you want your resource to meet the same bar as official Qbox resources.

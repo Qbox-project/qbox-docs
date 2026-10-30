@@ -41,6 +41,10 @@ const config: Config = {
             to: '/dashboard/database-backups',
           },
           {
+            from: '/converting',
+            to: '/migrating',
+          },
+          {
             from: [
               '/dashboard/logging/inviting-people',
               '/tebex/loki-logging/inviting-people',

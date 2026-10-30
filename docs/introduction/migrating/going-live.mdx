@@ -1,0 +1,189 @@
+---
+title: "Testing and Going Live"
+sidebar_label: "Testing and going live"
+sidebar_position: 6
+keywords: [qbox, fivem, qbcore, migration, testing, checklist, go live, rollback, troubleshooting, maintenance]
+description: Test your converted Qbox server with your staff, then switch your players over from QBCore on go-live day, step by step. Includes how to roll back and fixes for common errors.
+slug: /migrating/going-live
+---
+
+# Testing and going live
+
+## Test on the test server {#test-on-the-test-server}
+
+Test with **real characters from your copied database**, not new ones. New characters only prove that Qbox works. Old characters prove that your data came across. Pick characters that have a job, a gang, owned vehicles and a full inventory.
+
+Keep the test server's Live Console open the whole time. Every `SCRIPT ERROR` is something to fix before you go live.
+
+### Letting staff join
+
+If the test server runs on the same machine as your live server, staff join by pressing **F8** in FiveM and typing `connect your.server.ip:30125`. For that, port `30125` must be open in the machine's firewall, the same way `30120` is open for your live server:
+
+1. On the server machine, open the Start menu and search for **Windows Defender Firewall with Advanced Security**.
+2. Click **Inbound Rules** on the left, then **New Rule...** on the right.
+3. Choose **Port**, then **TCP**, and enter `30125` under **Specific local ports**.
+4. Choose **Allow the connection**, keep all three profiles ticked, and name it `FiveM test server TCP`.
+5. Do the same again with **UDP** instead of TCP.
+
+If your server is a rented machine (VPS), its provider may also have a firewall in their control panel. Open `30125` there too.
+
+If the test server runs on your home PC, test alone with several of your own characters. Letting others join a home PC needs port forwarding on your router, which is different for every router.
+
+### Characters
+
+- [ ] Character selection shows every existing character on the account, with the right names.
+- [ ] Characters spawn where they logged out, with their health, armor, hunger and thirst.
+- [ ] Cash, bank and crypto match what they had on QBCore.
+- [ ] Job, grade and duty are correct. Bosses can open the boss menu and see their employees.
+- [ ] Gang and gang grade are correct.
+- [ ] Phone number, citizen ID and character details are unchanged.
+
+### Inventory
+
+- [ ] Player inventories have the right items and amounts. Weapons have their serial numbers, ID cards their details.
+- [ ] Every item has a picture.
+- [ ] Stashes, trunks and gloveboxes still contain their items.
+- [ ] Usable items work, including items from your own scripts.
+- [ ] Shops sell what they should, at the right prices.
+
+### Vehicles and property
+
+- [ ] Owned vehicles are in their garages, with their modifications.
+- [ ] Impounded vehicles are in the impound lot.
+- [ ] Players get keys when they take a vehicle out.
+- [ ] The vehicle shop lists your vehicles, including add-on vehicles.
+- [ ] Characters wear their own clothes.
+- [ ] Job and gang bank accounts have their balances, and bosses can use them.
+
+### Server
+
+- [ ] Admins can use admin commands after `/optin`, and players can't.
+- [ ] The main features of every one of your own scripts work, including the ones that had missing-table errors before you loaded your data.
+- [ ] The Live Console stays clean while the server starts and while you play: no `SCRIPT ERROR`, no `Invalid group` or `Invalid grade` warnings from qbx_core, and no warning about QBCore items missing from ox_inventory.
+
+If you can, play a session with several people at once. Some problems only show up when players interact, such as giving items, cuffing or sharing vehicle keys.
+
+### Fixing problems and testing again
+
+Fix problems on the test server, and **write every fix in your notes**, so it's part of go-live day too.
+
+Before go-live day, run the whole [Database](/migrating/database) page once more on a fresh copy, to prove your notes work from start to finish:
+
+1. Stop the test server.
+2. Back up your live database again, and load it into another new database, for example `qbox_migration2`. See [Copy a database](/migrating/basics#copy-a-database).
+3. Change the database name in the test server's `mysql_connection_string` to `qbox_migration2`.
+4. Follow your notes from [step 2 of Database](/migrating/database#fix-the-collation) onwards, using `qbox_migration2` wherever the guide says `qbox_migration`.
+
+**Never delete or empty a database to reuse it.** Always make a new one. Your live database is in the same list, and one wrong click there is very hard to undo.
+
+## Go-live day {#switch-over}
+
+On go-live day you repeat the database steps on a fresh copy of your live data, and switch your players over. Your settings, jobs, items and scripts are already done on the test server.
+
+### Before the day
+
+- **Your notes are complete.** Every SQL block and console command from [Database](/migrating/database), in order.
+- **You have your original qb-doorlock files**, if you converted doors. See [Housing, phone and other data](/migrating/database#other-data).
+- **You know which files you changed** on the test server. You need that list if your live server is at a hosting company.
+- **Pick a time** with few players, and plan a few hours.
+- **Tell your players** when the server goes down and roughly for how long. Tell them what changes: new inventory, a new apartment to pick, saved outfits and houses that don't carry over.
+- **Decide your rollback deadline.** For example: "If we can't fix it by 10 pm, we go back to QBCore."
+
+### If both servers run on the same machine
+
+You keep using your **live txAdmin** at `http://localhost:40120`, and point it at the Qbox server's folder. That way you keep txAdmin's bans, warnings, whitelist and admin accounts.
+
+**Prepare the Qbox server:**
+
+1. **Write down the Qbox folder.** In the **test** txAdmin (`http://localhost:40125`), go to **Settings**, then **FXServer**, and copy the **Server Data Folder** and **CFG File Path** into your notes.
+2. **Stop the test server for good.** Stop it in the test txAdmin, then close its black `start-test-server.bat` window.
+
+**Close QBCore:**
+
+3. **Write down the QBCore folder.** In the **live** txAdmin, go to **Settings**, then **FXServer**, and copy its **Server Data Folder** and **CFG File Path** into your notes as well. You need them if you roll back.
+4. **Close the QBCore server.** Announce it in game, kick everyone, and click **Stop** in the live txAdmin.
+5. **Update the live server's FiveM files.** Qbox needs the newer FiveM server files you downloaded for the test server. Close the live txAdmin's black window. Then copy everything from `C:\FXServer-qbox\server` into the folder with your live server's `FXServer.exe`, and choose to replace the files. Start your live server again the way you always do, and open the live txAdmin at `http://localhost:40120`. Keep a copy of the old files if you want to be able to roll back to exactly the same version.
+
+**Convert the data:**
+
+6. **Back up the live database.** In HeidiSQL, follow [Back up a database](/migrating/basics#back-up-a-database). This is the final state of your QBCore server. Keep it safe.
+7. **Load it into a new database** called `qbox_live`, as in [Copy a database](/migrating/basics#copy-a-database).
+8. **Run the database steps from your notes** in HeidiSQL, on `qbox_live`: [steps 2 to 5](/migrating/database#fix-the-collation). Run `SELECT DATABASE();` first: it must say `qbox_live`.
+
+**Switch the server:**
+
+9. **Edit the Qbox server's `server.cfg`**, in the Qbox folder from step 1:
+   - In `mysql_connection_string`, change the database name to `qbox_live`.
+   - If there are `endpoint_add_tcp` and `endpoint_add_udp` lines with `30125`, change `30125` to `30120`.
+   - Put your live server's license key in `sv_licenseKey`, so your server keeps its place in the server list.
+10. **Close Qbox to the public while you finish.** In `qbx_core/config/server.lua`, set `closed = true` under `server`. Only players with the `qbadmin.join` permission can join a closed server, so give it to your admins in `permissions.cfg`:
+
+    ```cfg title="permissions.cfg"
+    add_ace group.admin qbadmin.join allow
+    ```
+
+11. **Point the live txAdmin at Qbox.** In the live txAdmin, go to **Settings**, then **FXServer**. Paste the Qbox **Server Data Folder** and **CFG File Path** from step 1, and save.
+12. **Start the server** in the live txAdmin, and watch the Live Console for errors.
+
+**Finish the conversion:**
+
+13. **Run the console steps from your notes**, with nobody connected: `convertjobs`, then `convertqbinventory dryrun` and `convertqbinventory`. Do the checks after each one.
+14. **Doors:** if you converted qb-doorlock doors, copy your original qb-doorlock files into `ox_doorlock/convert` again, and type `ensure ox_doorlock` in the Live Console.
+15. **Convert clothing:** join alone and run `/migrateskins qb-clothing`, see [Convert clothing](/migrating/database#clothing).
+16. **Let staff do a quick test:** log in, check money, inventory, a vehicle and a job.
+17. **Open the server.** In game, an admin runs `/optin`, then `/openserver`. Also set `closed` back to `false` in the config, so the server stays open after the next restart.
+
+### If your live server is at a hosting company
+
+Your test server is on your own PC, so the finished setup has to go to your host. Follow the same order as above, with these differences:
+
+1. **Close the QBCore server** at your host, and **back up** its database (with phpMyAdmin or HeidiSQL) and its files. Many hosts also have a backup button in their panel.
+2. **Install Qbox at your host.** Most hosts that use txAdmin let you deploy a new server with a recipe: choose **QBox Framework**, as you did for the test server. Ask your host if you aren't sure how, and ask whether your bans and txAdmin accounts carry over. The server must run FiveM server build 10731 or newer; hosts usually keep this up to date. Keep the old server's files until you're sure you're staying.
+3. **Copy your work from the test server** to the new Qbox server at your host, using the list of files you changed: your edited Qbox files, such as `qbx_core/shared/jobs.lua`, `gangs.lua` and `vehicles.lua`, `ox_inventory/data/items.lua` and the item pictures in `ox_inventory/web/images`, your config changes, `permissions.cfg`, the lines you added to `server.cfg`, and the `resources/[custom]` folder with your scripts.
+4. **Make a really empty database for your data.** The recipe already put Qbox's tables into the database it created, so your QBCore backup can't go in there. Create one more new database at your host, or ask your host to make one. Load your QBCore backup into it, and change `mysql_connection_string` in the new server's `server.cfg` to that database. Never use the QBCore server's own database: that's your way back.
+5. **Run the database steps from your notes** on that database. If your host lets you connect HeidiSQL to their database, use that. Their panel shows the address and login. Otherwise use phpMyAdmin: click the database on the left, then use its **SQL** tab to run SQL, and its **Import** tab for `.sql` files.
+6. Continue from step 10 above: close the server to the public, start it, run the console steps, convert doors and clothing, test, and open.
+
+## Rolling back
+
+Your live QBCore database was **never changed**: you always worked on copies. So going back is simple:
+
+1. Stop the Qbox server.
+2. Point the server back to QBCore. On the same machine: in the live txAdmin, go to **Settings**, then **FXServer**, paste the QBCore **Server Data Folder** and **CFG File Path** from your notes, and save. At a hosting company: switch back to the old server in their panel.
+3. Start the server, and tell your players.
+
+Anything players did on Qbox in the meantime is lost, because there is no way to convert ox_inventory data back to qb-inventory. That's why you set a rollback deadline. After that deadline, fix problems on Qbox instead of going back.
+
+## After going live
+
+- **Keep the old QBCore server folder and database** until you're sure you're staying on Qbox. After that you can delete them.
+- **Keep the bridge on.** Only turn it off, with `setr qbx:enableBridge "false"`, once no resource uses `qb-core` anymore.
+- **Have scripts you maintain rewritten for Qbox** when there's time. It's optional. See [Converting resources](/migrating/converting-resources).
+
+## Troubleshooting
+
+| You see | Why | Fix |
+| --- | --- | --- |
+| `Foreign key constraint is incorrectly formed` (errno 150) when running SQL | Your tables use different collations | Do [Fix the collation](/migrating/database#fix-the-collation) first |
+| `Access denied for user` in the console | The password in `mysql_connection_string` is wrong | Check the user and password, see [Connect to your database server](/migrating/basics#connect-to-your-database-server) |
+| `Unknown database` in the console | The database name in `mysql_connection_string` doesn't exist | Check the spelling against the list in HeidiSQL |
+| `Unknown column 'coords'` | The vehicle columns are missing | Do [Fix vehicles](/migrating/database#fix-vehicles) |
+| `Table '...player_groups' doesn't exist` | The Qbox SQL wasn't run | Do [Run the Qbox SQL](/migrating/database#run-the-qbox-sql) |
+| `'}' expected` or `unexpected symbol near` in a `.lua` file | A typo in a config file you edited, often a missing comma | Open the file at the line number from the error. See [Editing Lua config files](/migrating/basics#editing-lua-config-files) |
+| `Unemployed job not found. Does it exist in shared/jobs.lua?` | Your jobs file has no `unemployed` job | Put the `unemployed` job back. qbx_core also needs the `none` gang |
+| Characters lose their grade or boss access | Grade numbers still have quotes, or grade numbers changed | Remove the quotes and keep the grade numbers you had on QBCore. See [Jobs and gangs](/migrating/server-setup#jobs-and-gangs) |
+| `Invalid grade ... found in player_groups table` | A grade players have doesn't exist in your jobs or gangs file | Add the grade back, or move those players to a grade that exists |
+| `Could not find dependency ... for resource ...` | A script needs a QBCore resource Qbox doesn't have | See [Check its dependencies](/migrating/scripts#2-check-its-dependencies) |
+| `No such export ... in resource qb-inventory` (or `qb-target`, `qb-menu`) | A script uses a QBCore resource Qbox replaced | Switch the script's config to ox, see [Check a script](/migrating/scripts#check-a-script) |
+| `No such export GetCoreObject in resource qbx_core` | A script calls `exports.qbx_core:GetCoreObject()` | Change it to `exports['qb-core']:GetCoreObject()`, or set the script's framework option to Qbox |
+| `attempt to call a nil value (field 'GetPlayerByLicense')` or another QBCore function name | Your qbx_core is older than its QBCore 1.3.0 support | [Update qbx_core](/migrating/basics#updating-qbx_core) |
+| `attempt to index a nil value` next to `grades[...]` | The script looks up grades with quotes around the number | The script needs a small fix, see [Differences from QBCore](/migrating/scripts#differences-from-qbcore) |
+| `... QBCore items in qbx_core/shared/items.lua are missing from ox_inventory` | Items in `qbx_core/shared/items.lua` aren't in ox_inventory yet | Finish [Items](/migrating/server-setup#items) |
+| `Inventory for player.X contains invalid data` | That character's inventory is still in QBCore's format | Run `convertqbinventory`. See [Convert inventories](/migrating/database#inventories) |
+| `... players are online. Inventory conversion must run with no players connected.` | `convertqbinventory` only runs on an empty server | Kick everyone or close the server, and run it again |
+| Items without a picture | The picture isn't in `ox_inventory/web/images` | Copy your item pictures there. Each must be named after its item, like `water_bottle.png` |
+| Staff get "no permission" on admin commands | Staff are still in `qbcore.*` groups, or didn't run `/optin` | Move them to `group.admin`, see [Permissions](/migrating/server-setup#permissions), and run `/optin`. Moderators can't use qbx_core's admin commands |
+| `Player.Functions.SetInventory is unsupported for ox_inventory` | The script replaces whole inventories | The script needs updating for ox_inventory |
+| Stuck on the loading screen with your own multicharacter | Your multicharacter never closes the loading screen | See the [FAQ](/faq#can-i-use-my-own-multicharacter) |
+
+Still stuck? Ask in the [Qbox Discord](https://discord.gg/qbox) with the full error text and the name of the resource.
