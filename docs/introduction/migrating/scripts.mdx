@@ -1,0 +1,168 @@
+---
+title: "Your Own Scripts"
+sidebar_label: "Your own scripts"
+sidebar_position: 4
+keywords: [qbox, fivem, qbcore, migration, bridge, compatibility, scripts, GetCoreObject, qb-inventory, qb-target, exports, events, escrow, paid scripts]
+description: Move your own and paid QBCore scripts to Qbox. How to check whether a script works on Qbox, what to change in its config, and what the QBCore bridge in qbx_core does and doesn't cover.
+slug: /migrating/scripts
+---
+
+# Your own scripts
+
+"Your own scripts" means every resource that isn't part of the Qbox recipe: paid scripts, free scripts you downloaded, and anything a developer made for you.
+
+**Most QBCore scripts keep working on Qbox without changes.** qbx_core includes a bridge that answers QBCore's functions and events. The scripts that need attention are the ones built for **qb-inventory**, **qb-target** or **qb-menu**, because Qbox uses different resources for those.
+
+## Move your scripts one at a time
+
+1. **Leave QBCore's own resources behind.** Don't copy `qb-core` or any other `qb-` resource that Qbox replaces, see [Resource equivalents](/migrating/resources). Running both means double menus, commands and errors. If a folder called `qb-core` ends up on the test server, delete it.
+2. **Make a folder for your scripts** on the test server: `resources/[custom]`. Folder names in square brackets are groups that FiveM can start all at once.
+3. **Add this line at the very bottom of `server.cfg`**, below all other `ensure` lines, so your scripts start after Qbox:
+
+   ```cfg
+   ensure [custom]
+   ```
+
+4. **Copy one script** into `resources/[custom]`.
+5. **Check it** as described in [Check a script](#check-a-script), and change its config if needed.
+6. **Restart the test server**, look at the Live Console for errors, and try the script in game.
+7. Repeat for the next script.
+
+Doing one at a time means that when something breaks, you know which script did it.
+
+:::note[Errors about missing tables are expected for now]
+The test server still runs on an empty database. A script that stores its own data may print an error like `Table '...' doesn't exist`. Don't run random `.sql` files to fix it. Write the script down, and test it again after [Database](/migrating/database), when your real data is in.
+:::
+
+## Check a script {#check-a-script}
+
+### 1. Look for a Qbox option in its config
+
+Open the script's config file, usually `config.lua` or a file in a `config` folder. Many scripts have settings that choose what they work with. Set them like this:
+
+| Setting is about | Choose |
+| --- | --- |
+| Framework or core | `qbx` or `qbox` if it's offered, otherwise `qb` or `qbcore` |
+| Inventory | `ox_inventory` or `ox` |
+| Target (third eye) | `ox_target` or `ox` |
+| Menus, input, progress bars, notifications | `ox_lib` or `ox` |
+| Fuel | `ox_fuel` |
+| Banking | `Renewed-Banking` |
+| Clothing | `illenium-appearance` |
+
+If the script supports Qbox directly, it talks to qbx_core without the bridge, which is the best case.
+
+### 2. Check its dependencies
+
+Open the script's `fxmanifest.lua` and look for `dependency` or `dependencies`. If it lists a QBCore resource, Qbox must have something with that name, or the script won't start. The console then says:
+
+```
+Could not find dependency qb-target for resource my_script.
+Couldn't start resource my_script.
+```
+
+Qbox's resources answer to these QBCore names: `qb-core`, `qb-vehiclekeys`, `qb-weathersync`, `qb-management`, `qb-mechanicjob`, `qb-taxijob`, `qb-towjob`, `qb-truckerjob`, `qb-scrapyard`, `qb-lapraces` and `qb-npwd`. Any other `qb-` dependency, such as `qb-target` or `qb-inventory`, needs a Qbox option in the script's config, a version from its author, or a developer.
+
+### 3. Search it for QBCore resources Qbox doesn't have
+
+Open the script's folder in VS Code and press **Ctrl+Shift+F** to search all its files. Search for each word below. A result in a config option you already changed in step 1 doesn't count.
+
+| Search for | If you find it | What to do |
+| --- | --- | --- |
+| `qb-inventory`, `inventory:server:`, `inventory:client:` | The script talks to qb-inventory directly | Switch it to ox_inventory in its config, or get an ox_inventory version |
+| `qb-target` | The script uses qb-target | Switch it to ox_target in its config. Some scripts support `qtarget`, which ox_target also answers |
+| `qb-menu`, `qb-input` | The script uses QBCore's menus | Switch it to ox_lib in its config. If it has no such option, copy the `qb-menu` and `qb-input` folders from your QBCore server into `resources/[custom]` too. They work through the bridge |
+| `LegacyFuel`, `qb-fuel`, `cdn-fuel` | The script reads fuel from a fuel script Qbox doesn't use | Switch it to ox_fuel in its config |
+| `exports['progressbar']` | The script uses QBCore's progress bar directly | Get a version that uses ox_lib, or a developer |
+| `qb-phone` | The script works with qb-phone | Find a version for NPWD, or for the phone you use |
+
+`QBCore.Functions.Progressbar`, `QBCore.Functions.Notify` and `QBCore.Functions.HasItem` are fine. The bridge handles those.
+
+### 4. Escrowed scripts
+
+A script is escrowed (encrypted) if its folder has a `.fxap` file and its Lua files look like gibberish. You can only change its config. If its config has no option for ox_inventory or ox_target and the script needs them, ask the author for a Qbox version. Many authors have one.
+
+### What to do with each kind of script {#sort-your-scripts}
+
+| The script... | What to do |
+| --- | --- |
+| Has a Qbox option, such as `Config.Framework = 'qbx'` | Use it |
+| Turned up nothing in step 3 | Usually works as it is. Test it |
+| Finds qb-inventory, qb-target or qb-menu, and has an ox option | Switch to the ox option |
+| Finds qb-inventory, qb-target or qb-menu, and has no ox option | Ask the author for a Qbox version, or have a developer update it |
+| Reads or writes the database itself | Test it carefully. Inventories, jobs and vehicles are stored differently on Qbox |
+| Is a multi-job, multicharacter or queue script | Usually remove it. qbx_core has these built in. See the [FAQ](/faq#are-multijob-resources-compatible-with-qbox) |
+| Replaces a stock QBCore resource | Use the Qbox replacement. See [Resource equivalents](/migrating/resources) |
+
+## How the bridge works {#how-the-bridge-works}
+
+The bridge is the part of qbx_core that makes QBCore scripts work:
+
+- **qbx_core answers to the name `qb-core`.** Scripts that need `qb-core` start normally, and scripts that check whether `qb-core` is running see that it is.
+- **`exports['qb-core']:GetCoreObject()` still works.** It returns the familiar `QBCore` object. Its functions call qbx_core and ox_inventory underneath.
+- **QBCore's events still fire**, such as `QBCore:Client:OnPlayerLoaded` and `QBCore:Client:OnJobUpdate`.
+- **QBCore callbacks still work.**
+
+The bridge is switched on by this line in `server.cfg`. Leave it on:
+
+```cfg
+setr qbx:enableBridge "true"
+```
+
+:::info[Scripts that detect the framework by themselves]
+Because qbx_core answers to `qb-core`, a script that checks for `qb-core` before `qbx_core` uses its QBCore mode. That works through the bridge. If the script has a Qbox mode, set it in its config instead.
+:::
+
+## For developers
+
+The rest of this page is for people who write or edit Lua. To change a script's code to the Qbox API, see [Converting resources](/migrating/converting-resources).
+
+### What the bridge covers {#what-the-bridge-covers}
+
+The bridge covers QBCore 1.3.0's functions, `exports['qb-core']` exports and events, on the server and the client. If a QBCore script fails with `attempt to call a nil value (field '...')` on a QBCore function, update qbx_core first.
+
+### Inventory, target and menus {#inventory-target-and-menus}
+
+| Script uses | On Qbox |
+| --- | --- |
+| `Player.Functions.AddItem`, `RemoveItem`, `GetItemByName`, `QBCore.Functions.HasItem` | Work, through ox_inventory |
+| `exports['qb-inventory']:...` or `inventory:server:` events | **Fail.** Nothing provides `qb-inventory`. Switch the script to ox_inventory |
+| `exports['qb-target']:...` | **Fail.** ox_target only answers the older `qtarget` exports. Switch to ox_target, or use `exports.qtarget` if the script supports it |
+| `exports['qb-menu']:...`, `exports['qb-input']:...` | **Fail** unless qb-menu and qb-input are running. Switch to ox_lib, or keep them running for that script |
+| `exports['LegacyFuel']:GetFuel` or `qb-fuel` exports | **Fail.** ox_fuel keeps fuel in the `fuel` state bag: `Entity(vehicle).state.fuel` |
+| `exports['qb-radialmenu']:AddOption` | Works, through qbx_radialmenu |
+| qb-vehiclekeys and qb-weathersync events and exports | The common ones work. See [Resource equivalents](/migrating/resources) |
+
+Item data looks different in ox_inventory:
+
+- **Usable item callbacks receive ox_inventory data.** The item a `CreateUseableItem` callback gets has `count` and `metadata`, not QBCore's `amount` and `info`.
+- **`QBCore.Shared.Items` is built from ox_inventory's items.** An item is `unique` when ox_inventory doesn't stack it, and `useable` when ox_inventory can use it.
+- **`PlayerData.items` is empty.** Read items from ox_inventory instead.
+
+### Differences from QBCore
+
+Some things can't work exactly like QBCore on top of Qbox and ox_inventory:
+
+- **Job and gang grades have number keys.** Use `QBCore.Shared.Jobs.police.grades[0]`, not `grades['0']`. Scripts that do `grades[tostring(level)]` get `nil`. Change them to `grades[level]`.
+- **`exports['qb-core']:AddItem`, `AddItems` and `UpdateItem` can't create real items**, because ox_inventory only knows the items in `ox_inventory/data/items.lua`. They update `QBCore.Shared.Items` and print an entry for you to paste into ox_inventory.
+- **`QBCore:Server:AddItem`, `RemoveItem` and `UseItem` only print a warning.** Clients could use them to give themselves items, so do item changes on the server with ox_inventory.
+- **Item functions on an offline player raise an error**, and so does `Player.Functions.SetInventory`. Clear the inventory and add items with ox_inventory instead.
+- **The fourth argument of `QBCore.Functions.Notify`** is a subtitle on Qbox, not an icon.
+- **Progress bars come from ox_lib**, so players cancel them with ox_lib's key.
+- **`QBCore.Config` has qbx_core's layout**, not QBCore's.
+- **`GetCoreVersion` returns qbx_core's version.** Scripts that compare it with a QBCore version number get the wrong answer.
+- **`QBCore.Shared.Vehicles` entries have no `shop` field.**
+- **Commands registered with `QBCore.Commands.Add` and permission `'god'` need `group.god`.** See [Permissions](/migrating/server-setup#permissions).
+
+### Behaviour that changed to match QBCore
+
+The bridge follows QBCore 1.3.0, and older qbx_core versions handled these differently. Check scripts that were written for or adjusted to Qbox before this change:
+
+- **`QBCore.Functions.Progressbar` returns right away** and calls `onFinish` or `onCancel` when the bar ends. It used to wait until the bar was done.
+- **`QBCore.Functions.PlayAnim` waits** until the animation has played once, or for `duration` milliseconds if that is shorter. With a `duration` of `-1` it starts a looping animation and returns right away.
+- **`GetDutyCount`, `GetPlayersOnDuty` and `GetPlayersByJob` match a job's type as well as its name.** For example, `GetDutyCount('leo')` counts every job with `type = 'leo'`, and `GetDutyCount('mechanic')` also counts other jobs with `type = 'mechanic'`.
+- **`GetDutyCount` returns only the number.** It used to return the list of players as a second value. Use `GetPlayersOnDuty` for the list.
+
+### Fixing a script yourself
+
+If you can edit the script, replace the calls that fail with their Qbox versions. [Converting resources](/migrating/converting-resources) has a replacement table for the most used QBCore functions. You don't have to convert the whole script. QBCore and Qbox calls work side by side.

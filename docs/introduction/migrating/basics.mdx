@@ -1,0 +1,244 @@
+---
+title: "Tools and Basics"
+sidebar_label: "Tools and basics"
+sidebar_position: 1
+keywords: [qbox, fivem, qbcore, migration, heidisql, txadmin, live console, vs code, backup, mariadb, sql, beginner]
+description: The tools you need to migrate from QBCore to Qbox, and how to use them. Running console commands in txAdmin, running SQL in HeidiSQL, backing up and copying a database, and editing config files.
+slug: /migrating/basics
+---
+
+# Tools and basics
+
+This page explains everything the rest of the guide expects you to know. If you already use HeidiSQL and a code editor every day, skim it and move on.
+
+## Tools you need
+
+| Tool | What it's for | Where to get it |
+| --- | --- | --- |
+| **txAdmin** | Starting your server and typing server commands | You already have it. It came with your FiveM server |
+| **HeidiSQL** | Looking at your database and running database commands | It comes with the MariaDB installer for Windows. Otherwise from [heidisql.com](https://www.heidisql.com/download.php) |
+| **Visual Studio Code** (VS Code) | Editing config files | [code.visualstudio.com](https://code.visualstudio.com/) |
+| **7-Zip** | Unpacking FiveM server files | [7-zip.org](https://www.7-zip.org/) |
+
+Don't use Windows Notepad for config files. It's easy to break a file with it without noticing, and it can't search across a whole folder.
+
+## Words used in this guide
+
+| Word | What it means |
+| --- | --- |
+| **Resource** or **script** | A folder in your server's `resources` folder that adds something to the game, like `qb-policejob` or `ox_inventory` |
+| **Framework** or **core** | The resource every other script builds on. `qb-core` on QBCore, `qbx_core` on Qbox |
+| **Bridge** | The part of qbx_core that answers QBCore's functions, so QBCore scripts keep working on Qbox |
+| **Live server** | The server your players play on today |
+| **Test server** | The separate Qbox server you build for this migration. Also called a staging server |
+| **Database** | Where your server stores characters, money, vehicles and so on. Yours runs on MariaDB |
+| **Table** and **column** | A database is made of tables, like `players` or `player_vehicles`. Each table has columns, like `citizenid` or `money` |
+| **SQL**, **query** or **statement** | A command you type to read or change the database |
+| **Live Console** | The page in txAdmin where you see your server's output and type server commands |
+| **Collation** | The rules a database table uses to compare and sort text. All tables need the same one, see [Database](/migrating/database#fix-the-collation) |
+| **Citizen ID** | The ID of a character, like `ABC12345`. It stays the same on Qbox |
+| **Identifier** | The ID of a player's account, like `fivem:1234567` or `license:...`. Used to give staff permissions |
+| **Escrowed script** | A paid script whose code is encrypted. You can't edit it, only its config |
+
+## Using txAdmin's Live Console
+
+Some steps ask you to run a command "in the Live Console". That means:
+
+1. Open txAdmin in your browser. On your own PC that's usually `http://localhost:40120`.
+2. Click **Live Console** in the left menu.
+
+:::warning[Two servers, two txAdmins]
+Once you've built the test server next to your live server, you have two txAdmins: the live one at `http://localhost:40120` and the test one at `http://localhost:40125`. **Look at the address bar** before you type a command or click Restart. Everything in this guide happens on the test server until go-live day.
+:::
+3. Type the command in the box at the bottom, exactly as written in the guide, and press **Enter**.
+4. The answer appears in the console above.
+
+Server commands don't start with a `/`. Commands with a `/` are chat commands that you type in game.
+
+**Starting and stopping the server:** use the start, stop and restart buttons in txAdmin. Some database steps must be done while the server is **stopped**. The guide says so when it matters.
+
+**Restarting one resource** without restarting the whole server: type `ensure` and the resource name in the Live Console, for example `ensure ox_inventory`.
+
+**Reading errors.** Errors in the console usually start with `SCRIPT ERROR:` and name the resource and file, for example:
+
+```
+SCRIPT ERROR: @qbx_core/shared/jobs.lua:57: '}' expected (to close '{' at line 3) near 'police'
+```
+
+This one says: in `qbx_core/shared/jobs.lua`, at line 57, a `}` is missing. Open that file, go to that line and look just above it. A missing comma or bracket is the most common mistake.
+
+## Using HeidiSQL
+
+### Connect to your database server
+
+1. Open HeidiSQL. The **Session manager** opens.
+2. Click **New** at the bottom left.
+3. Fill in:
+   - **Network type:** `MariaDB or MySQL (TCP/IP)`
+   - **Hostname / IP:** `127.0.0.1` if the database runs on this PC
+   - **User** and **Password:** the database login, usually `root` and the password you chose when installing MariaDB
+   - **Port:** `3306`
+4. Click **Open**.
+
+You can find the login your server uses in `mysql_connection_string` in your `server.cfg`. It usually looks like this:
+
+```cfg
+set mysql_connection_string "mysql://root:YourPassword@localhost/qbcore_a1b2c3?charset=utf8mb4"
+```
+
+Here the user is `root`, the password is `YourPassword` and the database is `qbcore_a1b2c3`. If there is no password, the part looks like `root@localhost`.
+
+It can also be written like this, with the same parts:
+
+```cfg
+set mysql_connection_string "user=root;password=YourPassword;host=localhost;database=qbcore_a1b2c3"
+```
+
+### Pick the right database
+
+The list on the left shows every database on the server. **Click the database you want to work on before you run anything.** Every command in this guide runs on the database that is selected.
+
+To make sure, run this. It shows the name of the selected database:
+
+```sql
+SELECT DATABASE();
+```
+
+### Run SQL
+
+1. Select the database on the left.
+2. Click the **Query** tab.
+3. Paste the SQL from the guide into the big text box. Replace anything that was in there.
+4. Click the blue **Execute SQL** button (the ▶ triangle in the toolbar), or press **F9**.
+
+Results appear in a grid under the text box. If something is wrong, HeidiSQL shows a popup starting with `SQL Error`. Copy the whole message if you ask for help.
+
+Press **F5** to refresh the list on the left after you add or change tables.
+
+### Run an .sql file
+
+Some steps ask you to run a file that ends in `.sql`.
+
+1. Select the database on the left.
+2. Click **File**, then **Run SQL file...**.
+3. Pick the file and confirm.
+
+### Back up a database
+
+1. Right-click the database on the left and choose **Export database as SQL**.
+2. On the left of the window, make sure your database is ticked.
+3. Set the options:
+   - **Database(s):** untick both **Drop** and **Create**. This lets you load the backup into a database with a different name later.
+   - **Table(s):** tick **Create**, untick **Drop**. Then a backup loaded into the wrong database by mistake fails instead of overwriting tables.
+   - **Data:** choose **Insert**.
+   - **Output:** choose **Single .sql file**.
+   - **Filename:** pick where to save it. Use a name with the date, like `qbcore-2026-10-30.sql`.
+4. Click **Export** and wait until it says it's done.
+
+### Copy a database
+
+You copy a database by backing it up, then loading the backup into a new, empty database:
+
+1. Back up the database as described above.
+2. **Check the backup file.** Open it in VS Code, press **Ctrl+F** and search for `CREATE DATABASE`, then for `DROP DATABASE`. If either is found, the backup was made with the **Database(s)** options ticked, and loading it would write into your **original** database instead of the new one. Delete the file and make the backup again with **Drop** and **Create** unticked.
+3. Right-click your connection, the top line in the list on the left, and choose **Create new**, then **Database**.
+4. Give it a name, for example `qbox_migration`. Set **Collation** to `utf8mb4_unicode_ci`. Click **OK**.
+5. Click the new database on the left to select it.
+6. Click **File**, then **Run SQL file...**, and pick your backup.
+7. Press **F5**. The new database now has the same tables as the old one.
+
+### If your database is at a hosting company
+
+If your server is hosted by a game server provider, their control panel usually has **phpMyAdmin**. Use its **Export** tab to download your database as a `.sql` file. You can then load that file into MariaDB on your own PC, as in [Copy a database](#copy-a-database).
+
+## Using VS Code
+
+1. Open VS Code, click **File**, then **Open Folder...**, and open your server folder, the one with `server.cfg` in it.
+2. Open files from the list on the left.
+3. Save with **Ctrl+S**.
+
+Useful keys:
+
+| Keys | What it does |
+| --- | --- |
+| **Ctrl+F** | Find text in the open file |
+| **Ctrl+H** | Find and replace in the open file |
+| **Alt+R** | While finding or replacing: turn on "regular expressions" (the `.*` button). Some steps need this |
+| **Ctrl+Shift+F** | Search every file in the folder. Useful to check what your scripts use |
+| **Ctrl+G** | Go to a line number |
+
+### Editing Lua config files
+
+Most Qbox config files are Lua tables. A few rules prevent most errors:
+
+- **Every entry ends with a comma**, including the last one: `label = 'Police',`
+- **Every `{` needs a matching `}`.** VS Code highlights the matching bracket when you click next to one.
+- **Text goes in quotes:** `'police'` or `"police"`. Numbers and `true` or `false` don't.
+- **`--` starts a comment.** Everything after it on that line is ignored.
+
+After editing, restart the server or the resource and check the Live Console for errors.
+
+## Check your database server {#check-your-database-server}
+
+Qbox needs **MariaDB 10.9 or newer**. In HeidiSQL, run:
+
+```sql
+SELECT VERSION();
+```
+
+| You see | What to do |
+| --- | --- |
+| A number like `11.8.3-MariaDB` or `12.0.2-MariaDB`, 10.9 or higher | You're good |
+| `10.4.x-MariaDB` or another version below 10.9 | Too old. This is common with XAMPP. Install a new MariaDB, see below |
+| A number without `MariaDB`, like `8.0.36` | That's MySQL, which Qbox doesn't support. Install MariaDB, see below |
+
+**If your database is at a hosting company**, open phpMyAdmin in their panel. Its start page shows the **Server version**. If it's MySQL or a MariaDB older than 10.9, ask your host to move you to a current MariaDB before go-live day. Your test server runs on your own PC, so you can start right away.
+
+### Install a new MariaDB
+
+You can install a new MariaDB next to your old database server. Your live server keeps using the old one, and only the test server uses the new one.
+
+1. Download the **MariaDB Server** installer for Windows (the `.msi` file) from [mariadb.org/download](https://mariadb.org/download/). Pick the newest LTS version.
+2. Run it. When it asks, set a password for the `root` user and write it down. Leave **HeidiSQL** ticked, so it gets installed too.
+3. When it asks for a **TCP port**: if your old database server already uses `3306`, the installer suggests `3307`. Keep that and write it down.
+4. Finish the installation.
+
+If you used port `3307`, add it wherever the guide connects to the database: in HeidiSQL's **Port** field, in txAdmin's database settings when you deploy the test server, and in `mysql_connection_string`, after the host:
+
+```cfg
+set mysql_connection_string "mysql://root:YourPassword@localhost:3307/qbox_migration?charset=utf8mb4"
+```
+
+Your QBCore data gets into the new MariaDB automatically: in [Database](/migrating/database) you load a backup of your live database into it.
+
+## Back up everything {#back-up-everything}
+
+Do this before anything else, and keep these backups until well after you've moved to Qbox. You don't need to stop your live server for it. A quiet time with few players is best.
+
+1. **Back up the database.** Follow [Back up a database](#back-up-a-database).
+2. **Back up the server folder.** This is the folder that contains `server.cfg` and `resources`. To find it, open your live txAdmin, go to **Settings**, then **FXServer**, and look at **Server Data Folder**. Copy that whole folder somewhere safe, for example to a USB drive or another disk. Zip it if you like.
+3. **Write down what you changed in qb-core.** If you or a developer ever edited files inside `qb-core`, those changes don't carry over. Make a list of what was changed and why, so you can redo it on Qbox in a supported way.
+
+Store the backups **outside** your server folder, so you can't overwrite them by accident.
+
+### Restore a backup
+
+If your live database ever gets damaged, don't load the backup over it. Load it next to it instead:
+
+1. In HeidiSQL, create a new database, for example `qbcore_restore`, and load the backup into it as in [Copy a database](#copy-a-database).
+2. In your live server's `server.cfg`, change the database name in `mysql_connection_string` to `qbcore_restore`.
+3. Restart the live server.
+
+To restore the server folder, stop the server and copy the backed-up folder back.
+
+## Updating qbx_core {#updating-qbx_core}
+
+If the guide tells you to update qbx_core, for example because a command doesn't exist:
+
+1. Download `qbx_core.zip` from the newest release on [qbx_core's releases page](https://github.com/Qbox-project/qbx_core/releases).
+2. Stop the test server.
+3. Copy the files you changed in qbx_core somewhere safe: the `config` folder, and `shared/jobs.lua`, `gangs.lua`, `vehicles.lua` and `main.lua`.
+4. Delete the `resources/[qbx]/qbx_core` folder. Then unpack the zip into `resources/[qbx]`. The zip contains a `qbx_core` folder, so you have `resources/[qbx]/qbx_core` again.
+5. Copy your changed files back in, and start the server.
+
+Now continue with [Resource equivalents](/migrating/resources).

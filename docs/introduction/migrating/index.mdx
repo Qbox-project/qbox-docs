@@ -1,0 +1,149 @@
+---
+title: "Migrating from QBCore"
+sidebar_label: "Overview"
+sidebar_position: 0
+keywords: [qbox, fivem, qbcore, migration, migrate, convert, framework, switch, upgrade]
+description: Move a running QBCore server to Qbox while keeping characters, money, jobs, items and vehicles. A step-by-step guide for server owners, with every step explained.
+slug: /migrating
+---
+
+# Migrating from QBCore
+
+This guide moves your QBCore server to Qbox, and brings your players' characters, money, jobs, items and vehicles along.
+
+QBCore has been deprecated by its maintainers and is no longer offered as a txAdmin recipe. Qbox started as a copy of QBCore, so it is the closest place to move to. Most of your server comes with you.
+
+## Who this guide is for
+
+This guide is written for **server owners**, not developers. You don't need to know how to code. You will:
+
+- click around in **txAdmin**, which you already use,
+- run ready-made database commands in **HeidiSQL**, a free database program,
+- copy and edit a few text files in **Visual Studio Code**, a free text editor.
+
+Every step tells you exactly what to click and type, and how to check that it worked. If you have never used HeidiSQL or VS Code, read [Tools and basics](/migrating/basics) first. It explains everything this guide expects you to know.
+
+:::tip[Developer porting a single script?]
+Go straight to [Converting resources](/migrating/converting-resources).
+:::
+
+## How the migration works
+
+You never touch your live server until the very end. Instead:
+
+1. You build a **second, separate Qbox server**: the test server.
+2. You copy your settings over to it, such as jobs, items and staff.
+3. You load a **copy** of your database into it and convert that copy.
+4. You and your staff test everything.
+5. On go-live day, you repeat the database steps on a fresh copy and switch your players over.
+
+Your QBCore server keeps running the whole time, and if anything goes wrong you just keep using it.
+
+## What you keep and what you lose
+
+Read this before you start, so nothing surprises you or your players.
+
+| Comes with you | Notes |
+| --- | --- |
+| Characters, names, citizen IDs, character details | Automatically |
+| Cash, bank and crypto | Automatically |
+| Jobs, gangs and grades | After you run one command |
+| Items in player inventories, stashes, trunks and gloveboxes | After you run one command. Weapons lose their attachments |
+| Owned vehicles, with their mods | After a few database commands |
+| Job and gang bank accounts | After one database command |
+| Clothing | After one in-game command |
+| Phone numbers and mails | After one database command |
+
+| Does not come with you | Why |
+| --- | --- |
+| Houses and apartments, and the items in their stashes | Qbox uses a different housing system. Players pick a new apartment |
+| Saved outfits | The clothing script stores them differently |
+| Phone contacts, messages, photos and tweets | Qbox uses a different phone |
+| Weapon attachments | ox_inventory stores attachments differently |
+| Bank transaction history | Balances come with you, the history doesn't |
+| Weed plants | They belong to houses |
+
+Your **own scripts** may need work too. Most QBCore scripts keep working, but scripts built for qb-inventory, qb-target or qb-menu need a Qbox version or an update. You check each one in [Your own scripts](/migrating/scripts).
+
+## What changes
+
+| | On QBCore | On Qbox |
+| --- | --- | --- |
+| Core | `qb-core` | `qbx_core`, which pretends to be `qb-core` so QBCore scripts keep working |
+| Inventory | `qb-inventory` | [ox_inventory](https://coxdocs.dev/ox_inventory) |
+| Looking at things to interact (third eye) | `qb-target` | [ox_target](https://coxdocs.dev/ox_target) |
+| Menus, input boxes, progress bars, notifications | `qb-menu`, `qb-input`, `progressbar` | [ox_lib](https://coxdocs.dev/ox_lib) |
+| Character selection | `qb-multicharacter` | Built into qbx_core |
+| More than one job per character | Extra scripts | Built into qbx_core |
+| Connection queue | `connectqueue` | Built into qbx_core |
+| Staff permissions | `qbcore.god`, `qbcore.admin`, `qbcore.mod` | `group.admin`, `group.mod`, `group.support` |
+| Database | MySQL or MariaDB | **MariaDB 10.9 or newer**. MySQL and XAMPP are not supported |
+
+## The full checklist
+
+Do these in order. Each line links to the step that explains it. Don't skip ahead: later steps rely on earlier ones.
+
+**Part 1: Prepare.** Nothing on your live server changes.
+
+- [ ] Get HeidiSQL and VS Code, and learn the basics: [Tools and basics](/migrating/basics)
+- [ ] Check your MariaDB version: [Check your database server](/migrating/basics#check-your-database-server)
+- [ ] Back up your server and database: [Back up everything](/migrating/basics#back-up-everything)
+- [ ] List your resources and find their Qbox replacements: [Resource equivalents](/migrating/resources)
+
+**Part 2: Build the test server.**
+
+- [ ] Install Qbox as a second server: [Build a test server](/migrating/server-setup#build-a-test-server)
+- [ ] Make sure it works before you change anything: [Check the test server](/migrating/server-setup#check-the-test-server)
+
+**Part 3: Move your settings to the test server.**
+
+- [ ] Copy your settings into `server.cfg`: [server.cfg](/migrating/server-setup#servercfg)
+- [ ] Add your staff: [Permissions](/migrating/server-setup#permissions)
+- [ ] Copy your jobs and gangs: [Jobs and gangs](/migrating/server-setup#jobs-and-gangs)
+- [ ] Copy your items: [Items](/migrating/server-setup#items)
+- [ ] Add your add-on vehicles: [Vehicles](/migrating/server-setup#vehicles)
+- [ ] Copy your other settings: [Other settings](/migrating/server-setup#other-settings)
+- [ ] Add and check your own scripts: [Your own scripts](/migrating/scripts)
+
+**Part 4: Convert a copy of your database.**
+
+- [ ] Copy your database and connect the test server to it: [1. Copy your database](/migrating/database#load-a-copy)
+- [ ] Make all tables use the same text rules: [2. Fix the collation](/migrating/database#fix-the-collation)
+- [ ] Add Qbox's tables: [3. Run the Qbox SQL](/migrating/database#run-the-qbox-sql)
+- [ ] Fix vehicles and garages: [4. Fix vehicles](/migrating/database#fix-vehicles)
+- [ ] Copy job and gang bank accounts: [5. Copy job and gang bank balances](/migrating/database#society-balances)
+- [ ] Convert jobs and gangs: [6. Start the server and convert jobs](/migrating/database#convert-jobs)
+- [ ] Convert inventories: [7. Convert inventories](/migrating/database#inventories)
+- [ ] Convert clothing: [8. Convert clothing](/migrating/database#clothing)
+- [ ] Decide what to do about houses, phones and doors: [9. Housing, phone and other data](/migrating/database#other-data)
+
+**Part 5: Test.**
+
+- [ ] Test everything with your staff: [Test on the test server](/migrating/going-live#test-on-the-test-server)
+
+**Part 6: Go live.**
+
+- [ ] Switch your players over: [Go-live day](/migrating/going-live#switch-over)
+
+## Rules that keep you safe
+
+- **Never do this on your live server.** Everything happens on the test server and a copy of your database.
+- **Check which database is selected** before you run any SQL. The guide shows you how, every time.
+- **Keep your backups** until well after you go live. Don't delete the old database or server folder.
+- **Write everything down.** Keep a text file open and paste every database command and console command into it as you run it, in order. On go-live day you run that exact list again.
+- **Read every check.** Most steps end with "How to check it worked". If the check fails, fix it before you continue. Problems get much harder to find later.
+- **Stuck? Stop and ask.** Guessing on a database is how data gets lost.
+
+## Do I have to convert my scripts?
+
+No. qbx_core includes a **bridge**: a compatibility layer that answers QBCore's functions and events, so most QBCore scripts run without changes.
+
+Rewriting a script for Qbox is optional. Developers can do it later, one script at a time. [Your own scripts](/migrating/scripts) shows which scripts need attention.
+
+## Getting help
+
+Ask in the support channels of the [Qbox Discord](https://discord.gg/qbox). You get an answer much faster if you include:
+
+- the step of this guide you are on, for example "Database, step 3",
+- the **full** error text from the console or HeidiSQL, copied as text, not a screenshot of part of it,
+- the name of the resource involved, if there is one.

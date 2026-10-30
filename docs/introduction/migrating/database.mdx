@@ -1,0 +1,494 @@
+---
+title: "Converting Your Database"
+sidebar_label: "Database"
+sidebar_position: 5
+keywords: [qbox, fivem, qbcore, migration, database, mariadb, sql, heidisql, collation, convertjobs, convertqbinventory, ox_inventory, player_vehicles, renewed-banking, illenium-appearance]
+description: Convert a copy of your QBCore database for Qbox, step by step in HeidiSQL and txAdmin. Fix the collation, add Qbox's tables, and convert jobs, inventories, vehicles, bank accounts and clothing.
+slug: /migrating/database
+---
+
+# Converting your database
+
+On this page you load a **copy** of your QBCore database into the test server and convert it, one step at a time. Your live database isn't touched.
+
+## Before you start
+
+- **Finish [Server setup](/migrating/server-setup) first.** Your jobs, gangs and items must be on the test server, because steps 6 and 7 use them.
+- **Know the basics of HeidiSQL and the Live Console.** See [Tools and basics](/migrating/basics).
+- **Open a notes file.** Paste every SQL block and console command you run into it, in order, with a note of what happened. On go-live day you run exactly that list again on a fresh copy.
+
+:::danger[Before every SQL block: check the selected database]
+HeidiSQL runs SQL on whichever database is selected on the left, and the steps on this page change and delete things. Before you run anything, run this:
+
+```sql
+SELECT DATABASE();
+```
+
+It must say `qbox_migration`, the copy you make in step 1 (on go-live day: `qbox_live`). If it shows any other name, **stop**, click the right database on the left, and check again. Never run these steps on your live database.
+:::
+
+How each step works:
+
+- Steps 1 to 5 happen in **HeidiSQL**, with the test server **stopped**.
+- Steps 6 to 8 happen in **txAdmin**, with the test server **running** and nobody connected.
+- Every step ends with **How to check it worked**. Don't continue until the check passes.
+
+:::info
+The SQL on this page was tested on MariaDB 12.0 against a database made with QBCore 1.3's own SQL files. If your QBCore server was heavily customized, the checks after each step matter even more.
+:::
+
+## 1. Copy your database {#load-a-copy}
+
+1. **Stop the test server** in its txAdmin.
+2. **Count your characters.** Click your live database on the left and run the query below. It only reads, so it's safe. It's the only query in this guide that you run on your live database. Write the number down.
+
+   ```sql
+   SELECT COUNT(*) AS characters FROM players;
+   ```
+
+3. **Copy your live database** into a new database called `qbox_migration`. Follow [Copy a database](/migrating/basics#copy-a-database). Backing up the live database is safe while the live server runs. If your live database is at a hosting company, download it with phpMyAdmin first, see [If your database is at a hosting company](/migrating/basics#if-your-database-is-at-a-hosting-company). If you installed a new MariaDB for Qbox, create `qbox_migration` in the new one.
+4. **Connect the test server to the copy.** Open the test server's `server.cfg` and find the `mysql_connection_string` line. Change **only the database name**, the part after the last `/` and before the `?`:
+
+   ```cfg
+   # before: the empty database the recipe created
+   set mysql_connection_string "mysql://root:YourPassword@localhost/qbox_a1b2c3?charset=utf8mb4"
+
+   # after: your copy
+   set mysql_connection_string "mysql://root:YourPassword@localhost/qbox_migration?charset=utf8mb4"
+   ```
+
+   Save the file. **Don't start the server yet.**
+
+**How to check it worked:** in HeidiSQL, click `qbox_migration` on the left and run:
+
+```sql
+SELECT DATABASE(), COUNT(*) AS characters FROM players;
+```
+
+It should show `qbox_migration` and the same number of characters you wrote down. From now on, keep `qbox_migration` selected.
+
+## 2. Fix the collation {#fix-the-collation}
+
+**Why:** a collation is the set of rules a table uses to compare text. Qbox's tables are linked to your `players` table, and linked tables must use the same collation. QBCore didn't set one, so your tables use whatever your MariaDB chose, and often a mix. Without this step, the next step fails with:
+
+```
+Can't create table `player_groups` (errno: 150 "Foreign key constraint is incorrectly formed")
+```
+
+**First, check.** Run this:
+
+```sql
+SELECT TABLE_NAME, TABLE_COLLATION
+FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = DATABASE()
+  AND TABLE_COLLATION <> 'utf8mb4_unicode_ci';
+```
+
+If it shows **no rows**, your tables are fine. Skip to [step 3](#run-the-qbox-sql).
+
+**Otherwise, fix it.** Paste this whole block into the Query tab and run it once. It converts every table, which can take a few minutes on a big database. Wait until HeidiSQL is done.
+
+```sql
+ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+ALTER TABLE `player_vehicles` DROP FOREIGN KEY IF EXISTS `FK_playervehicles_players`;
+
+DELIMITER //
+BEGIN NOT ATOMIC
+    FOR t IN (
+        SELECT TABLE_NAME AS name
+        FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_TYPE = 'BASE TABLE'
+          AND TABLE_COLLATION <> 'utf8mb4_unicode_ci'
+    ) DO
+        EXECUTE IMMEDIATE CONCAT('ALTER TABLE `', t.name, '` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    END FOR;
+END //
+DELIMITER ;
+
+ALTER TABLE `player_vehicles`
+    ADD CONSTRAINT `FK_playervehicles_players` FOREIGN KEY IF NOT EXISTS (`citizenid`)
+    REFERENCES `players` (`citizenid`) ON DELETE CASCADE ON UPDATE CASCADE;
+```
+
+What it does: it sets the right collation as the default, temporarily removes the link between vehicles and characters that QBCore's vehicle shop added, converts every table, and puts the link back. Running it twice does no harm.
+
+**How to check it worked:** run the check query from the top of this step again. It must show no rows.
+
+**If you get an error:**
+
+| Error | What to do |
+| --- | --- |
+| `Cannot add or update a child row: a foreign key constraint fails` | Some vehicles belong to characters that were deleted. See [Vehicles without a character](#vehicles-without-a-character) below, then run the block again |
+| `Cannot change column ... used in a foreign key constraint` (error 1832) | Another script added its own link to your `players` table. Don't try to work around it: ask in the [Qbox Discord](https://discord.gg/qbox) and include the full error |
+| `You have an error in your SQL syntax` | Make sure you copied the whole block, from `ALTER DATABASE` to the last `;`. If you did, your MariaDB is too old, see [Check your database server](/migrating/basics#check-your-database-server) |
+
+### Vehicles without a character
+
+If a character was deleted on QBCore, their vehicles sometimes stayed behind. Nobody can use them. To see them:
+
+```sql
+SELECT v.id, v.plate, v.vehicle, v.citizenid
+FROM player_vehicles v
+LEFT JOIN players p ON p.citizenid = v.citizenid
+WHERE p.citizenid IS NULL;
+```
+
+To delete them:
+
+```sql
+DELETE v
+FROM player_vehicles v
+LEFT JOIN players p ON p.citizenid = v.citizenid
+WHERE p.citizenid IS NULL;
+```
+
+Then run the big block from this step again.
+
+## 3. Run the Qbox SQL {#run-the-qbox-sql}
+
+**Why:** Qbox needs some tables and columns QBCore doesn't have, for example `player_groups` for jobs and gangs. These files add what's missing and keep your data. One of them, `migrate.sql`, moves vehicle financing into a new table and then removes the old financing columns from `player_vehicles`.
+
+**First, move QBCore's outfits table aside.** QBCore's `player_outfits` table has different columns from the one Qbox's clothing script uses. Run:
+
+```sql
+RENAME TABLE IF EXISTS `player_outfits` TO `player_outfits_qbcore`;
+```
+
+**Then run these files in this order**, each with **File**, then **Run SQL file...**. The files are in the test server's folder, the one whose name ends in `.base`, see [Where the files are](/migrating/server-setup#where-the-files-are). For example, the second file is at `...\YourServer.base\resources\[qbx]\qbx_core\qbx_core.sql`.
+
+1. **`qbox.sql`** from the Qbox recipe. Download it from [GitHub](https://github.com/Qbox-project/txAdminRecipe/blob/main/qbox.sql) with the **Download raw file** button at the top right of the file. It adds the tables for clothing, doors, mail and banking.
+2. **`qbx_core.sql`**, in `resources/[qbx]/qbx_core`. It adds the jobs and gangs table and new columns in `players`.
+3. **`vehicles.sql`**, in `resources/[qbx]/qbx_vehicles`.
+4. **`vehshop.sql`**, in `resources/[qbx]/qbx_vehicleshop`.
+5. **`migrate.sql`**, in the same folder. It moves vehicle financing to Qbox's table. **Run it only once.**
+6. The files of these resources, if you use them:
+   - `resources/[qbx]/qbx_vehiclesales/qbx_vehiclesales.sql`
+   - `resources/[qbx]/qbx_weed/sql/qbx_weed.sql`
+   - `resources/[qbx]/qbx_lapraces/qbx_lapraces.sql`
+   - `resources/[qbx]/qbx_drugs/qbx_drugs.sql`
+   - `resources/[npwd]/npwd/import.sql`
+
+You don't need SQL for qbx_properties. It creates its own tables when it starts.
+
+**How to check it worked:** HeidiSQL showed no `SQL Error` popup for any file. Then run:
+
+```sql
+SELECT COUNT(*) FROM player_groups;
+```
+
+It should show `0`, not an error. The table exists but is still empty. Step 6 fills it.
+
+If a file shows an error, stop and ask in the [Qbox Discord](https://discord.gg/qbox), with the file name and the full error.
+
+## 4. Fix vehicles {#fix-vehicles}
+
+**Add two missing columns.** Qbox needs them, but its SQL only creates them for brand-new tables. Run:
+
+```sql
+ALTER TABLE `player_vehicles` ADD COLUMN IF NOT EXISTS `coords` text DEFAULT NULL;
+ALTER TABLE `players` ADD COLUMN IF NOT EXISTS `phone_number` varchar(20) DEFAULT NULL;
+```
+
+Without `coords`, garages don't work. Without `phone_number`, phone numbers aren't saved.
+
+### Vehicles that were never parked
+
+QBCore only saves a vehicle's details the first time it's parked. Vehicles that were bought but never parked have no details, and Qbox's garage can't take them out. This fills in what's needed from the information QBCore did save:
+
+```sql
+UPDATE `player_vehicles`
+SET `mods` = JSON_OBJECT(
+    'plate', `plate`,
+    'model', IF(CAST(`hash` AS SIGNED) > 2147483647, CAST(`hash` AS SIGNED) - 4294967296, CAST(`hash` AS SIGNED))
+)
+WHERE (`mods` IS NULL OR `mods` IN ('', '{}', '[]'))
+  AND `hash` REGEXP '^-?[0-9]+$';
+```
+
+**How to check it worked:** run this. It should show no rows:
+
+```sql
+SELECT id, plate, vehicle, hash
+FROM player_vehicles
+WHERE `mods` IS NULL OR `mods` IN ('', '{}', '[]');
+```
+
+If it shows rows, those vehicles have no usable information left. Note their plates and owners, delete them, and give the owners a new vehicle in game later:
+
+```sql
+DELETE FROM player_vehicles WHERE `mods` IS NULL OR `mods` IN ('', '{}', '[]');
+```
+
+### Garages that don't exist on Qbox
+
+A parked vehicle only shows up in a garage with exactly the same name. Some QBCore garages don't exist in Qbox's garage script. See which garages your parked vehicles are in:
+
+```sql
+SELECT garage, COUNT(*) AS vehicles
+FROM player_vehicles
+WHERE state = 1
+GROUP BY garage
+ORDER BY vehicles DESC;
+```
+
+Now open the test server's `qbx_garages/config/server.lua` and press **Ctrl+F**. Search for each garage name from the result. If a name isn't in the file, move its vehicles to a garage that is. For example, to move everything from `casinogarage` to `pillboxgarage`:
+
+```sql
+UPDATE player_vehicles SET garage = 'pillboxgarage' WHERE garage = 'casinogarage';
+```
+
+- **Keep boats and aircraft in their own kind of garage.** In the config, each garage has a `vehicleType`. Move boats to a boat garage, and helicopters and planes to an aircraft garage. A car garage can't take them out.
+- Vehicles in **qb-houses house garages** need moving too, because those garages don't exist on Qbox.
+- These QBCore garages aren't in Qbox by default: `airzancudo`, `caears242`, `casinogarage`, `dumborigparking`, `grapeseedgarage`, `popsrigparking`, `rigdepot`, `ronsrigparking`, `ronsrigparking2`, `ronsrigparking3`.
+- If you prefer, you can add a garage with the old name to `qbx_garages/config/server.lua` instead, by copying an existing garage and changing its name and location.
+
+Impounded vehicles and vehicles that are out are fine as they are.
+
+**How to check it worked:** run the garage query again. Every name it shows must exist in `qbx_garages/config/server.lua`.
+
+## 5. Copy job and gang bank balances {#society-balances}
+
+**Why:** each character's own bank balance comes along automatically. The **shared** accounts of jobs and gangs, the "society" money, don't. Qbox's banking script, Renewed-Banking, keeps them in its own table, which starts every account at $0.
+
+Run this with the test server **stopped**:
+
+```sql
+INSERT INTO `bank_accounts_new` (`id`, `amount`, `transactions`, `auth`, `isFrozen`, `creator`)
+SELECT `account_name`, `account_balance`, '[]', '[]', 0, NULL
+FROM `bank_accounts`
+WHERE `account_type` IN ('job', 'gang')
+ON DUPLICATE KEY UPDATE `amount` = VALUES(`amount`);
+```
+
+If HeidiSQL says that `bank_accounts` doesn't exist, your QBCore is older and kept these balances in a `management_funds` table. Run this instead:
+
+```sql
+INSERT INTO `bank_accounts_new` (`id`, `amount`, `transactions`, `auth`, `isFrozen`, `creator`)
+SELECT `job_name`, `amount`, '[]', '[]', 0, NULL
+FROM `management_funds`
+ON DUPLICATE KEY UPDATE `amount` = VALUES(`amount`);
+```
+
+**How to check it worked:** QBCore's table is still in your copy, so you can compare both. Run these two queries one after the other:
+
+```sql
+SELECT id, amount FROM bank_accounts_new ORDER BY id;
+```
+
+```sql
+SELECT account_name, account_balance FROM bank_accounts WHERE account_type IN ('job', 'gang') ORDER BY account_name;
+```
+
+Every job and gang should have the same amount in both. If you used the `management_funds` query, compare with `SELECT job_name, amount FROM management_funds ORDER BY job_name;` instead.
+
+- Transaction history and qb-banking's shared accounts between players don't come along.
+- Only boss grades with `bankAuth = true` can use a job's account. You added that in [Jobs and gangs](/migrating/server-setup#jobs-and-gangs).
+
+## 6. Start the server and convert jobs {#convert-jobs}
+
+**Why:** QBCore stores each character's job and gang inside the character. Qbox also keeps a list of everyone's jobs and gangs in the `player_groups` table, which the boss menu and multiple jobs use. One command fills it in.
+
+1. **Start the test server** in txAdmin. Don't join it yet.
+2. **Watch the Live Console** until the server has started. It must show no `SCRIPT ERROR`. On this first start qbx_core adds a `users` table, which is normal.
+3. **In the Live Console, run:**
+
+   ```
+   convertjobs
+   ```
+
+   It's safe to run more than once.
+
+**How to check it worked.** `convertjobs` quietly skips jobs and grades that aren't in your jobs file, so check the result. Run this in HeidiSQL:
+
+```sql
+SELECT JSON_VALUE(p.job, '$.name') AS job,
+       COUNT(*) AS characters,
+       COUNT(g.citizenid) AS converted
+FROM players p
+LEFT JOIN player_groups g
+    ON g.citizenid = p.citizenid
+   AND g.type = 'job'
+   AND g.`group` = JSON_VALUE(p.job, '$.name')
+GROUP BY JSON_VALUE(p.job, '$.name');
+```
+
+You get one row per job. For each job, **characters** and **converted** must be the same number. `unemployed` is the only exception: it always shows `0` converted, because Qbox doesn't store it.
+
+If a job has fewer converted than characters, that job, or one of its grades, is missing from your `qbx_core/shared/jobs.lua`. Add it, restart the server, run `convertjobs` again and check again.
+
+**Gangs:** check them the same way with this query. There, `none` is the exception:
+
+```sql
+SELECT JSON_VALUE(p.gang, '$.name') AS gang,
+       COUNT(*) AS characters,
+       COUNT(g.citizenid) AS converted
+FROM players p
+LEFT JOIN player_groups g
+    ON g.citizenid = p.citizenid
+   AND g.type = 'gang'
+   AND g.`group` = JSON_VALUE(p.gang, '$.name')
+GROUP BY JSON_VALUE(p.gang, '$.name');
+```
+
+:::warning[Get your jobs and gangs right first]
+In the recipe's `server.cfg`, `qbx:cleanPlayerGroups` is `true`. Every time the server starts, it removes jobs, gangs and grades from `player_groups` that aren't in your files. If you forgot a job, the characters who had it lose it from that list. Fix the file and run `convertjobs` again.
+:::
+
+<details>
+<summary>For developers: extra jobs from a multi-job script</summary>
+
+`convertjobs` only copies each character's main job and gang. If your QBCore server used a multi-job script with its own table, raise `qbx:max_jobs_per_player` first, then import the extra jobs with a one-off command in a temporary resource. Change the query to match your script's table:
+
+```lua
+RegisterCommand('importmultijob', function(source)
+    if source ~= 0 then return end
+
+    local rows = MySQL.query.await('SELECT citizenid, job, grade FROM your_multijob_table')
+    for i = 1, #rows do
+        local row = rows[i]
+        local success, err = exports.qbx_core:AddPlayerToJob(row.citizenid, row.job, tonumber(row.grade))
+        if not success then
+            print(('%s %s: %s'):format(row.citizenid, row.job, err and err.message))
+        end
+    end
+end, true)
+```
+
+</details>
+
+## 7. Convert inventories {#inventories}
+
+**Why:** ox_inventory stores items differently from qb-inventory. qbx_core has a command that converts them: `convertqbinventory`. It converts:
+
+| On QBCore | On Qbox |
+| --- | --- |
+| Each character's inventory | The same character's inventory |
+| Stashes | Stashes with the same name |
+| Trunks and gloveboxes | The trunk and glovebox of the owned vehicle with that plate |
+| Police evidence drawers | Evidence stashes |
+
+It reads both the current qb-inventory and older versions. If the console says the command doesn't exist, [update qbx_core](/migrating/basics#updating-qbx_core).
+
+**Before you run it:**
+
+- **Your items must be in ox_inventory.** Finish [Items](/migrating/server-setup#items) first. ox_inventory throws away items it doesn't know the moment a player opens their inventory.
+- **Nobody may be connected.** The real conversion refuses to run while players are online.
+
+**1. Do a test run.** In the Live Console, run:
+
+```
+convertqbinventory dryrun
+```
+
+This changes nothing. It prints what a real run would do, for example:
+
+```
+[INFO] Players: 312 rows: 298 to convert, 14 empty or already ox format (skipped), 0 invalid JSON (skipped)
+[INFO] Vehicles: 85 trunks and 40 gloveboxes to write
+[INFO] Stashes: 23 stashes to create (2 evidence lockers merged from 5 QB drawers)
+[WARN] Items not defined in ox_inventory (kept as-is) (3): pistol_ammo x41, burger x6, oldphone x2
+[INFO] Dry run complete: 298 player, 125 vehicle and 23 stash writes would be made. Nothing was changed.
+```
+
+Read every `[WARN]` line:
+
+| Warning starts with | What to do |
+| --- | --- |
+| `Items not defined in ox_inventory` | These items would be lost. Add each one to `ox_inventory/data/items.lua`, see [Adding a missing item](#adding-a-missing-item) below, restart the server and run the test again. QBCore ammo, such as `pistol_ammo`, shows up here too: either add it as an item, or accept that it's lost |
+| `Plates with no owned vehicle` | A trunk or glovebox belongs to a vehicle nobody owns, such as a stolen car. Those items are skipped |
+| `Duplicate plates` | Two owned vehicles have the same plate. The items go to the one that was added to the database first |
+| `Stashes that already exist in ox_inventory` or `Vehicle inventories that already contain ox data` | Skipped, so nothing is overwritten. Normal when you run the conversion a second time |
+| `Stash names longer than 100 characters` | Skipped, because ox_inventory doesn't allow such long names |
+| `Players with more items than inventory:slots` | Those characters have more item stacks than an ox_inventory has slots. The extra items are placed after the last slot, where players may not be able to reach them. Raise `inventory:slots` in `ox.cfg` so everything fits |
+| `Players with invalid inventory JSON`, `Invalid ... inventories` or `Inventories found in more than one QB table` | That data was broken or doubled on QBCore and is skipped. Ask in the Discord if many are listed |
+| `players are online` | Nobody may be connected for the real conversion. Kick them or close the server first |
+| `Back up your database before converting` | Always shown, as a reminder. You're working on a copy, so you're fine |
+
+#### Adding a missing item
+
+Open `ox_inventory/data/items.lua`, press **Ctrl+End**, and add a line like this just above the very last `}`, for every missing item:
+
+```lua
+['burger'] = { label = 'Burger', weight = 200 },
+```
+
+Use the item name from the warning between the quotes, and choose a label and a weight in grams. Add `stack = false,` inside the `{ }` for items that shouldn't stack, such as phones or ID cards. Save, then restart ox_inventory by typing `ensure ox_inventory` in the Live Console.
+
+**2. Convert for real:**
+
+```
+convertqbinventory
+```
+
+- Everything is written in one go. If anything fails, nothing is changed.
+- QBCore's own tables aren't changed. Every character inventory is saved to a `players_qb_inventory_backup` table before it's overwritten.
+- Running it again is safe. Whatever was already converted is skipped.
+
+The console ends with `Converted ... player, ... vehicle and ... stash inventories`.
+
+**How to check it worked:** run the test run again: `convertqbinventory dryrun`. It should now report `0 to convert`, `0 trunks and 0 gloveboxes to write` and `0 stashes to create`. Then join the server with one of your characters and open your inventory.
+
+When you join with an old character for the first time, Qbox asks you to pick an apartment and then shows the clothing menu, because QBCore apartments don't carry over. That's expected. Pick any apartment and close the clothing menu. Clothes are fixed in the next step.
+
+**Good to know:**
+
+- **Weapons** keep their serial number, ammo and quality. **Attachments are lost**, because ox_inventory stores them differently.
+- **Slots:** items in player inventories stay in their slot where possible. Stashes, trunks and gloveboxes are filled from the first slot.
+- **Stashes are shared.** Converted stashes have no owner. A script that gives every player their own stash won't see the converted items.
+- **Cash** isn't an inventory item on QBCore, so it isn't touched. It stays with the character and shows up as the `money` item.
+
+### Starting fresh instead
+
+If you'd rather not keep items, empty every inventory instead of converting:
+
+```sql
+UPDATE `players` SET `inventory` = '[]';
+```
+
+Cash is kept. Existing characters don't get starter items again, so hand out what they need, such as a phone, with `/giveitem`.
+
+Either way, you can leave QBCore's old `inventories` table in the database. Nothing on Qbox uses it.
+
+## 8. Convert clothing {#clothing}
+
+**Why:** Qbox uses illenium-appearance for clothing. It can convert qb-clothing's saved looks with an in-game command.
+
+1. **Give yourself the `god` permission.** If you didn't already in [Permissions](/migrating/server-setup#permissions), add these lines to `permissions.cfg` with your own identifier, and restart the server:
+
+   ```cfg title="permissions.cfg"
+   add_ace group.god god allow
+   add_principal identifier.fivem:YOUR_ID group.god
+   ```
+
+2. **Join the test server** and spawn with any character.
+3. Press **T** to open the chat, and type:
+
+   ```
+   /migrateskins qb-clothing
+   ```
+
+4. **Don't touch anything while it runs.** It converts every saved look by putting it on your own character for a moment, so your character keeps changing clothes. With many characters this takes a while.
+5. When it's done, a notification says `Migration finished` with the number of converted skins.
+
+**How to check it worked:** log in with a few other characters. They should wear their own clothes.
+
+**Saved outfits don't carry over.** They stay in the `player_outfits_qbcore` table. Players need to save their outfits again.
+
+## 9. Housing, phone and other data {#other-data}
+
+Some data has no converter. Decide what to tell your players.
+
+| Data | What happens |
+| --- | --- |
+| **qb-apartments and qb-houses** | Not imported, and their stashes aren't converted. Every existing character is asked to pick a new apartment on their next login, and then sees the clothing menu. To stop this, set `startingApartment = false` in `qbx_core/config/client.lua`, but then new characters don't get an apartment either |
+| **qb-phone** | Contacts, messages, photos and tweets don't come along. Phone numbers and mails do |
+| **qb-doorlock** | ox_doorlock can convert your qb-doorlock config files: copy them into the `ox_doorlock/convert` folder and restart the server. Do this after step 3, because `qbox.sql` adds doors the bank robbery script needs. After converting, ox_doorlock marks those files as done and skips them from then on, so **keep the originals**: you need them again on go-live day. Whether doors were locked or open isn't kept |
+| **qb-weed plants** | They belong to houses, so they're gone |
+
+Leave QBCore's old tables in the database, such as `inventories`, `player_contacts`, `apartments`, `player_houses` and `bank_statements`, until you're sure you won't go back to QBCore.
+
+## Done
+
+Your test server now runs on a converted copy of your data. Next: [test everything with your staff](/migrating/going-live).
