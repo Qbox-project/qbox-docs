@@ -30,6 +30,8 @@ An exception to this is resources that use qb-core in undocumented, unsupported,
 - Invalid usages of existing functions;
 - And other unexpected ways not mentioned here.
 
+Scripts that depend on qb-inventory, qb-target or qb-menu also need attention. See [Your own scripts](/migrating/scripts).
+
 ## Who should use Qbox?
 
 Servers currently using QBCore and servers interested in running QBCore in the future.
@@ -103,7 +105,9 @@ This is likely due to a low performance PC. If the error is `qbx_core` you can a
 
 ### Do I need to add items to qbx_core/shared/items.lua and ox_inventory?
 
-No you don't need to add items there unless they are being accessed in a resource via the bridge such as a script that is not ox_inventory compatible. Items added here will be automatically added to `ox_inventory` but you will have to manually add things like client/server exports in the `ox_inventory/data/items.lua`
+No. Add items to `ox_inventory/data/items.lua` only. Scripts that use the bridge see them through `QBCore.Shared.Items`, which qbx_core builds from ox_inventory's items.
+
+`qbx_core/shared/items.lua` is deprecated. Anything you put there is written to `qbx_core/converted.lua` on the next start, for you to copy into `ox_inventory/data/items.lua`. See [Items](/migrating/server-setup#items).
 
 ### Error SQL: Can't create table xyz (Foreign Key Constraint is incorrectly formed)
 
